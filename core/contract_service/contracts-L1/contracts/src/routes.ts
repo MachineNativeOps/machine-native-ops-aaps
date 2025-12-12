@@ -66,7 +66,7 @@ const escalationController = new EscalationController();
  *     HTTP/1.1 200 OK
  *     {
  *       "status": "healthy",
- *       "timestamp": "2024-01-15T10:30:00.000Z",
+ *       "timestamp": "2025-12-01T10:00:00.000Z",
  *       "service": "contracts-l1"
  *     }
  */
