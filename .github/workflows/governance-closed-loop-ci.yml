@@ -1,0 +1,285 @@
+name: Governance Closed-Loop CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  dag-validation:
+    name: "1) DAG validation"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Validate governance index DAG
+        run: |
+          python governance/index/scripts/index-validator.py --json > governance-index-validation.json
+      - name: Upload DAG validation results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: governance-index-validation
+          path: governance-index-validation.json
+          retention-days: 14
+
+  execution-coverage:
+    name: "2) Required execution coverage"
+    runs-on: ubuntu-latest
+    needs: dag-validation
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check required execution dimensions
+        run: |
+          python - <<'PY'
+import json
+import sys
+from pathlib import Path
+
+root = Path("governance")
+dimensions = json.load(open(root / "index/dimensions.json"))
+required = [d for d in dimensions["dimensions"] if d.get("execution") == "required"]
+missing_paths = []
+inactive = []
+
+for dim in required:
+    dim_path = root / dim["path"]
+    if not dim_path.exists():
+        missing_paths.append(dim["path"])
+    status = (dim.get("status") or "").lower()
+    if status in {"deprecated", "removed"}:
+        inactive.append(dim["path"])
+
+report = {
+    "total_required": len(required),
+    "missing_paths": missing_paths,
+    "inactive_required": inactive,
+}
+
+artifacts = Path("artifacts")
+artifacts.mkdir(exist_ok=True)
+(artifacts / "execution-coverage.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+
+if missing_paths or inactive:
+    print(json.dumps(report, indent=2))
+    sys.exit(1)
+PY
+      - name: Upload execution coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: execution-coverage
+          path: artifacts/execution-coverage.json
+          retention-days: 14
+
+  compliance-frameworks:
+    name: "3) Compliance framework mapping"
+    runs-on: ubuntu-latest
+    needs: execution-coverage
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify compliance coverage for active dimensions
+        run: |
+          python - <<'PY'
+import json
+import sys
+from pathlib import Path
+
+index_root = Path("governance/index")
+dimensions = json.load(open(index_root / "dimensions.json"))
+compliance = json.load(open(index_root / "compliance.json"))
+
+dim_paths = {d["path"] for d in dimensions["dimensions"] if d.get("execution") == "required" and d.get("status") in {"active", "production"}}
+
+covered = set()
+for fw in compliance.get("frameworks", []):
+    for dim in fw.get("dimensions", []) or []:
+        if dim:
+            covered.add(dim)
+    for ctrl in fw.get("controls", []) or []:
+        if ctrl.get("dimension"):
+            covered.add(ctrl["dimension"])
+    for func in fw.get("functions", []) or []:
+        for cat in func.get("categories", []) or []:
+            if cat.get("dimension"):
+                covered.add(cat["dimension"])
+    rc = fw.get("risk_classification") or {}
+    for entry in rc.values():
+        if isinstance(entry, dict):
+            if entry.get("dimension"):
+                covered.add(entry["dimension"])
+            for dim in entry.get("dimensions", []) or []:
+                if dim:
+                    covered.add(dim)
+    for ob in fw.get("obligations", []) or []:
+        if ob.get("dimension"):
+            covered.add(ob["dimension"])
+    for req in fw.get("requirements", []) or []:
+        if req.get("dimension"):
+            covered.add(req["dimension"])
+
+matrix = compliance.get("compliance_matrix", {}).get("by_dimension", {})
+covered.update(matrix.keys())
+
+missing = sorted(dim_paths - covered)
+
+report = {
+    "checked_dimensions": sorted(dim_paths),
+    "missing_frameworks": missing,
+    "total_checked": len(dim_paths),
+}
+
+artifacts = Path("artifacts")
+artifacts.mkdir(exist_ok=True)
+(artifacts / "compliance-frameworks.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+
+if missing:
+    print(json.dumps(report, indent=2))
+    sys.exit(1)
+PY
+      - name: Upload compliance mapping report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-frameworks
+          path: artifacts/compliance-frameworks.json
+          retention-days: 14
+
+  event-closure:
+    name: "4) Event closed-loop checks"
+    runs-on: ubuntu-latest
+    needs: dag-validation
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate event registry closure
+        run: |
+          python - <<'PY'
+import json
+import sys
+from pathlib import Path
+
+index_root = Path("governance/index")
+dimensions = json.load(open(index_root / "dimensions.json"))
+events = json.load(open(index_root / "events.json"))
+
+dimension_paths = {d["path"] for d in dimensions["dimensions"]}
+issues = []
+
+for category in events.get("event_categories", []):
+    source = category.get("source")
+    if source and source not in dimension_paths:
+        issues.append(f"Unknown source dimension: {source}")
+    for event in category.get("events", []):
+        event_id = event.get("id", "<unknown>")
+        if not event.get("trigger"):
+            issues.append(f"{event_id} missing trigger")
+        if not event.get("agents"):
+            issues.append(f"{event_id} missing agents")
+        if not event.get("actions"):
+            issues.append(f"{event_id} missing actions")
+
+report = {"issues": issues, "total_categories": len(events.get("event_categories", []))}
+
+artifacts = Path("artifacts")
+artifacts.mkdir(exist_ok=True)
+(artifacts / "event-closure.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+
+if issues:
+    print(json.dumps(report, indent=2))
+    sys.exit(1)
+PY
+      - name: Upload event closure report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: event-closure
+          path: artifacts/event-closure.json
+          retention-days: 14
+
+  technical-debt:
+    name: "5) Technical debt report"
+    runs-on: ubuntu-latest
+    needs: dag-validation
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Scan technical debt markers
+        run: |
+          python - <<'PY'
+import json
+from pathlib import Path
+
+from governance.technical_debt_manager import TechnicalDebtManager
+
+manager = TechnicalDebtManager(Path("."))
+count = manager.scan_for_debt(["governance"])
+report = {
+    "debt_count": count,
+    "sample_items": [item.to_dict() for item in manager.debt_items[:25]],
+}
+
+artifacts = Path("artifacts")
+artifacts.mkdir(exist_ok=True)
+(artifacts / "technical-debt-report.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+print(f"Detected {count} potential debt markers")
+PY
+      - name: Upload technical debt report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: technical-debt-report
+          path: artifacts/technical-debt-report.json
+          retention-days: 14
+
+  security-scan:
+    name: "6) SBOM + vulnerability scan"
+    runs-on: ubuntu-latest
+    needs: [dag-validation, compliance-frameworks]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+      - name: Generate SBOM and run audit
+        run: |
+          npm install --ignore-scripts
+          npx @cyclonedx/cyclonedx-npm --output-file sbom.json || echo "SBOM generation reported issues"
+          npm audit --audit-level=high || echo "npm audit reported vulnerabilities"
+      - name: Upload SBOM
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: governance-sbom
+          path: sbom.json
+          retention-days: 14
+
+  deployment-verification:
+    name: "7) Deployment verification"
+    runs-on: ubuntu-latest
+    needs: [security-scan, event-closure]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate docker-compose manifests
+        run: |
+          if command -v docker compose >/dev/null 2>&1; then
+            docker compose config
+            if [ -f docker-compose.dev.yml ]; then
+              docker compose -f docker-compose.dev.yml config
+            fi
+          else
+            docker-compose config
+            if [ -f docker-compose.dev.yml ]; then
+              docker-compose -f docker-compose.dev.yml config
+            fi
+          fi
