@@ -1,4 +1,7 @@
 name: project-self-awareness-nightly
+permissions:
+  contents: read
+  issues: write
 
 on:
   schedule:
