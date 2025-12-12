@@ -1,0 +1,10 @@
+# Auto-generated files - committed once to establish baseline
+# Future regenerations should be committed only when semantically significant changes occur
+
+# Note: These patterns are NOT active to allow baseline commit.
+# Uncomment after baseline to prevent unnecessary commits of regenerated files:
+# *.yaml
+# *.json
+
+# Always keep this .gitignore file
+!.gitignore

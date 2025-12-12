@@ -1,0 +1,16 @@
+# SynergyMesh Funding Configuration
+# These are supported funding model platforms
+
+github: [SynergyMesh]
+patreon: # synergymesh
+open_collective: synergymesh
+ko_fi: # synergymesh
+tidelift: # npm/synergymesh
+community_bridge: # synergymesh
+liberapay: # synergymesh
+issuehunt: # synergymesh
+lfx_crowdfunding: # synergymesh
+polar: # synergymesh
+buy_me_a_coffee: # synergymesh
+thanks_dev: # synergymesh
+custom: ['https://synergymesh.io/sponsor']

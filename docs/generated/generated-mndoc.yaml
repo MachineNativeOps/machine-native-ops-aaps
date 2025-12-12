@@ -1,0 +1,344 @@
+$schema: https://schema.superroot.kn/mndoc/v1
+id: unmanned-island
+kind: SystemDoc
+path: README.md
+title: Unmanned Island System
+version: 4.0.0
+domain: unmanned-island
+layer: platform
+type: overview
+owner: unmanned-island
+status: active
+languages:
+- zh-Hant
+- en
+tags:
+- ai
+- automation
+- autonomous-system
+- ci-cd
+- cloud-native
+- governance
+- kubernetes
+- mcp
+- sigstore
+- slsa
+summary: ''
+sections:
+- id: 系統概述
+  title: 系統概述
+  type: overview
+  content_preview: '## 🌟 系統概述
+
+
+    **Unmanned Island System**
+
+    是一個統一的企業級智能自動化平台，整合三大核心子系統：
+
+
+    ```
+
+    ┌─────────────────────────────────────────────────────────────────────────────┐
+
+    │                        🏝️ Unmanned Island Syste...'
+- id: 技術路線規劃圖-technical-roadmap
+  title: 🗺 技術路線規劃圖 | Technical Roadmap
+  type: content
+  content_preview: '## 🗺️ 技術路線規劃圖 | Technical Roadmap
+
+
+    ### 📍 當前狀態 (v1.0.0)
+
+
+    ```
+
+    ✅ 已完成模組 (Production Ready)
+
+    ├── 🔷 SynergyMesh Core Engine
+
+    │   ├── ✅ 統一整合層 (Unified Integration)
+
+    │   ├── ✅ 心智矩陣 (Mind Matrix)
+
+    │   ├── ✅ 安全機制 (...'
+- id: 核心子系統
+  title: 核心子系統
+  type: overview
+  content_preview: "## \U0001F537 核心子系統\n\n### 1️⃣ SynergyMesh Core Engine（核心引擎）\n\n雲原生智能業務自動化和數據編排平台。\n\
+    \n```yaml\n# 核心能力\ncapabilities:\n  cognitive_processing: # 四層認知架構\n    - perception # 感知層 - 遙測收集、異常偵測\n\
+    \    - reasoning # 推理層 - 因果圖構建、風險..."
+- id: 全局優化推理系統global-optimization-reasoning
+  title: 🎯 全局優化推理系統（Global Optimization Reasoning）
+  type: overview
+  content_preview: '## 🎯 全局優化推理系統（Global Optimization Reasoning）
+
+
+    > **讓 AI 與架構師用「全局視野」做決策，而不只是打補丁**
+
+
+    **Global Optimization Reasoning System** 是一套完整的架構治理與優化框架，確保所有重構、語言治理、模組調整都遵循「全局優化優先」原則。
+
+
+    ### 核心原則：Global Optimization F...'
+- id: 4-活體知識庫living-knowledge-base
+  title: 4⃣ 活體知識庫（Living Knowledge Base）
+  type: content
+  content_preview: "## 4️⃣ 活體知識庫（Living Knowledge Base）\n\n> 讓系統自己感知變化、重建自身結構、自我檢查，並主動回報狀態。\n\n本模組**不是**人工智慧助理、命令列工具、Copilot\
+    \ 或聊天機器人。\n它的唯一目的，是讓程式碼倉庫「知道自己現在長怎樣、哪裡有問題」，並用**機器可讀的方式**表達出來。\n\n```yaml\n# 知識循環四層次\nknowledge_cycle:\n\
+    \  pe..."
+- id: 統一目錄結構
+  title: 統一目錄結構
+  type: structure
+  content_preview: '## 📁 統一目錄結構
+
+
+    ```
+
+    unmanned-island/
+
+    │
+
+    ├── synergymesh.yaml              # 🔑 統一主配置入口
+
+    │
+
+    ├── core/                         # 🏛️ 核心平台服務
+
+    │   ├── unified_integration/      # 統一整合層
+
+    │   ├── mind_matrix/        ...'
+- id: refactor-playbook-system
+  title: Refactor Playbook System
+  type: content
+  content_preview: "## \U0001F504 Refactor Playbook System\n\n**三階段重構系統** - 結構化的語言治理與架構重構控制平面\n\n```\n\
+    01_deconstruction → 02_integration → 03_refactor\n                                         ↓\n   \
+    \                         Proposer gen..."
+- id: 快速開始
+  title: 快速開始
+  type: getting-started
+  content_preview: '## 🚀 快速開始
+
+
+    ### 📥 安裝選擇
+
+
+    **我們提供多種安裝方式，請選擇最適合您的：**
+
+
+    | 用戶類型 | 推薦方式 | 文檔 |
+
+    |---------|---------|------|
+
+    | **一般用戶** | 下載對應平台的安裝程式 | [INSTALL.md](./INSTALL.md) |
+
+    | **開發者** | 從源碼安裝 | 見下方「從源碼安裝」 |
+
+    | **企業部署** |...'
+- id: 跨平台安裝與構建系統-cross-platform-build-system
+  title: 📦 跨平台安裝與構建系統 | Cross-Platform Build System
+  type: overview
+  content_preview: '## 📦 跨平台安裝與構建系統 | Cross-Platform Build System
+
+
+    > **完整的跨平台分發解決方案，支援 Windows, macOS, Linux 和 Docker**
+
+
+    ### 🎯 系統概覽
+
+
+    SynergyMesh 提供完整的自動化構建和分發系統，涵蓋所有主流平台：
+
+
+    ```
+
+    構建系統架構
+
+    ├── 🪟 Windows
+
+    │   ├── EXE 安裝程式（PyInst...'
+- id: admin-copilot-cli-public-preview
+  title: 🖥 Admin Copilot CLI (Public Preview)
+  type: content
+  content_preview: '## 🖥️ Admin Copilot CLI (Public Preview)
+
+
+    Admin Copilot CLI 將 AI 驅動的程式碼分析與操作能力帶入命令列，使系統可透過自然語言理解自身程式碼，並執行建置、偵錯與維護流程。
+
+
+    詳見 docs/ADMIN_COPILOT_CLI.md 與 tools/cli/README.md。
+
+
+    ---'
+- id: web-前端與代碼分析-api-appsweb
+  title: 🌐 Web 前端與代碼分析 API (apps/web)
+  type: content
+  content_preview: '## 🌐 Web 前端與代碼分析 API (apps/web)
+
+
+    apps/web 提供企業級代碼分析服務，包括 React 前端與 FastAPI 後端。
+
+
+    - 前端：npm install、npm run dev / build
+
+    - 後端：pip install -r requirements.txt、pytest
+
+
+    部署與 API 詳見 apps/web/README.md。
+
+
+    ---'
+- id: 核心功能
+  title: 核心功能
+  type: features
+  content_preview: '## 🛠️ 核心功能
+
+
+    ### 🤖 智能自動化
+
+
+    | 功能           | 說明                             | 入口                                 |
+
+    | -------------- | -------------------------------- | ----------------------------------...'
+- id: 全局配置總覽
+  title: 🎛 全局配置總覽
+  type: content
+  content_preview: '## 🎛️ 全局配置總覽
+
+
+    | 配置檔案                          | 說明                             |
+
+    |-----------------------------------|----------------------------------|
+
+    | synergymesh.yaml                  | 統一主配置入口 ...'
+- id: 虛擬專家團隊
+  title: 👨‍💼 虛擬專家團隊
+  type: content
+  content_preview: '## 👨‍💼 虛擬專家團隊
+
+
+    內建多位虛擬專家，對應架構、安全、資料庫、DevOps 等領域，詳細映射參考 config/agents/team/virtual-experts.yaml。
+
+
+    ---'
+- id: 智能代理服務
+  title: 🤖 智能代理服務
+  type: content
+  content_preview: '## 🤖 智能代理服務
+
+
+    services/agents/ 提供長生命週期業務代理：
+
+
+    - Auto-Repair Agent：自動修復
+
+    - Code Analyzer Agent：程式碼分析
+
+    - Dependency Manager：依賴管理
+
+    - Orchestrator：代理編排
+
+    - Vulnerability Detector：漏洞檢測
+
+
+    更多細節見 services/agents/READ...'
+- id: 無人機系統配置
+  title: 🚁 無人機系統配置
+  type: overview
+  content_preview: '## 🚁 無人機系統配置
+
+
+    drone-config.yml 定義無人機編隊與協調策略，並透過 automation/autonomous/ 五骨架框架實作。
+
+
+    ---'
+- id: 自主系統框架無人駕駛無人機
+  title: 🚗 自主系統框架（無人駕駛/無人機）
+  type: overview
+  content_preview: '## 🚗 自主系統框架（無人駕駛/無人機）
+
+
+    ### 統一架構骨架系統 ⭐
+
+
+    **11 個完整架構骨架**，整合架構指南與實現代碼：
+
+
+    - **入口**: [`automation/architecture-skeletons/README.md`](./automation/architecture-skeletons/README.md)
+
+    - **索引**: [`automation/arch...'
+- id: 文檔導航
+  title: 文檔導航
+  type: documentation
+  content_preview: '## 📚 文檔導航
+
+
+    完整文檔入口：docs/README.md
+
+
+    - **架構**：docs/architecture/
+
+    - **快速入門**：docs/QUICK_START.md
+
+    - **API 文檔**：docs/AUTO_ASSIGNMENT_API.md
+
+    - **運維手冊**：docs/operations/
+
+    - **語言治理**：docs/LANGUAGE_GOVERNANCE_IM...'
+- id: cicd
+  title: CI/CD
+  type: cicd
+  content_preview: '## 🔄 CI/CD
+
+
+    主要工作流位於 .github/workflows/，品質閘條件定義在各 CI 配置中（覆蓋率、Lint、Schema、Policy）。
+
+
+    ---'
+- id: 授權與致謝
+  title: 授權與致謝
+  type: license
+  content_preview: '## 📄 授權與致謝
+
+
+    本專案採用 MIT License 授權，詳見 LICENSE。
+
+
+    致謝 SynergyMesh、Sigstore、OPA、SLSA 等開源專案提供的基礎能力。
+
+
+    ---
+
+
+    <div align="center">
+
+
+    **🏝️ Unmanned Island System**
+
+
+    _讓開發更高效，讓程式碼更完美！_
+
+
+    [GitHub](https://github.com/S...'
+detected_subsystems:
+- id: synergymesh
+  detected: true
+  keywords_found:
+  - SynergyMesh
+  - Core Engine
+  - 核心引擎
+- id: governance
+  detected: true
+  keywords_found:
+  - Governance
+  - 治理
+  - Schema
+- id: autonomous
+  detected: true
+  keywords_found:
+  - Autonomous
+  - 自主
+  - 五骨架
+  - Framework
+meta:
+  generated_by: generate_mndoc_from_readme.py
+  source: README.md
