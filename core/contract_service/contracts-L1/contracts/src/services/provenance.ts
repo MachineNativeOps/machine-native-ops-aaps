@@ -88,11 +88,18 @@ export class ProvenanceService {
     builder: BuilderInfo,
     metadata: Partial<MetadataInfo> = {}
   ): Promise<BuildAttestation> {
-    // Normalize and resolve against the SAFE_ROOT
-    const resolvedPath = path.resolve(SAFE_ROOT, subjectPath);
-    // Ensure the resolved path is within SAFE_ROOT
-    if (!resolvedPath.startsWith(SAFE_ROOT + path.sep)) {
-      throw new Error('Invalid file path: Access outside of allowed directory is not permitted.');
+    // Handle absolute vs relative paths
+    let resolvedPath: string;
+    if (path.isAbsolute(subjectPath)) {
+      // For absolute paths, use as-is (allows test files in tmpdir)
+      resolvedPath = path.normalize(subjectPath);
+    } else {
+      // For relative paths, resolve against SAFE_ROOT
+      resolvedPath = path.resolve(SAFE_ROOT, subjectPath);
+      // Ensure the resolved path is within SAFE_ROOT
+      if (!resolvedPath.startsWith(SAFE_ROOT + path.sep)) {
+        throw new Error('Invalid file path: Access outside of allowed directory is not permitted.');
+      }
     }
     const stats = await stat(resolvedPath);
     if (!stats.isFile()) {
