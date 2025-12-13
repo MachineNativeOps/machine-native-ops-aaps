@@ -29,7 +29,7 @@
 import { Router, Request, Response } from 'express';
 import type { Router as RouterType } from 'express';
 
-import rateLimit from 'express-rate-limit';
+import rateLimit, { type RateLimitRequestHandler } from 'express-rate-limit';
 
 import { AssignmentController } from './controllers/assignment';
 import { EscalationController } from './controllers/escalation';
@@ -56,7 +56,7 @@ const router: RouterType = Router();
  *
  * To change the rate limiting policy, modify the `max` and `windowMs` values below.
  */
-const limiter = rateLimit({
+const limiter: RateLimitRequestHandler = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 100,
     standardHeaders: true,
