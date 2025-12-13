@@ -31,7 +31,7 @@ jobs:
       - name: Run governance tool
         continue-on-error: true
         run: |
-          npx ts-node --transpile-only governance/dimensions/81-auto-comment/scripts/generate-comment.ts \
+          npx ts-node --esm --transpile-only governance/dimensions/81-auto-comment/scripts/generate-comment.ts \
             --workflow "GitHub CI Trigger" \
             --run-id "${{ github.run_id }}" \
             --commit "${{ github.sha }}" \
