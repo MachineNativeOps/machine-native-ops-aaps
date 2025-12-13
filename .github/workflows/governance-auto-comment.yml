@@ -172,6 +172,8 @@ jobs:
 
       - name: Generate auto-comment
         id: generate
+        env:
+          HEAD_BRANCH: ${{ needs.check-trigger.outputs.head_branch }}
         run: |
           cd ${{ env.DIMENSION_PATH }}/scripts
 
@@ -180,7 +182,7 @@ jobs:
             --workflow "${{ needs.check-trigger.outputs.workflow_name }}" \
             --run-id "${{ github.event.workflow_run.id || github.run_id }}" \
             --commit "${{ needs.check-trigger.outputs.head_sha }}" \
-            --branch "${{ needs.check-trigger.outputs.head_branch }}" \
+            --branch "$HEAD_BRANCH" \
             --pr-number "${{ needs.check-trigger.outputs.pr_number }}"
 
           # 讀取生成的事件資訊
