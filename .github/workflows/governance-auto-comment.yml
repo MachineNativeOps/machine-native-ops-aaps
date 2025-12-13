@@ -375,7 +375,7 @@ jobs:
           ### 處理結果
           | 項目 | 值 |
           |------|-----|
-          | 事件 ID | \`${{ needs.generate-comment.outputs.event_id }}\` |
+          | 事件 ID | \`$EVENT_ID\` |
           | 錯誤類型 | ${{ needs.generate-comment.outputs.error_type }} |
           | 自動修復 | ${{ needs.generate-comment.outputs.auto_fixed }} |
 
