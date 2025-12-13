@@ -359,6 +359,8 @@ jobs:
 
     steps:
       - name: Generate workflow summary
+        env:
+          EVENT_ID: ${{ needs.generate-comment.outputs.event_id }}
         run: |
           cat >> $GITHUB_STEP_SUMMARY << EOF
           ## 🤖 Governance Auto-Comment Engine Report
