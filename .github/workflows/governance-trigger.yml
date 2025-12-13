@@ -55,7 +55,7 @@ jobs:
 
           npm exec --prefix "$GOVERNANCE_SCRIPTS_PATH" ts-node -- \
             "$GOVERNANCE_SCRIPTS_PATH/generate-comment.ts" "${SCRIPT_ARGS[@]}" || {
-              echo "generate-comment script failed; continuing";
+              echo "generate-comment script failed; continuing. Script: $GOVERNANCE_SCRIPTS_PATH/generate-comment.ts Args: ${SCRIPT_ARGS[*]}. See above for log output.";
               GOVERNANCE_STATUS="failed";
             }
 
