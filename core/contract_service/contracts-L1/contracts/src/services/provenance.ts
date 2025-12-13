@@ -57,7 +57,10 @@ async function validateAndNormalizePath(
 
     // Ensure the canonical path is within its expected root
     // Inside tmpdir for test environment, OK
-    if (process.env.NODE_ENV === 'test' && canonicalPath.startsWith(systemTmpDir)) {
+    if (
+      process.env.NODE_ENV === 'test' &&
+      (canonicalPath === systemTmpDir || canonicalPath.startsWith(systemTmpDir + path.sep))
+    ) {
       return canonicalPath;
     }
     // Always enforce containment in safeRoot otherwise
