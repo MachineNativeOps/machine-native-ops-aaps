@@ -12,6 +12,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+    env:
+      GOVERNANCE_SCRIPTS_PATH: governance/dimensions/81-auto-comment/scripts
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,15 +21,15 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
+          node-version: "20"
 
       - name: Install governance tool dependencies
         run: |
-          if [ ! -f governance/dimensions/81-auto-comment/scripts/package.json ]; then
-            echo "governance/dimensions/81-auto-comment/scripts/package.json not found, skipping install."
+          if [ ! -f "$GOVERNANCE_SCRIPTS_PATH/package.json" ]; then
+            echo "$GOVERNANCE_SCRIPTS_PATH/package.json not found, skipping install."
             exit 0
           fi
-          npm install --prefix governance/dimensions/81-auto-comment/scripts
+          npm install --prefix "$GOVERNANCE_SCRIPTS_PATH"
 
       - name: Run governance tool
         continue-on-error: true
@@ -37,15 +39,15 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number || '' }}
           BRANCH_NAME: ${{ github.ref_name }}
         run: |
-          npx --prefix governance/dimensions/81-auto-comment/scripts ts-node \
-            governance/dimensions/81-auto-comment/scripts/generate-comment.ts \
+          npx --prefix "$GOVERNANCE_SCRIPTS_PATH" ts-node \
+            "$GOVERNANCE_SCRIPTS_PATH/generate-comment.ts" \
             --workflow "${WORKFLOW_NAME}" \
             --run-id "${{ github.run_id }}" \
             --commit "${COMMIT_SHA}" \
             --branch "${BRANCH_NAME}" \
             --pr-number "${PR_NUMBER}" || echo "generate-comment script failed; continuing"
 
-          node governance/dimensions/81-auto-comment/scripts/update-registry.js \
+          node "$GOVERNANCE_SCRIPTS_PATH/update-registry.js" \
             --event-id "auto-comment-${{ github.run_id }}" \
             --status "triggered" \
             --workflow "${WORKFLOW_NAME}" \
