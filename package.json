@@ -9,9 +9,7 @@
     "core/advisory-database",
     "apps/web",
     "island-ai",
-    "unmanned-engineer-ceo/80-skeleton-configs/01-architecture-stability",
-    "unmanned-engineer-ceo/80-skeleton-configs/04-security-observability",
-    "unmanned-engineer-ceo/80-skeleton-configs/05-identity-tenancy"
+    "unmanned-engineer-ceo/80-skeleton-configs"
   ],
   "scripts": {
     "lint": "npm run lint --workspaces --if-present",
