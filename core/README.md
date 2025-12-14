@@ -133,7 +133,7 @@ understanding = await context_engine.analyze(
 ### Execution Engine 執行引擎
 
 ```python
-from core.modules.execution_engine import ExecutionEngine
+from core.execution_engine import ExecutionEngine
 
 executor = ExecutionEngine()
 result = await executor.execute(
@@ -158,7 +158,7 @@ result = await executor.execute(
 
 - [Architecture Layers](../docs/architecture/layers.md) - 架構分層視圖
 - [Repository Map](../docs/architecture/repo-map.md) - 倉庫語義邊界
-- [Execution Architecture](./modules/execution_architecture/) - 執行架構詳細設計
+- [Execution Architecture](./execution_architecture/) - 執行架構詳細設計
 - [Safety Mechanisms](./safety_mechanisms/) - 安全機制文檔
 
 ## 📝 Document History 文檔歷史

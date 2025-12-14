@@ -13,54 +13,49 @@ that all AI agents must follow for any operation.
 Phase 6 Implementation - 100% Complete Self-Contained Modules
 """
 
-from .fundamental_laws import (
-    FundamentalLaws,
-    LawZero,
-    LawOne,
-    LawTwo,
-    LawThree,
-    EnforcementLevel,
-)
-
-from .operational_rules import (
-    OperationalRules,
-    DataHandlingRule,
-    SystemAccessRule,
-    ResourceUsageRule,
-    CommunicationRule,
-    OperationalRuleEngine,
-)
-
 from .adaptive_guidelines import (
-    AdaptiveGuidelines,
-    DomainGuideline,
-    ContextualGuideline,
-    LearningGuideline,
     AdaptiveGuidelineEngine,
+    AdaptiveGuidelines,
+    ContextualGuideline,
+    DomainGuideline,
+    LearningGuideline,
 )
-
 from .constitution_engine import (
+    ActionProposal,
     ConstitutionEngine,
     ConstitutionVerdict,
     VerdictType,
-    ActionProposal,
 )
-
-from .policy_as_prompt import (
-    PolicyAsPrompt,
-    PolicyPrompt,
-    PromptGuardrail,
-    PolicyEnforcer,
+from .fundamental_laws import (
+    EnforcementLevel,
+    FundamentalLaws,
+    LawOne,
+    LawThree,
+    LawTwo,
+    LawZero,
 )
-
 from .guardrails import (
-    GuardrailSystem,
-    Guardrail,
-    GuardrailType,
-    GuardrailResult,
-    SafetyGuardrail,
     ComplianceGuardrail,
     EthicsGuardrail,
+    Guardrail,
+    GuardrailResult,
+    GuardrailSystem,
+    GuardrailType,
+    SafetyGuardrail,
+)
+from .operational_rules import (
+    CommunicationRule,
+    DataHandlingRule,
+    OperationalRuleEngine,
+    OperationalRules,
+    ResourceUsageRule,
+    SystemAccessRule,
+)
+from .policy_as_prompt import (
+    PolicyAsPrompt,
+    PolicyEnforcer,
+    PolicyPrompt,
+    PromptGuardrail,
 )
 
 __all__ = [

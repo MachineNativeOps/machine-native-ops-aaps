@@ -6,13 +6,12 @@ AI-driven anomaly detection without manual thresholds
 Reference: AI-enhanced observability with automatic anomaly detection [4]
 """
 
+import statistics
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, List, Optional
-import uuid
-import statistics
-import math
+from typing import Any
 
 
 class AnomalyDetectionStrategy(Enum):
@@ -59,10 +58,10 @@ class DetectedAnomaly:
     confidence: float = 0.0
     description: str = ""
     timestamp: datetime = field(default_factory=datetime.now)
-    context: Dict[str, Any] = field(default_factory=dict)
-    recommended_actions: List[str] = field(default_factory=list)
-    
-    def to_dict(self) -> Dict[str, Any]:
+    context: dict[str, Any] = field(default_factory=dict)
+    recommended_actions: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, Any]:
         return {
             'anomaly_id': self.anomaly_id,
             'metric_name': self.metric_name,
@@ -87,7 +86,7 @@ class SmartAnomalyDetector:
     
     Reference: AI-enhanced observability with automatic anomaly detection [4]
     """
-    
+
     def __init__(
         self,
         default_strategy: AnomalyDetectionStrategy = AnomalyDetectionStrategy.STATISTICAL,
@@ -97,18 +96,18 @@ class SmartAnomalyDetector:
         self._default_strategy = default_strategy
         self._sensitivity = sensitivity
         self._min_samples = min_samples
-        self._baselines: Dict[str, Dict[str, float]] = {}
-        self._history: Dict[str, List[float]] = {}
-        self._anomalies: List[DetectedAnomaly] = []
-        self._category_rules: Dict[str, AnomalyCategory] = {}
-    
+        self._baselines: dict[str, dict[str, float]] = {}
+        self._history: dict[str, list[float]] = {}
+        self._anomalies: list[DetectedAnomaly] = []
+        self._category_rules: dict[str, AnomalyCategory] = {}
+
     def set_baseline(
         self,
         metric_name: str,
         mean: float,
         stdev: float,
-        min_val: Optional[float] = None,
-        max_val: Optional[float] = None
+        min_val: float | None = None,
+        max_val: float | None = None
     ) -> None:
         """Set baseline statistics for a metric"""
         self._baselines[metric_name] = {
@@ -117,12 +116,12 @@ class SmartAnomalyDetector:
             'min': min_val,
             'max': max_val
         }
-    
-    def learn_baseline(self, metric_name: str, values: List[float]) -> Dict[str, float]:
+
+    def learn_baseline(self, metric_name: str, values: list[float]) -> dict[str, float]:
         """Learn baseline from historical data"""
         if not values:
             return {}
-        
+
         baseline = {
             'mean': statistics.mean(values),
             'stdev': statistics.stdev(values) if len(values) > 1 else 0.0,
@@ -132,35 +131,35 @@ class SmartAnomalyDetector:
         self._baselines[metric_name] = baseline
         self._history[metric_name] = values.copy()
         return baseline
-    
+
     def add_sample(self, metric_name: str, value: float) -> None:
         """Add a sample to the history"""
         if metric_name not in self._history:
             self._history[metric_name] = []
         self._history[metric_name].append(value)
-        
+
         # Keep only recent samples
         max_samples = 1000
         if len(self._history[metric_name]) > max_samples:
             self._history[metric_name] = self._history[metric_name][-max_samples:]
-        
+
         # Update baseline if enough samples
         if len(self._history[metric_name]) >= self._min_samples:
             self.learn_baseline(metric_name, self._history[metric_name])
-    
+
     def set_category_rule(self, metric_pattern: str, category: AnomalyCategory) -> None:
         """Set category rule for metric patterns"""
         self._category_rules[metric_pattern] = category
-    
+
     def _get_category(self, metric_name: str) -> AnomalyCategory:
         """Determine category based on metric name"""
         metric_lower = metric_name.lower()
-        
+
         # Check custom rules first
         for pattern, category in self._category_rules.items():
             if pattern in metric_lower:
                 return category
-        
+
         # Default categorization
         if any(kw in metric_lower for kw in ['cpu', 'memory', 'disk', 'network']):
             return AnomalyCategory.RESOURCE
@@ -176,11 +175,11 @@ class SmartAnomalyDetector:
             return AnomalyCategory.SECURITY
         else:
             return AnomalyCategory.UNKNOWN
-    
+
     def _calculate_severity(self, deviation: float, confidence: float) -> AnomalySeverity:
         """Calculate severity based on deviation and confidence"""
         score = deviation * confidence
-        
+
         if score > 4.0:
             return AnomalySeverity.CRITICAL
         elif score > 3.0:
@@ -189,23 +188,23 @@ class SmartAnomalyDetector:
             return AnomalySeverity.MEDIUM
         else:
             return AnomalySeverity.LOW
-    
+
     def detect_statistical(
         self,
         metric_name: str,
         value: float
-    ) -> Optional[DetectedAnomaly]:
+    ) -> DetectedAnomaly | None:
         """Detect anomaly using statistical method (Z-score)"""
         baseline = self._baselines.get(metric_name)
         if not baseline or baseline['stdev'] == 0:
             return None
-        
+
         z_score = abs((value - baseline['mean']) / baseline['stdev'])
-        
+
         if z_score > self._sensitivity:
             deviation = z_score
             confidence = min(1.0, z_score / 5.0)
-            
+
             return DetectedAnomaly(
                 metric_name=metric_name,
                 category=self._get_category(metric_name),
@@ -217,32 +216,32 @@ class SmartAnomalyDetector:
                 confidence=confidence,
                 description=f"Statistical anomaly: {metric_name} = {value:.2f} (expected {baseline['mean']:.2f}, z-score {z_score:.2f})"
             )
-        
+
         return None
-    
+
     def detect_threshold(
         self,
         metric_name: str,
         value: float,
-        min_threshold: Optional[float] = None,
-        max_threshold: Optional[float] = None
-    ) -> Optional[DetectedAnomaly]:
+        min_threshold: float | None = None,
+        max_threshold: float | None = None
+    ) -> DetectedAnomaly | None:
         """Detect anomaly using threshold-based method"""
         baseline = self._baselines.get(metric_name, {})
-        
+
         min_val = min_threshold if min_threshold is not None else baseline.get('min')
         max_val = max_threshold if max_threshold is not None else baseline.get('max')
-        
+
         violation = None
         if min_val is not None and value < min_val:
             violation = ('below', min_val)
         elif max_val is not None and value > max_val:
             violation = ('above', max_val)
-        
+
         if violation:
             direction, threshold = violation
             deviation = abs(value - threshold) / max(abs(threshold), 1.0)
-            
+
             return DetectedAnomaly(
                 metric_name=metric_name,
                 category=self._get_category(metric_name),
@@ -254,26 +253,26 @@ class SmartAnomalyDetector:
                 confidence=0.9,
                 description=f"Threshold violation: {metric_name} = {value:.2f} is {direction} threshold {threshold:.2f}"
             )
-        
+
         return None
-    
+
     def detect_rate_change(
         self,
         metric_name: str,
         value: float,
         max_rate_change: float = 0.5  # 50% change
-    ) -> Optional[DetectedAnomaly]:
+    ) -> DetectedAnomaly | None:
         """Detect anomaly based on rate of change"""
         history = self._history.get(metric_name, [])
         if len(history) < 2:
             return None
-        
+
         prev_value = history[-1]
         if prev_value == 0:
             return None
-        
+
         rate_change = abs(value - prev_value) / abs(prev_value)
-        
+
         if rate_change > max_rate_change:
             return DetectedAnomaly(
                 metric_name=metric_name,
@@ -286,25 +285,25 @@ class SmartAnomalyDetector:
                 confidence=0.8,
                 description=f"Rate change anomaly: {metric_name} changed {rate_change*100:.1f}% from {prev_value:.2f} to {value:.2f}"
             )
-        
+
         return None
-    
+
     def detect(
         self,
         metric_name: str,
         value: float,
-        strategy: Optional[AnomalyDetectionStrategy] = None
-    ) -> Optional[DetectedAnomaly]:
+        strategy: AnomalyDetectionStrategy | None = None
+    ) -> DetectedAnomaly | None:
         """
         Detect anomaly using specified or default strategy
         
         For HYBRID strategy, uses all available methods and returns most confident result
         """
         strategy = strategy or self._default_strategy
-        
+
         # Add sample to history
         self.add_sample(metric_name, value)
-        
+
         if strategy == AnomalyDetectionStrategy.STATISTICAL:
             return self.detect_statistical(metric_name, value)
         elif strategy == AnomalyDetectionStrategy.THRESHOLD:
@@ -314,26 +313,26 @@ class SmartAnomalyDetector:
         elif strategy == AnomalyDetectionStrategy.HYBRID:
             # Try all strategies and return most confident
             anomalies = []
-            
+
             result = self.detect_statistical(metric_name, value)
             if result:
                 anomalies.append(result)
-            
+
             result = self.detect_threshold(metric_name, value)
             if result:
                 anomalies.append(result)
-            
+
             result = self.detect_rate_change(metric_name, value)
             if result:
                 anomalies.append(result)
-            
+
             if anomalies:
                 # Return most confident
                 return max(anomalies, key=lambda a: a.confidence)
-        
+
         return None
-    
-    def get_anomalies(self) -> List[DetectedAnomaly]:
+
+    def get_anomalies(self) -> list[DetectedAnomaly]:
         """Get all detected anomalies"""
         return self._anomalies.copy()
 
@@ -344,9 +343,9 @@ class AnomalyClassifier:
     
     Classifies anomalies by severity and category
     """
-    
+
     def __init__(self):
-        self._severity_weights: Dict[AnomalyCategory, float] = {
+        self._severity_weights: dict[AnomalyCategory, float] = {
             AnomalyCategory.SECURITY: 1.5,
             AnomalyCategory.AVAILABILITY: 1.3,
             AnomalyCategory.ERROR: 1.2,
@@ -356,15 +355,15 @@ class AnomalyClassifier:
             AnomalyCategory.TRAFFIC: 0.8,
             AnomalyCategory.UNKNOWN: 0.7
         }
-    
+
     def classify(self, anomaly: DetectedAnomaly) -> DetectedAnomaly:
         """Classify an anomaly with adjusted severity"""
         weight = self._severity_weights.get(anomaly.category, 1.0)
         adjusted_deviation = anomaly.deviation * weight
-        
+
         # Recalculate severity
         score = adjusted_deviation * anomaly.confidence
-        
+
         if score > 4.0:
             anomaly.severity = AnomalySeverity.CRITICAL
         elif score > 3.0:
@@ -373,16 +372,16 @@ class AnomalyClassifier:
             anomaly.severity = AnomalySeverity.MEDIUM
         else:
             anomaly.severity = AnomalySeverity.LOW
-        
+
         # Add recommended actions based on category
         anomaly.recommended_actions = self._get_recommendations(anomaly)
-        
+
         return anomaly
-    
-    def _get_recommendations(self, anomaly: DetectedAnomaly) -> List[str]:
+
+    def _get_recommendations(self, anomaly: DetectedAnomaly) -> list[str]:
         """Get recommended actions for an anomaly"""
         recommendations = []
-        
+
         if anomaly.category == AnomalyCategory.RESOURCE:
             recommendations = [
                 "Check resource utilization trends",
@@ -425,5 +424,5 @@ class AnomalyClassifier:
                 "Review related metrics",
                 "Check system logs"
             ]
-        
+
         return recommendations

@@ -9,16 +9,15 @@ Reference: Python supports 80% of AI agent implementations [4]
 Reference: Hybrid architecture for optimal performance
 """
 
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Dict, List, Optional, Any, Union
-from datetime import datetime
-import uuid
 import asyncio
+import json
 import os
 import sys
-import subprocess
-import json
+import uuid
+from dataclasses import dataclass, field
+from datetime import datetime
+from enum import Enum
+from typing import Any
 
 
 class PythonVersion(Enum):
@@ -52,23 +51,23 @@ class PythonPackage:
     Python 包定義
     """
     name: str
-    version: Optional[str] = None
-    extras: List[str] = field(default_factory=list)
+    version: str | None = None
+    extras: list[str] = field(default_factory=list)
     source: str = "pypi"  # pypi, git, local
-    git_url: Optional[str] = None
+    git_url: str | None = None
     installed: bool = False
-    
+
     def get_install_string(self) -> str:
         """Get pip install string for the package"""
         if self.source == "git" and self.git_url:
             return f"git+{self.git_url}"
-        
+
         package_str = self.name
         if self.extras:
             package_str += f"[{','.join(self.extras)}]"
         if self.version:
             package_str += f"=={self.version}"
-        
+
         return package_str
 
 
@@ -84,10 +83,10 @@ class ExecutionResult:
     stderr: str = ""
     return_value: Any = None
     execution_time: float = 0.0
-    memory_usage: Optional[int] = None
-    error_type: Optional[str] = None
-    error_message: Optional[str] = None
-    traceback: Optional[str] = None
+    memory_usage: int | None = None
+    error_type: str | None = None
+    error_message: str | None = None
+    traceback: str | None = None
 
 
 @dataclass
@@ -100,9 +99,9 @@ class PythonEnvironmentConfig:
     python_version: PythonVersion = PythonVersion.PYTHON_311
     environment_type: EnvironmentType = EnvironmentType.VIRTUALENV
     base_path: str = "/tmp/python_envs"
-    packages: List[PythonPackage] = field(default_factory=list)
-    environment_variables: Dict[str, str] = field(default_factory=dict)
-    requirements_file: Optional[str] = None
+    packages: list[PythonPackage] = field(default_factory=list)
+    environment_variables: dict[str, str] = field(default_factory=dict)
+    requirements_file: str | None = None
 
 
 class PythonEnvironment:
@@ -113,17 +112,17 @@ class PythonEnvironment:
     Creates and manages isolated Python environments for
     executing AI agent code safely.
     """
-    
+
     def __init__(self, config: PythonEnvironmentConfig):
         self.config = config
         self.id = str(uuid.uuid4())
         self.path = os.path.join(config.base_path, config.name)
-        self.python_executable: Optional[str] = None
-        self.pip_executable: Optional[str] = None
+        self.python_executable: str | None = None
+        self.pip_executable: str | None = None
         self.is_active = False
-        self.created_at: Optional[datetime] = None
-        self.installed_packages: Dict[str, str] = {}
-    
+        self.created_at: datetime | None = None
+        self.installed_packages: dict[str, str] = {}
+
     async def create(self) -> bool:
         """Create the Python environment
         
@@ -140,15 +139,15 @@ class PythonEnvironment:
                 return False
         except Exception:
             return False
-    
+
     async def _create_virtualenv(self) -> bool:
         """Create a virtualenv environment"""
         # In production: Actually create virtualenv
         # subprocess.run([sys.executable, "-m", "venv", self.path])
-        
+
         # Simulate environment creation
         await asyncio.sleep(0.1)
-        
+
         self.python_executable = os.path.join(
             self.path, "bin" if os.name != "nt" else "Scripts", "python"
         )
@@ -157,32 +156,32 @@ class PythonEnvironment:
         )
         self.is_active = True
         self.created_at = datetime.now()
-        
+
         return True
-    
+
     async def _create_conda(self) -> bool:
         """Create a conda environment"""
         # In production: Actually create conda env
         # subprocess.run(["conda", "create", "-n", self.config.name, f"python={self.config.python_version.value}"])
-        
+
         await asyncio.sleep(0.1)
-        
+
         self.python_executable = f"conda run -n {self.config.name} python"
         self.pip_executable = f"conda run -n {self.config.name} pip"
         self.is_active = True
         self.created_at = datetime.now()
-        
+
         return True
-    
+
     async def _use_system_python(self) -> bool:
         """Use system Python"""
         self.python_executable = sys.executable
         self.pip_executable = f"{sys.executable} -m pip"
         self.is_active = True
         self.created_at = datetime.now()
-        
+
         return True
-    
+
     async def install_package(self, package: PythonPackage) -> bool:
         """Install a package in the environment
         
@@ -190,20 +189,20 @@ class PythonEnvironment:
         """
         if not self.is_active:
             return False
-        
+
         try:
             # In production: Actually install package
             # subprocess.run([self.pip_executable, "install", package.get_install_string()])
-            
+
             await asyncio.sleep(0.05)
-            
+
             package.installed = True
             self.installed_packages[package.name] = package.version or "latest"
-            
+
             return True
         except Exception:
             return False
-    
+
     async def install_requirements(self, requirements_path: str) -> bool:
         """Install packages from requirements file
         
@@ -211,16 +210,16 @@ class PythonEnvironment:
         """
         if not self.is_active:
             return False
-        
+
         try:
             # In production: Actually install from requirements
             # subprocess.run([self.pip_executable, "install", "-r", requirements_path])
-            
+
             await asyncio.sleep(0.1)
             return True
         except Exception:
             return False
-    
+
     async def destroy(self) -> bool:
         """Destroy the environment
         
@@ -233,13 +232,13 @@ class PythonEnvironment:
             elif self.config.environment_type == EnvironmentType.CONDA:
                 # In production: subprocess.run(["conda", "env", "remove", "-n", self.config.name])
                 pass
-            
+
             self.is_active = False
             return True
         except Exception:
             return False
-    
-    def get_status(self) -> Dict[str, Any]:
+
+    def get_status(self) -> dict[str, Any]:
         """Get environment status"""
         return {
             "id": self.id,
@@ -261,7 +260,7 @@ class PackageManager:
     Provides package installation, version management, and
     dependency resolution.
     """
-    
+
     # Recommended packages for SynergyMesh AI core
     RECOMMENDED_PACKAGES = {
         "ai_agents": [
@@ -290,19 +289,19 @@ class PackageManager:
             PythonPackage("rich"),
         ]
     }
-    
+
     def __init__(self):
-        self.environments: Dict[str, PythonEnvironment] = {}
-        self.package_cache: Dict[str, PythonPackage] = {}
-    
-    def get_recommended_packages(self, category: str) -> List[PythonPackage]:
+        self.environments: dict[str, PythonEnvironment] = {}
+        self.package_cache: dict[str, PythonPackage] = {}
+
+    def get_recommended_packages(self, category: str) -> list[PythonPackage]:
         """Get recommended packages for a category
         
         獲取某類別的推薦包
         """
         return self.RECOMMENDED_PACKAGES.get(category, [])
-    
-    def get_all_recommended_packages(self) -> List[PythonPackage]:
+
+    def get_all_recommended_packages(self) -> list[PythonPackage]:
         """Get all recommended packages
         
         獲取所有推薦包
@@ -311,7 +310,7 @@ class PackageManager:
         for category_packages in self.RECOMMENDED_PACKAGES.values():
             packages.extend(category_packages)
         return packages
-    
+
     async def setup_ai_environment(
         self,
         env_name: str = "synergymesh_ai",
@@ -330,22 +329,22 @@ class PackageManager:
                 self.get_recommended_packages("utilities")
             )
         )
-        
+
         env = PythonEnvironment(config)
         await env.create()
-        
+
         # Install all packages
         for package in config.packages:
             await env.install_package(package)
-        
+
         self.environments[env_name] = env
         return env
-    
+
     def register_environment(self, env: PythonEnvironment) -> None:
         """Register an existing environment"""
         self.environments[env.config.name] = env
-    
-    def get_environment(self, name: str) -> Optional[PythonEnvironment]:
+
+    def get_environment(self, name: str) -> PythonEnvironment | None:
         """Get an environment by name"""
         return self.environments.get(name)
 
@@ -361,18 +360,18 @@ class PythonExecutor:
     - Output capture
     - Error handling
     """
-    
-    def __init__(self, environment: Optional[PythonEnvironment] = None):
+
+    def __init__(self, environment: PythonEnvironment | None = None):
         self.environment = environment
-        self.execution_history: List[ExecutionResult] = []
+        self.execution_history: list[ExecutionResult] = []
         self.default_timeout = 60.0  # seconds
         self.max_output_size = 1024 * 1024  # 1MB
-    
+
     async def execute_code(
         self,
         code: str,
         mode: ExecutionMode = ExecutionMode.INLINE,
-        timeout: Optional[float] = None,
+        timeout: float | None = None,
         capture_output: bool = True
     ) -> ExecutionResult:
         """Execute Python code
@@ -381,9 +380,9 @@ class PythonExecutor:
         """
         start_time = datetime.now()
         result = ExecutionResult()
-        
+
         timeout = timeout or self.default_timeout
-        
+
         try:
             if mode == ExecutionMode.INLINE:
                 result = await self._execute_inline(code, timeout, capture_output)
@@ -391,11 +390,11 @@ class PythonExecutor:
                 result = await self._execute_script(code, timeout, capture_output)
             elif mode == ExecutionMode.MODULE:
                 result = await self._execute_module(code, timeout, capture_output)
-            
+
             result.execution_time = (datetime.now() - start_time).total_seconds()
             result.success = True
-            
-        except asyncio.TimeoutError:
+
+        except TimeoutError:
             result.success = False
             result.error_type = "TimeoutError"
             result.error_message = f"Execution timed out after {timeout} seconds"
@@ -403,10 +402,10 @@ class PythonExecutor:
             result.success = False
             result.error_type = type(e).__name__
             result.error_message = str(e)
-        
+
         self.execution_history.append(result)
         return result
-    
+
     async def _execute_inline(
         self,
         code: str,
@@ -415,7 +414,7 @@ class PythonExecutor:
     ) -> ExecutionResult:
         """Execute inline Python code"""
         result = ExecutionResult()
-        
+
         # In production: Use subprocess with the environment's Python
         # proc = await asyncio.create_subprocess_exec(
         #     self.environment.python_executable, "-c", code,
@@ -423,16 +422,16 @@ class PythonExecutor:
         #     stderr=asyncio.subprocess.PIPE
         # )
         # stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=timeout)
-        
+
         # Simulate execution
         await asyncio.sleep(0.05)
-        
+
         # Simulate output
         result.stdout = f"Executed: {code[:50]}..."
         result.stderr = ""
-        
+
         return result
-    
+
     async def _execute_script(
         self,
         script_path: str,
@@ -441,13 +440,13 @@ class PythonExecutor:
     ) -> ExecutionResult:
         """Execute a Python script file"""
         result = ExecutionResult()
-        
+
         # In production: Execute script file
         await asyncio.sleep(0.05)
-        
+
         result.stdout = f"Script executed: {script_path}"
         return result
-    
+
     async def _execute_module(
         self,
         module_name: str,
@@ -456,19 +455,19 @@ class PythonExecutor:
     ) -> ExecutionResult:
         """Execute a Python module"""
         result = ExecutionResult()
-        
+
         # In production: python -m module_name
         await asyncio.sleep(0.05)
-        
+
         result.stdout = f"Module executed: {module_name}"
         return result
-    
+
     async def execute_function(
         self,
         module_name: str,
         function_name: str,
-        args: List[Any] = None,
-        kwargs: Dict[str, Any] = None
+        args: list[Any] = None,
+        kwargs: dict[str, Any] = None
     ) -> ExecutionResult:
         """Execute a specific function from a module
         
@@ -476,7 +475,7 @@ class PythonExecutor:
         """
         args = args or []
         kwargs = kwargs or {}
-        
+
         code = f"""
 import json
 from {module_name} import {function_name}
@@ -484,19 +483,19 @@ from {module_name} import {function_name}
 result = {function_name}(*{json.dumps(args)}, **{json.dumps(kwargs)})
 print(json.dumps(result))
 """
-        
+
         return await self.execute_code(code, ExecutionMode.INLINE)
-    
-    def get_execution_stats(self) -> Dict[str, Any]:
+
+    def get_execution_stats(self) -> dict[str, Any]:
         """Get execution statistics
         
         獲取執行統計信息
         """
         if not self.execution_history:
             return {"total": 0, "success": 0, "failed": 0, "avg_time": 0}
-        
+
         successful = [r for r in self.execution_history if r.success]
-        
+
         return {
             "total": len(self.execution_history),
             "success": len(successful),
@@ -520,13 +519,13 @@ class PythonBridge:
     3. 代碼執行：安全執行 Python AI 代碼
     4. 框架整合：與 LangChain、CrewAI 等框架整合
     """
-    
+
     def __init__(self):
         self.package_manager = PackageManager()
-        self.executors: Dict[str, PythonExecutor] = {}
-        self.default_environment: Optional[PythonEnvironment] = None
+        self.executors: dict[str, PythonExecutor] = {}
+        self.default_environment: PythonEnvironment | None = None
         self._initialized = False
-    
+
     async def initialize(
         self,
         setup_ai_env: bool = True,
@@ -542,16 +541,16 @@ class PythonBridge:
                     include_ml=include_ml
                 )
                 self.executors["default"] = PythonExecutor(self.default_environment)
-            
+
             self._initialized = True
             return True
         except Exception:
             return False
-    
+
     def create_executor(
         self,
         name: str,
-        environment: Optional[PythonEnvironment] = None
+        environment: PythonEnvironment | None = None
     ) -> PythonExecutor:
         """Create a new Python executor
         
@@ -561,7 +560,7 @@ class PythonBridge:
         executor = PythonExecutor(env)
         self.executors[name] = executor
         return executor
-    
+
     async def execute_ai_code(
         self,
         code: str,
@@ -574,19 +573,19 @@ class PythonBridge:
         executor = self.executors.get(executor_name)
         if not executor:
             executor = self.executors.get("default")
-        
+
         if not executor:
             return ExecutionResult(
                 success=False,
                 error_type="RuntimeError",
                 error_message="No executor available"
             )
-        
+
         return await executor.execute_code(code)
-    
+
     async def run_langchain_agent(
         self,
-        agent_config: Dict[str, Any],
+        agent_config: dict[str, Any],
         task: str
     ) -> ExecutionResult:
         """Run a LangChain agent
@@ -608,12 +607,12 @@ task = "{task}"
 
 print(f"LangChain agent executed task: {{task}}")
 """
-        
+
         return await self.execute_ai_code(code)
-    
+
     async def run_crewai_crew(
         self,
-        crew_config: Dict[str, Any]
+        crew_config: dict[str, Any]
     ) -> ExecutionResult:
         """Run a CrewAI crew
         
@@ -633,10 +632,10 @@ config = {json.dumps(crew_config)}
 
 print(f"CrewAI crew executed with {{len(config.get('agents', []))}} agents")
 """
-        
+
         return await self.execute_ai_code(code)
-    
-    def get_status(self) -> Dict[str, Any]:
+
+    def get_status(self) -> dict[str, Any]:
         """Get bridge status
         
         獲取橋接器狀態
@@ -654,4 +653,3 @@ print(f"CrewAI crew executed with {{len(config.get('agents', []))}} agents")
 
 
 # Import json for code generation
-import json

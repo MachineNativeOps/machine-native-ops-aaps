@@ -13,35 +13,32 @@ Based on research findings:
 """
 
 from .architecture_config import (
-    TechStackConfig,
-    LanguageConfig,
-    FrameworkConfig,
     ArchitectureLayer,
+    FrameworkConfig,
+    LanguageConfig,
+    TechStackConfig,
     get_recommended_stack,
 )
-
 from .framework_integrations import (
-    FrameworkIntegration,
-    LangChainIntegration,
-    CrewAIIntegration,
     AutoGenIntegration,
-    LangGraphIntegration,
+    CrewAIIntegration,
+    FrameworkIntegration,
     FrameworkOrchestrator,
+    LangChainIntegration,
+    LangGraphIntegration,
 )
-
 from .multi_agent_coordinator import (
-    AgentRole,
     AgentCapability,
-    MultiAgentCoordinator,
-    AgentTeam,
-    TaskRouter,
     AgentCommunicationBus,
+    AgentRole,
+    AgentTeam,
+    MultiAgentCoordinator,
+    TaskRouter,
 )
-
 from .python_bridge import (
+    PackageManager,
     PythonBridge,
     PythonEnvironment,
-    PackageManager,
     PythonExecutor,
 )
 

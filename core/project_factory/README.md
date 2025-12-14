@@ -461,7 +461,7 @@ builder.register("custom-microservice")
 
 ```python
 # 1. 整合 Execution Engine
-from core.modules.execution_engine import ExecutionEngine
+from core.execution_engine import ExecutionEngine
 from core.project_factory import ProjectFactory
 
 engine = ExecutionEngine()

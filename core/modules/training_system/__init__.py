@@ -9,31 +9,29 @@ including domain knowledge, skill development, and example-driven learning.
 核心理念：不只是告訴 AI「不能做什麼」，更要教導 AI「應該怎麼做」
 """
 
-from .knowledge_base import (
-    KnowledgeBase,
-    DomainKnowledge,
-    ConceptDefinition,
-    BestPractice,
-    AntiPattern,
-    KnowledgeCategory,
-)
-
-from .skills_training import (
-    SkillsTrainingSystem,
-    Skill,
-    SkillLevel,
-    TrainingModule,
-    TrainingSession,
-    SkillAssessment,
-    LearningPath,
-)
-
 from .example_library import (
-    ExampleLibrary,
     CodeExample,
-    ScenarioExample,
     DecisionExample,
     ExampleCategory,
+    ExampleLibrary,
+    ScenarioExample,
+)
+from .knowledge_base import (
+    AntiPattern,
+    BestPractice,
+    ConceptDefinition,
+    DomainKnowledge,
+    KnowledgeBase,
+    KnowledgeCategory,
+)
+from .skills_training import (
+    LearningPath,
+    Skill,
+    SkillAssessment,
+    SkillLevel,
+    SkillsTrainingSystem,
+    TrainingModule,
+    TrainingSession,
 )
 
 __all__ = [
