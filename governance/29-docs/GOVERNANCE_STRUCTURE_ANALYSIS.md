@@ -1,6 +1,6 @@
 # Governance Structure Analysis of the KeyStonApp Project
 
-This document synthesizes an inferred analysis of the `/governance` directory based on structural context (approximately 80+ subdirectories) and open-source governance best practices.
+This document synthesizes an inferred analysis of the `/governance` directory based on structural context (approximately 80+ subdirectories) and open-source governance best practices. It is **speculative** and intended for navigation and improvement planning until full directory content is validated.
 
 ## 1. Summary of Key Governance Policies and Structures
 
@@ -23,7 +23,7 @@ This document synthesizes an inferred analysis of the `/governance` directory ba
 
 ## 2. Main Governance Components (Inferred)
 
-- **Decision-Making**: Service-level, RFC-style decisions without clear evidence of a central TSC; risk of inconsistency and duplication.
+- **Decision-Making**: Service-level, RFC-style decisions without clear evidence of a central TSC (Technical Steering Committee); risk of inconsistency and duplication.
 - **Roles & Responsibilities**: Service maintainers, potential governance council, compliance officers, security stewards, and community managers; missing visible `OWNERS`/`MAINTAINERS` increases ambiguity.
 - **Contribution Guidelines**: Likely fragmented across service folders; discoverability is low without a centralized contributor experience.
 - **Voting Mechanisms**: No visible formal voting framework; decisions may rely on ad-hoc consensus.
