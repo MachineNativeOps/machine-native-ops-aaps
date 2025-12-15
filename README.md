@@ -1160,6 +1160,12 @@ apps/web 提供企業級代碼分析服務，包括 React 前端與 FastAPI 後�
 | 策略閘       | OPA/Conftest 策略執行 | governance/policies/    |
 | SBOM 生成    | 軟體物料清單          | governance/sbom/        |
 
+**🆕 安全增強 (PR #351)**:
+- ✅ **SEC-PATH-001**: 路徑遍歷防護 - SAFE_ROOT 驗證機制
+- ✅ **SEC-LOG-001**: 安全日誌實踐 - 敏感資料自動遮蔽
+- ✅ **SEC-CRYPTO-001**: 強密碼演算法 - SHA-256+ 強制執行
+- 📚 [安全增強文檔](docs/security/PR351_SECURITY_ENHANCEMENTS.md) | [架構演化](docs/architecture/PR351_ARCHITECTURE_EVOLUTION.md)
+
 ### 📊 監控與觀測
 
 | 功能            | 說明                 | 入口                         |

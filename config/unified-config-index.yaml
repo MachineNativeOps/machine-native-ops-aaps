@@ -374,6 +374,13 @@ unified_capabilities:
       provider: "core/contract_service/contracts-L1/contracts/src/middleware/logging.ts"
       description: "Sensitive data redaction in logs"
       policy_reference: "governance/10-policy/base-policies/security-policies.yaml#SEC-LOG-001"
+    cryptography:
+      provider: "core/contract_service/contracts-L1/contracts/src/services/provenance.ts"
+      description: "Strong cryptographic algorithms (SHA-256+)"
+      policy_reference: "governance/10-policy/base-policies/security-policies.yaml#SEC-CRYPTO-001"
+      algorithms:
+        hashing: ["SHA-256", "SHA-384", "SHA-512", "SHA3-256", "BLAKE3"]
+        forbidden: ["MD5", "SHA-1"]
 
   # Code Analysis (程式碼分析)
   code_analysis:

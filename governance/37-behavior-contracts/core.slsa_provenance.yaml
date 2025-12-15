@@ -360,7 +360,12 @@ security:
       - "SAFE_ROOT configurable via SAFE_ROOT_PATH environment variable"
       - "All file operations protected against directory traversal"
       - "Symlink resolution before path validation"
-    policy_reference: "governance/10-policy/base-policies/security-policies.yaml#SEC-PATH-001"
+      - "Sensitive data redaction in logs (passwords, tokens, API keys)"
+      - "Strong cryptographic algorithms enforced (SHA-256+)"
+    policy_references:
+      - "SEC-PATH-001: governance/10-policy/base-policies/security-policies.yaml#path_security"
+      - "SEC-LOG-001: governance/10-policy/base-policies/security-policies.yaml#logging_security"
+      - "SEC-CRYPTO-001: governance/10-policy/base-policies/security-policies.yaml#cryptography"
   
   compliance:
     - "SLSA Level 3"

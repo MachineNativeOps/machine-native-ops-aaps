@@ -140,15 +140,23 @@ export class SomeService {
 
 #### ProvenanceService (`provenance.ts`)
 
-**Purpose:** Manages build provenance tracking.
+**Purpose:** Manages build provenance tracking with security controls.
 
 **Key Methods:**
 - `createAttestation(filePath, builder)` - Create build attestation
 - `verifyAttestation(attestation)` - Verify build attestation
 - `importAttestation(data)` - Import external attestation
 - `exportAttestation(id)` - Export attestation
-- `getFileDigest(filePath)` - Calculate file digest
+- `generateFileDigest(filePath)` - Calculate file digest with path validation
 - `buildSLSAProvenance(file, builder)` - Build SLSA provenance
+- `resolveSafePath(userInputPath)` - Private: Validate paths against SAFE_ROOT
+
+**Security Enhancements (PR #351):**
+- **Policy SEC-PATH-001**: Path traversal prevention using SAFE_ROOT validation
+- **Environment Variable**: `SAFE_ROOT_PATH` defines allowed directory for file operations
+- **Path Validation**: Uses `realpath()` and `relative()` to prevent directory traversal
+- **Reference**: `governance/10-policy/base-policies/security-policies.yaml#SEC-PATH-001`
+- **Documentation**: `docs/security/PR351_SECURITY_ENHANCEMENTS.md`
 
 ## Best Practices
 
