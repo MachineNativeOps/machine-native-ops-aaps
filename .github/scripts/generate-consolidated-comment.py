@@ -7,7 +7,7 @@ Reads job summaries and creates a unified report following Chinese template
 import os
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 def main():
@@ -134,7 +134,7 @@ def main():
     fix_suggestions_text = "\n".join([f"{i+1}. {s}" for i, s in enumerate(fix_suggestions)])
     
     # Generate timestamp
-    timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
+    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
     
     # Build the consolidated comment using the Chinese template
     ci_name_tag = ci_name.replace(' ', '-').lower()
