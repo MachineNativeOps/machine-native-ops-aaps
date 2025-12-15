@@ -1,6 +1,6 @@
 # Governance Structure Analysis of the KeyStonApp Project
 
-This document synthesizes an inferred analysis of the `/governance` directory based on structural context (≈80+ subdirectories) and open-source governance best practices.
+This document synthesizes an inferred analysis of the `/governance` directory based on structural context (approximately 80+ subdirectories) and open-source governance best practices.
 
 ## 1. Summary of Key Governance Policies and Structures
 
