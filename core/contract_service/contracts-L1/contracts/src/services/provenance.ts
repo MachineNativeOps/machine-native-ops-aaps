@@ -99,12 +99,9 @@ export class ProvenanceService {
     }
     const absPath = resolve(canonicalRoot, userInputPath);
     const realAbsPath = await realpath(absPath);
-    // Ensure the realAbsPath is strictly under canonicalRoot (not equal nor outside)
-    if (
-      realAbsPath.length <= canonicalRoot.length ||    // Must not be root itself
-      realAbsPath.slice(0, canonicalRoot.length) !== canonicalRoot ||
-      (realAbsPath.length > canonicalRoot.length && realAbsPath[canonicalRoot.length] !== sep)
-    ) {
+    // Ensure the realAbsPath is strictly under canonicalRoot using path.relative
+    const rel = relative(canonicalRoot, realAbsPath);
+    if (rel.startsWith('..') || rel === '' || rel.includes('\0')) {
       throw new Error(`Access to file path '${userInputPath}' (resolved as '${realAbsPath}') is not allowed - path must be strictly within ${canonicalRoot}`);
     }
 
