@@ -124,7 +124,7 @@ export class ProvenanceService {
     metadata: Partial<MetadataInfo> = {}
   ): Promise<BuildAttestation> {
     // Validate path to prevent directory traversal attacks
-    const validatedPath = this.validatePath(subjectPath);
+    const validatedPath = await this.resolveSafePath(subjectPath);
 
     const stats = await stat(validatedPath);
     if (!stats.isFile()) {
