@@ -41,6 +41,12 @@ const SENSITIVE_PATTERNS = [
 ];
 
 /**
+ * Maximum length for error messages before they are considered unsafe to expose
+ * Messages longer than this threshold are replaced with a generic error message
+ */
+const MAX_SAFE_ERROR_MESSAGE_LENGTH = 100;
+
+/**
  * Sanitizes error messages to prevent leakage of sensitive information
  * @param message - The error message to sanitize
  * @returns Sanitized error message safe for client exposure
@@ -68,8 +74,7 @@ function sanitizeErrorMessage(message: string): string {
   }
 
   // Limit message length to prevent information disclosure through long error messages
-  const maxLength = 100;
-  if (sanitized.length > maxLength) {
+  if (sanitized.length > MAX_SAFE_ERROR_MESSAGE_LENGTH) {
     return 'Internal server error';
   }
 
