@@ -17,8 +17,6 @@ echo "✅ Node.js: $(node --version 2>/dev/null || echo 'not installed')"
 echo "✅ npm: $(npm --version 2>/dev/null || echo 'not installed')"
 
 # Start supporting services (if not already running)
-ecy
-    echo "   Expected: /workspace/start-life-system.sh"
 # Check PostgreSQL
 if docker-compose -f .devcontainer/docker-compose.yml exec -T postgres pg_isready -U life_admin -d life_system >/dev/null 2>&1; then
     echo "✅ PostgreSQL: Ready"

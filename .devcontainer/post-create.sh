@@ -17,6 +17,35 @@ fi
 echo "✅ Node.js version: $(node --version)"
 echo "✅ npm version: $(npm --version)"
 
+# Ensure Replit CLI is installed
+echo "🔧 Ensuring Replit CLI (replit) is installed..."
+if ! command -v replit >/dev/null 2>&1; then
+  echo "📦 Installing Replit CLI (npm -g replit)..."
+  npm install -g replit
+fi
+echo "✅ replit: $(command -v replit 2>/dev/null || echo 'not found')"
+
+# Ensure GitHub CLI is installed
+echo "🔧 Ensuring GitHub CLI (gh) is installed..."
+if ! command -v gh >/dev/null 2>&1; then
+  echo "📦 Installing GitHub CLI..."
+  if command -v apk >/dev/null 2>&1; then
+    sudo apk add --no-cache github-cli
+  elif command -v apt-get >/dev/null 2>&1; then
+    curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+      | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+    sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+      | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+    sudo apt-get update
+    sudo apt-get install -y gh
+  else
+    echo "❌ No supported package manager found (apk/apt-get). Cannot install gh automatically." >&2
+    exit 1
+  fi
+fi
+echo "✅ gh: $(gh --version 2>/dev/null | head -n 1 || echo 'not found')"
+
 # Navigate to workspace
 cd /workspace
 
