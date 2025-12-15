@@ -49,8 +49,8 @@ class ErrorSanitizationPatterns {
 }
 
 /**
- * Maximum length for error messages before they are considered unsafe to expose
- * Messages longer than this threshold are replaced with a generic error message
+ * Maximum length for error messages exposed to clients
+ * Messages longer than this are replaced with a generic message to prevent information disclosure
  */
 const MAX_SAFE_ERROR_MESSAGE_LENGTH = 100;
 
