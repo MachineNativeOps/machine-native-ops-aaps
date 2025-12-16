@@ -825,13 +825,53 @@ class PhoenixAgent:
                 f"🚨 ESCALATION LEVEL {incident.escalation_level}: {incident.id} - {incident.component}"
             )
             
-            # TODO: Send notifications to humans
+            # Send notifications to humans
             self._notify_escalation(incident)
     
     def _notify_escalation(self, incident: Incident):
-        """Notify humans of escalation"""
+        """Notify humans of escalation via notification queue"""
         self.logger.critical(f"📢 Notifying on-call team about {incident.id}")
-        # TODO: Implement actual notification (Slack, email, PagerDuty)
+
+        try:
+            # Create notification directory
+            notification_dir = BASE_PATH / ".notifications"
+            notification_dir.mkdir(parents=True, exist_ok=True)
+
+            # Create notification file for external pickup
+            notification_file = notification_dir / f"escalation_{incident.id}.json"
+
+            notification_data = {
+                "incident_id": incident.id,
+                "component": incident.component,
+                "status": incident.status.value,
+                "escalation_level": incident.escalation_level,
+                "detected_at": incident.detected_at.isoformat(),
+                "recovery_attempts": len(incident.recovery_attempts),
+                "timestamp": datetime.now().isoformat(),
+                "severity": "CRITICAL",
+                "channels": ["email", "slack", "pagerduty"],
+                "message": f"Component {incident.component} has escalated to level {incident.escalation_level} after {len(incident.recovery_attempts)} failed recovery attempts",
+                "action_required": True
+            }
+
+            # Write notification
+            with open(notification_file, 'w') as f:
+                json.dump(notification_data, f, indent=2)
+
+            self.logger.info(f"✅ Notification queued: {notification_file}")
+
+            # Also log to dedicated notification log
+            notification_log = BASE_PATH / ".automation_logs" / "notifications.log"
+            notification_log.parent.mkdir(parents=True, exist_ok=True)
+
+            with open(notification_log, 'a') as f:
+                f.write(
+                    f"[{datetime.now().isoformat()}] ESCALATION {incident.escalation_level} - "
+                    f"{incident.id} - {incident.component} - {len(incident.recovery_attempts)} attempts\n"
+                )
+
+        except Exception as e:
+            self.logger.error(f"Failed to create notification: {e}", exc_info=True)
     
     def _load_state(self):
         """Load previous state"""
