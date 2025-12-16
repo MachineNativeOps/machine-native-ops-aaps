@@ -5,6 +5,7 @@ import compression from 'compression';
 import morgan from 'morgan';
 import { config } from './config';
 import { logger } from './config/logger';
+import { swaggerDocument } from './config/swagger';
 import { errorHandler } from './middleware/error-handler';
 import { rateLimiter } from './middleware/rate-limiter';
 import { authRouter } from './routes/auth';
@@ -48,32 +49,51 @@ app.use('/api/v1/resources', resourcesRouter);
 app.use('/api/v1/tasks', tasksRouter);
 app.use('/api/v1/metrics', metricsRouter);
 
-// API Documentation
+// API Documentation - OpenAPI JSON
 app.get('/api/docs', (req, res) => {
-  res.json({
-    openapi: '3.0.0',
-    info: {
-      title: 'Unmanned Island System API',
-      version: '1.0.0',
-      description: 'REST API for external integrations'
-    },
-    servers: [
-      { url: `http://localhost:${config.port}`, description: 'Development' }
-    ],
-    paths: {
-      '/health': {
-        get: {
-          summary: 'Health check',
-          tags: ['System'],
-          responses: {
-            '200': {
-              description: 'System is healthy'
-            }
-          }
-        }
-      }
-    }
-  });
+  res.json(swaggerDocument);
+});
+
+// Swagger UI - Interactive API Documentation
+app.get('/api/docs/ui', (req, res) => {
+  res.send(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Documentation - Unmanned Island System</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css">
+  <style>
+    body { margin: 0; padding: 0; }
+    .swagger-ui .topbar { display: none; }
+  </style>
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+  <script>
+    window.onload = function() {
+      const ui = SwaggerUIBundle({
+        url: '/api/docs',
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: 'StandaloneLayout'
+      });
+      window.ui = ui;
+    };
+  </script>
+</body>
+</html>
+  `);
 });
 
 // 404 handler
