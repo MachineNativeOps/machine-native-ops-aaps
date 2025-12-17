@@ -168,7 +168,10 @@ export class ProvenanceService {
     }
 
     const content = await readFile(validatedPath);
-    const subject = this.slsaService.createSubjectFromContent(path.basename(validatedPath), content);
+    const relativePath = path.relative(process.cwd(), validatedPath);
+    const subjectName =
+      relativePath === '' ? validatedPath : relativePath || path.basename(validatedPath);
+    const subject = this.slsaService.createSubjectFromContent(subjectName, content);
 
     // 生成格式為 att_timestamp_hash 的 ID
     const timestamp = Date.now();
@@ -212,7 +215,7 @@ export class ProvenanceService {
       id: attestationId,
       timestamp: startedOn,
       subject: {
-        name: subject.name,
+        name: subjectName,
         digest: `sha256:${subject.digest.sha256}`,
         path: subjectPath,
       },

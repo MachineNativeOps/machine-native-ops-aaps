@@ -1,18 +1,12 @@
 import { realpath } from 'fs/promises';
 import path from 'path';
 
+import { PathValidationError } from '../errors';
+export { PathValidationError };
+
 export interface PathValidatorConfig {
   safeRoot?: string;
   allowedAbsolutePrefixes?: string[];
-}
-
-export class PathValidationError extends Error {
-  public readonly code = 'PATH_VALIDATION_ERROR';
-
-  constructor(message: string) {
-    super(message);
-    Object.setPrototypeOf(this, PathValidationError.prototype);
-  }
 }
 
 export class PathValidator {

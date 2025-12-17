@@ -65,6 +65,7 @@ export interface DAGNodeState {
 export class PathValidationEventEmitter {
   private listeners: Map<PathValidationEventType, Array<(event: PathValidationEvent) => void>> =
     new Map();
+  private recentEvents: PathValidationEvent[] = [];
 
   /**
    * Subscribe to a specific event type
@@ -74,12 +75,27 @@ export class PathValidationEventEmitter {
       this.listeners.set(eventType, []);
     }
     this.listeners.get(eventType)!.push(handler);
+
+    // Replay recent events to new subscribers to ensure they receive latest state
+    for (const event of this.recentEvents) {
+      if (event.type === eventType) {
+        try {
+          handler(event);
+        } catch (error) {
+          console.error(`Error replaying event for ${eventType}:`, error);
+        }
+      }
+    }
   }
 
   /**
    * Emit an event to all subscribed handlers
    */
   emit(event: PathValidationEvent): void {
+    this.recentEvents.push(event);
+    if (this.recentEvents.length > 20) {
+      this.recentEvents.shift();
+    }
     const handlers = this.listeners.get(event.type);
     if (handlers) {
       handlers.forEach((handler) => {

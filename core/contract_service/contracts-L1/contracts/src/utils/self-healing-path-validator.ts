@@ -124,8 +124,6 @@ export class SelfHealingPathValidator extends PathValidator {
         'code' in error &&
         (error as Error & { code: string }).code === 'ENOENT'
       ) {
-        pathValidationEvents.emitStructureMissing(eventData);
-
         // Attempt recovery if enabled and within retry limits
         if (this.config.enableAutoRecovery && attempts < (this.config.maxRecoveryAttempts || 3)) {
           this.recoveryAttempts.set(attemptKey, attempts + 1);
