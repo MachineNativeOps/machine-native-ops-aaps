@@ -215,7 +215,7 @@ class TestSuiteRunner:
                 'pyproject.toml'
             ]
             legacy_aliases = {
-                'machinenativeops.yaml': ['machine-native-ops.yaml', 'synergymesh.yaml'],
+                'machinenativeops.yaml': ['machine-native-ops.yaml'],
             }
             
             missing_configs = []
