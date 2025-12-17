@@ -63,15 +63,13 @@ async function resolveSafePath(userInputPath: string): Promise<string> {
     throw error;
   }
 
-  // Ensure trailing separator for accurate prefix check
-  const safeRootWithSep = canonicalSafeRoot.endsWith(path.sep)
-    ? canonicalSafeRoot
-    : canonicalSafeRoot + path.sep;
-
-  // Check that canonicalPath is within canonicalSafeRoot
+  // Check that canonicalPath is within canonicalSafeRoot using path.relative
+  // This prevents directory traversal and symlink attacks robustly, regardless of separator/casing.
+  const rel = path.relative(canonicalSafeRoot, canonicalPath);
   if (
-    canonicalPath !== canonicalSafeRoot && // allow the root folder itself
-    !canonicalPath.startsWith(safeRootWithSep)
+    rel.startsWith('..') ||
+    path.isAbsolute(rel) ||
+    rel === '' // Optionally, disallow accessing the root directory itself. Remove or comment this line to allow.
   ) {
     throw new PathValidationError('Invalid file path');
   }
