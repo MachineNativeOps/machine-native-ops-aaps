@@ -36,9 +36,11 @@ export class PathValidator {
     }
 
     const safeRoot = path.resolve(this.config.safeRoot || process.cwd());
-    const resolvedCandidate = path.isAbsolute(filePath)
-      ? path.resolve(safeRoot, path.relative('/', filePath))
-      : path.resolve(safeRoot, filePath);
+    const root = path.parse(normalizedInput).root || '/';
+    const relativeToRoot = path.relative(root, normalizedInput);
+    const resolvedCandidate = path.isAbsolute(normalizedInput)
+      ? path.resolve(safeRoot, relativeToRoot)
+      : path.resolve(safeRoot, normalizedInput);
 
     const canonicalPath = await realpath(resolvedCandidate);
 

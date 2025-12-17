@@ -91,16 +91,19 @@ export class SelfHealingPathValidator extends PathValidator {
     const attemptKey = filePath;
     const attempts = this.recoveryAttempts.get(attemptKey) || 0;
     const safeRoot = this.config.safeRoot || process.cwd();
+    const normalizedInput = path.normalize(filePath);
 
-    try {
-      const candidatePath = path.resolve(safeRoot, filePath);
-      await access(candidatePath);
-    } catch {
-      pathValidationEvents.emitStructureMissing({
-        filePath,
-        safeRoot,
-        error: 'ENOENT',
-      });
+    if (!normalizedInput.includes('..')) {
+      try {
+        const candidatePath = path.resolve(safeRoot, normalizedInput);
+        await access(candidatePath);
+      } catch {
+        pathValidationEvents.emitStructureMissing({
+          filePath,
+          safeRoot,
+          error: 'ENOENT',
+        });
+      }
     }
 
     try {
@@ -120,7 +123,7 @@ export class SelfHealingPathValidator extends PathValidator {
       // Emit validation failed event
       const eventData: PathValidationEventData = {
         filePath,
-        safeRoot: this.config.safeRoot || process.cwd(),
+        safeRoot,
         error: error instanceof Error ? error.message : String(error),
         errorCode: error instanceof PathValidationError ? error.code : undefined,
       };
