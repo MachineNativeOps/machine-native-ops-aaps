@@ -96,25 +96,36 @@ The repository includes an AI Behavior Contract (`.github/AI-BEHAVIOR-CONTRACT.m
 
 ## Governance Framework
 
-### Dimensions Structure (84 total: 00-83)
+### Dimensions Structure (85 total: 00-99)
 - **Location**: `src/governance/dimensions/`
 - **Index**: `src/governance/dimensions/index.yaml`
 - **Map**: `src/governance/governance-map.yaml`
 - **Stack**: YAML + OPA/Rego + JSON Schema
 
-### Dimension Categories
-- **00-39**: Core governance (security, change, schemas, templates, etc.)
-- **40-59**: Operational governance (monitoring, deployment, etc.)
-- **60-80**: Advanced governance (AI, automation, etc.)
-- **81-83**: Extended layer (auto-comment, stakeholder, integration)
+### Dimension Layers
+- **00-09**: Strategic Layer (vision, architecture, decision, risk)
+- **10-29**: Operational Layer (policy, tools, metrics, quality)
+- **30-49**: Execution Layer (schemas, templates, contracts, automation)
+- **50-59**: Observability Layer (monitoring, alerting, insights)
+- **60-80**: Advanced/Feedback Layer (AI, contracts, optimization)
+- **81-83**: Extended Layer (auto-comment, stakeholder, integration)
+- **90-99**: Meta-Specification Layer (naming conventions, meta-governance)
+
+### 99-naming-convention (Meta-Specification Capstone)
+Unified naming convention governance with nine sub-specifications:
+- **URN Format**: `urn:machinenativeops:{domain}:{resource}:{version}`
+- **Registered Domains**: governance, ai, core, autonomous, config, dimension
+- **Naming Standards**: directories (kebab-case), YAML keys (snake_case), JSON API (camelCase)
+- **Sub-specs**: directory, file, extension, key, value, mapping, reference, dependency, uri-urn
 
 ### Examples & Tutorials
-- **Naming examples**: `src/governance/dimensions/27-templates/examples/`
+- **Naming convention**: `src/governance/dimensions/99-naming-convention/examples/`
 - **Change management examples**: `src/governance/dimensions/03-change/examples/`
 - **Namespace tutorial**: `docs/tutorials/namespace/`
 
 ### Recent Changes (Dec 2025)
+- Added 99-naming-convention as meta-specification layer capstone
+- Established canonical URN format for all resources
 - Resolved ID conflicts: 10-stakeholder→82, 30-integration→83
 - Added 81-auto-comment dimension
-- Consolidated examples into governance dimensions structure
-- Standardized path formats across all configuration files
+- Total dimensions increased to 85 with meta-spec layer (90-99)
