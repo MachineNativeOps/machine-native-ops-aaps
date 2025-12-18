@@ -1390,11 +1390,43 @@ dimensions:
       tags: [integration, orchestration, interoperability]
       compliance: [Enterprise-Integration]
 
+  # ===========================================================================
+  # META-SPECIFICATION LAYER (90-99)
+  # ===========================================================================
+  - id: "99-naming-convention"
+    name: "統一命名規範治理"
+    name_en: "Unified Naming Convention Governance"
+    version: "1.0.0"
+    category: meta-specification
+    layer: "90-99"
+    layer_name: "Meta-Specification Layer"
+    status: active
+    path: "./99-naming-convention/"
+    schema: "./99-naming-convention/schema.json"
+    policy: "./99-naming-convention/policy.rego"
+    dependencies: ["01-architecture", "25-principles", "31-schemas"]
+    description: "統一命名規範，涵蓋目錄、檔案、鍵值、URI/URN 等九大子規範"
+    sub_specifications:
+      - "01-directory-naming"
+      - "02-file-naming"
+      - "03-extension-standards"
+      - "04-key-naming"
+      - "05-value-naming"
+      - "06-mapping-standards"
+      - "07-reference-standards"
+      - "08-dependency-standards"
+      - "09-uri-urn-standards"
+    metadata:
+      owner: governance-bot
+      tags: [naming, convention, uri, urn, kebab-case, canonical, meta-spec]
+      compliance: [ISO-42001, NIST-AI-RMF]
+      urn: "urn:machinenativeops:governance:naming-convention:v1"
+
 # =============================================================================
 # STATISTICS
 # =============================================================================
 statistics:
-  total_dimensions: 84
+  total_dimensions: 85
   categories:
     strategic: 10
     operational: 20
@@ -1402,7 +1434,16 @@ statistics:
     observability: 20
     feedback: 11
     extended: 3
+    meta-specification: 1
+  layers:
+    "00-09": "Strategic Layer"
+    "10-29": "Operational Layer"
+    "30-49": "Execution Layer"
+    "50-59": "Observability Layer"
+    "60-80": "Advanced/Feedback Layer"
+    "81-83": "Extended Layer"
+    "90-99": "Meta-Specification Layer"
   status:
-    active: 84
+    active: 85
     deprecated: 0
     draft: 0

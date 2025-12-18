@@ -462,6 +462,32 @@ dimensions:
   - 01-architecture
   purpose: Integration patterns and orchestration governance
   status: active
+# ===========================================================================
+# META-SPECIFICATION LAYER (90-99)
+# ===========================================================================
+- name: 99-naming-convention
+  type: dimension
+  category: meta-specification
+  layer: "90-99"
+  owner: governance-bot
+  path: governance/dimensions/99-naming-convention
+  depends_on:
+  - 01-architecture
+  - 25-principles
+  - 31-schemas
+  purpose: Unified naming convention governance covering directories, files, keys, values, URIs, URNs, and dependencies
+  status: active
+  urn: urn:machinenativeops:governance:naming-convention:v1
+  sub_specifications:
+  - 01-directory-naming
+  - 02-file-naming
+  - 03-extension-standards
+  - 04-key-naming
+  - 05-value-naming
+  - 06-mapping-standards
+  - 07-reference-standards
+  - 08-dependency-standards
+  - 09-uri-urn-standards
 shared_resources:
 - name: ci
   type: shared
@@ -506,7 +532,7 @@ shared_resources:
   type: shared
   owner: governance-bot
   path: governance/dimensions
-  purpose: Dimension metadata registry (00-83)
+  purpose: Dimension metadata registry (00-99, including meta-specification layer)
   consumers:
   - governance-bot
   - validation-pipeline
