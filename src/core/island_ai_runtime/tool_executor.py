@@ -143,7 +143,11 @@ class CodeRunner(Tool):
             # 執行代碼
             exec_cmd = self._build_execution_command(language, temp_file)
             result = subprocess.run(
-                exec_cmd, capture_output=True, text=True, timeout=request.timeout, cwd=request.working_dir
+                exec_cmd,
+                capture_output=True,
+                text=True,
+                timeout=request.timeout,
+                cwd=request.working_dir,
             )
 
             return ExecutionResult(
