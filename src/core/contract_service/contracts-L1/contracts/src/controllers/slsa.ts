@@ -45,12 +45,12 @@ export class SLSAController {
 
   private resolveSubjectPath(subjectPath: string): { normalized: string; resolved: string } {
     if (path.isAbsolute(subjectPath)) {
-      throw new PathValidationError();
+      throw new PathValidationError('Absolute paths are not allowed');
     }
 
     const normalizedSubjectPath = path.normalize(subjectPath);
     if (path.isAbsolute(normalizedSubjectPath)) {
-      throw new PathValidationError();
+      throw new PathValidationError('Normalized path resolves to an absolute location');
     }
 
     const resolvedPath = path.resolve(SAFE_ROOT, normalizedSubjectPath);
@@ -59,7 +59,7 @@ export class SLSAController {
       relativePath.startsWith('..') ||
       path.isAbsolute(relativePath)
     ) {
-      throw new PathValidationError();
+      throw new PathValidationError('Path traversal outside safe directory detected');
     }
 
     return { normalized: normalizedSubjectPath, resolved: resolvedPath };
