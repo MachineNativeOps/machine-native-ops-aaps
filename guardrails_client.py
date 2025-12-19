@@ -1,3 +1,13 @@
+"""Shared guardrails-first OpenAI client helper.
+
+This module centralizes OpenAI client creation. It prefers GuardrailsOpenAI when
+available, falls back to OpenAI otherwise, and exposes a small surface:
+    - get_api_key(): read configured API key (AI_INTEGRATIONS_OPENAI_API_KEY preferred)
+    - client_available(): detect whether a usable client can be built
+    - build_client(): return a configured client instance
+    - chat_completion(): convenience wrapper for chat completions
+"""
+
 import os
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -44,6 +54,11 @@ def client_available(api_key: Optional[str] = None) -> bool:
     return bool(key) and (HAS_GUARDRAILS_CLIENT or HAS_OPENAI_CLIENT)
 
 
+def is_client_available(api_key: Optional[str] = None) -> bool:
+    """Alias for client_available for readability."""
+    return client_available(api_key=api_key)
+
+
 def build_client(api_key: Optional[str] = None, base_url: Optional[str] = None) -> Any:
     """Build a Guardrails-enabled OpenAI client.
 
@@ -63,8 +78,12 @@ def build_client(api_key: Optional[str] = None, base_url: Optional[str] = None) 
             "or OPENAI_API_KEY."
         )
 
+    client_kwargs: Dict[str, Any] = {"api_key": api_key}
+    if base_url:
+        client_kwargs["base_url"] = base_url
+
     if HAS_GUARDRAILS_CLIENT:
-        return GuardrailsOpenAI(api_key=api_key, base_url=base_url)
+        return GuardrailsOpenAI(**client_kwargs)
 
     if not HAS_OPENAI_CLIENT:
         raise ImportError(
@@ -72,7 +91,7 @@ def build_client(api_key: Optional[str] = None, base_url: Optional[str] = None) 
             "Install via `pip install openai`."
         )
 
-    return OpenAI(api_key=api_key, base_url=base_url)
+    return OpenAI(**client_kwargs)
 
 
 def chat_completion(

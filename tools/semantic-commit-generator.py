@@ -27,7 +27,7 @@ Semantic Commit Message Generator
 import argparse
 import os
 
-from guardrails_client import chat_completion, client_available, get_api_key
+from guardrails_client import chat_completion, get_api_key, is_client_available
 from rich import print
 from rich.console import Console
 
@@ -45,6 +45,10 @@ def generate_semantic_commit_ai(
     
     if not api_key:
         api_key = get_api_key()
+    
+    if not is_client_available(api_key):
+        console.print("[yellow]Warning: No OpenAI/Guardrails client, using rule-based generation[/yellow]")
+        return generate_semantic_commit_rules(files, action, reason, violation_type)
     
     # 準備 prompt
     prompt = f"""Generate a semantic commit message following Conventional Commits specification.
@@ -69,10 +73,6 @@ Format:
 [optional footer(s)]
 
 Generate the commit message:"""
-    
-    if not client_available(api_key):
-        console.print("[yellow]Warning: No OpenAI/Guardrails client, using rule-based generation[/yellow]")
-        return generate_semantic_commit_rules(files, action, reason, violation_type)
     
     try:
         response = chat_completion(

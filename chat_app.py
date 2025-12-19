@@ -25,16 +25,17 @@ def chat_turn(user_input: str, messages: List[Dict[str, str]]) -> str:
         reply = "對不起，AI 目前無法回應。"
         messages.append({"role": "assistant", "content": reply})
         return reply
-    reply = "對不起，我目前無法回應。"
-    choices = getattr(response, "choices", [])
-    if choices:
-        first_choice = choices[0]
-        message = getattr(first_choice, "message", None)
-        content = getattr(message, "content", None)
-        if content:
-            reply = content
-    messages.append({"role": "assistant", "content": reply})
-    return reply
+    else:
+        reply = "對不起，我目前無法回應。"
+        choices = getattr(response, "choices", [])
+        if choices:
+            first_choice = choices[0]
+            message = getattr(first_choice, "message", None)
+            content = getattr(message, "content", None)
+            if content:
+                reply = content
+        messages.append({"role": "assistant", "content": reply})
+        return reply
 
 
 def run_chat() -> None:
