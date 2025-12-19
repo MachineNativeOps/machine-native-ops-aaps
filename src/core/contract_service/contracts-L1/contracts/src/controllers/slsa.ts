@@ -43,6 +43,29 @@ export class SLSAController {
     this.slsaService = new SLSAAttestationService();
   }
 
+  private resolveSubjectPath(subjectPath: string): { normalized: string; resolved: string } {
+    if (path.isAbsolute(subjectPath) || path.win32.isAbsolute(subjectPath)) {
+      throw new PathValidationError('Absolute paths are not allowed');
+    }
+
+    const sanitizedInput = subjectPath.replace(/\\/g, '/');
+    const normalizedSubjectPath = path.normalize(sanitizedInput);
+    if (path.isAbsolute(normalizedSubjectPath) || path.win32.isAbsolute(normalizedSubjectPath)) {
+      throw new PathValidationError('Normalized path resolves to an absolute location');
+    }
+
+    const resolvedPath = path.resolve(SAFE_ROOT, normalizedSubjectPath);
+    const relativePath = path.relative(SAFE_ROOT, resolvedPath);
+    if (
+      relativePath.startsWith('..') ||
+      path.isAbsolute(relativePath)
+    ) {
+      throw new PathValidationError('Path traversal outside safe directory detected');
+    }
+
+    return { normalized: normalizedSubjectPath, resolved: resolvedPath };
+  }
+
   /**
    * 創建 SLSA 構建溯源認證
    */
@@ -54,15 +77,9 @@ export class SLSAController {
       if (validatedInput.subjectPath) {
         // 從文件路徑創建主體
         const fs = await import('fs/promises');
-        // Normalize and resolve against the SAFE_ROOT
-        const resolvedPath = path.resolve(SAFE_ROOT, validatedInput.subjectPath);
-        // Ensure the resolved path is within SAFE_ROOT using relative path check
-        const relativePath = path.relative(SAFE_ROOT, resolvedPath);
-        if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
-          throw new PathValidationError();
-        }
-        const content = await fs.readFile(resolvedPath);
-        subjects = [this.slsaService.createSubjectFromContent(validatedInput.subjectPath, content)];
+        const { normalized, resolved } = this.resolveSubjectPath(validatedInput.subjectPath);
+        const content = await fs.readFile(resolved);
+        subjects = [this.slsaService.createSubjectFromContent(normalized, content)];
       } else {
         // 從摘要創建主體
         subjects = [
