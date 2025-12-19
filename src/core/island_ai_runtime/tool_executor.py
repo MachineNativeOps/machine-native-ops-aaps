@@ -185,7 +185,27 @@ class CodeRunner(Tool):
             "open('/etc/",
             "rm -rf",
         ]
-        dangerous_tokens = ["&&", "||", ";", "|", "`", "$(", "${"]
+        dangerous_tokens = [
+            "&&",
+            "||",
+            ";",
+            "|",
+            "`",
+            "$(",
+            "${",
+            ">",
+            "<",
+            ">>",
+            "<<",
+            "*",
+            "?",
+            "[",
+            "]",
+            "{",
+            "}",
+            "~",
+            "\n",
+        ]
 
         for pattern in dangerous_patterns:
             if pattern in request.command:

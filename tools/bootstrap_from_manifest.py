@@ -104,7 +104,7 @@ class BootstrapContext:
             old_umask = os.umask(0o077)
             try:
                 with tempfile.NamedTemporaryFile(
-                    "w", delete=False, prefix="bootstrap_", suffix=".sh", dir=self.repo_root
+                    "w", delete=False, prefix="bootstrap_", suffix=".sh"
                 ) as tmp:
                     tmp.write(formatted)
                     tmp_path = tmp.name

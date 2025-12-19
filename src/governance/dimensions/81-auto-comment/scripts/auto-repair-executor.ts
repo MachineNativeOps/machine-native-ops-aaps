@@ -23,6 +23,7 @@ import {
   FixStep,
   AutoFixPlan,
 } from "./ci-diagnosis-engine";
+import { parseCommandSegments } from "./safe-commands";
 
 // =============================================================================
 // TYPE DEFINITIONS
@@ -208,57 +209,11 @@ export class AutoRepairExecutor {
    * 安全地執行命令，避免 shell 注入
    */
   private runCommandSafely(command: string): { output: string; status: number } {
-    const segments = command
-      .split("&&")
-      .map(s => s.trim())
-      .filter(Boolean);
-
-    if (segments.length === 0) {
-      throw new Error("No command to execute");
-    }
-
-    const unsafePattern = /[;&|`$><()\\]/;
+    const segments = parseCommandSegments(command);
     const outputs: string[] = [];
     let lastStatus = 0;
 
-    const parseSegment = (segment: string): string[] => {
-      if (unsafePattern.test(segment)) {
-        throw new Error(`Unsafe command segment rejected: ${segment}`);
-      }
-
-      const trimmed = segment.trim();
-      switch (trimmed) {
-        case "git status --porcelain":
-          return ["git", "status", "--porcelain"];
-        case "git add .":
-          return ["git", "add", "."];
-        case "git rev-parse HEAD":
-          return ["git", "rev-parse", "HEAD"];
-        case "npm run lint":
-          return ["npm", "run", "lint"];
-        case "npm run build":
-          return ["npm", "run", "build"];
-        case "npm test":
-          return ["npm", "test"];
-        case "npx eslint --fix .":
-          return ["npx", "eslint", "--fix", "."];
-        case "npx eslint --fix --ext .ts,.tsx,.js,.jsx .":
-          return ["npx", "eslint", "--fix", "--ext", ".ts,.tsx,.js,.jsx", "."];
-        default:
-          if (trimmed.startsWith("git commit -m ")) {
-            const message = trimmed.replace(/^git commit -m\s+/, "").replace(/^['"]|['"]$/g, "");
-            if (unsafePattern.test(message)) {
-              throw new Error("Unsafe commit message content");
-            }
-            return ["git", "commit", "-m", message];
-          }
-      }
-
-      throw new Error(`Command not allowed: ${segment}`);
-    };
-
-    for (const segment of segments) {
-      const args = parseSegment(segment);
+    for (const args of segments) {
       const result: SpawnSyncReturns<string> = spawnSync(args[0], args.slice(1), {
         encoding: "utf-8",
         timeout: 300000,

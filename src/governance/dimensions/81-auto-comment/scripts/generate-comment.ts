@@ -24,6 +24,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { spawnSync } from "child_process";
 import { CIDiagnosisEngine, DiagnosisReport, DiagnosedError } from "./ci-diagnosis-engine";
+import { parseCommandSegments } from "./safe-commands";
 
 // =============================================================================
 // TYPE DEFINITIONS
@@ -251,73 +252,16 @@ function isProtectedBranch(branch?: string): boolean {
   return branch ? protectedBranches.includes(branch) : false;
 }
 
-const UNSAFE_PATTERN = /[;&|`$><()\\]/;
-
-function parseAllowedCommand(segment: string): string[] {
-  if (UNSAFE_PATTERN.test(segment)) {
-    throw new Error(`Unsafe command rejected: ${segment}`);
-  }
-
-  const trimmed = segment.trim();
-  switch (trimmed) {
-    case "git status --porcelain":
-      return ["git", "status", "--porcelain"];
-    case "git add .":
-      return ["git", "add", "."];
-    case "git rev-parse HEAD":
-      return ["git", "rev-parse", "HEAD"];
-    case "npm run lint":
-      return ["npm", "run", "lint"];
-    case "npm run build":
-      return ["npm", "run", "build"];
-    case "npm test":
-      return ["npm", "test"];
-    case "npm run type-check":
-      return ["npm", "run", "type-check"];
-    case "npm run format":
-      return ["npm", "run", "format"];
-    case "npx eslint --fix .":
-      return ["npx", "eslint", "--fix", "."];
-    case "npx eslint --fix --ext .ts,.tsx,.js,.jsx .":
-      return ["npx", "eslint", "--fix", "--ext", ".ts,.tsx,.js,.jsx", "."];
-    case "npx prettier --write .":
-      return ["npx", "prettier", "--write", "."];
-    case "npx yaml-lint --fix .":
-      return ["npx", "yaml-lint", "--fix", "."];
-    case "npx markdownlint --fix .":
-      return ["npx", "markdownlint", "--fix", "."];
-    default:
-      if (trimmed.startsWith("git commit -m ")) {
-        const message = trimmed.replace(/^git commit -m\s+/, "").replace(/^['"]|['"]$/g, "");
-        if (UNSAFE_PATTERN.test(message)) {
-          throw new Error("Unsafe commit message content");
-        }
-        return ["git", "commit", "-m", message];
-      }
-  }
-
-  throw new Error(`Command not allowed: ${segment}`);
-}
-
 function runSafeCommand(
   command: string,
   options?: { stdio?: "inherit" | "pipe"; timeoutMs?: number }
 ): string {
-  const segments = command
-    .split("&&")
-    .map(s => s.trim())
-    .filter(Boolean);
-
-  if (segments.length === 0) {
-    throw new Error("No command to execute");
-  }
-
+  const segments = parseCommandSegments(command);
   const stdio = options?.stdio ?? "pipe";
   const timeout = options?.timeoutMs ?? 300000;
   let output = "";
 
-  for (const segment of segments) {
-    const args = parseAllowedCommand(segment);
+  for (const args of segments) {
     const result = spawnSync(args[0], args.slice(1), {
       encoding: "utf-8",
       stdio: stdio === "inherit" ? "inherit" : "pipe",
