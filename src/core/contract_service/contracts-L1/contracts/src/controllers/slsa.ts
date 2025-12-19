@@ -44,12 +44,13 @@ export class SLSAController {
   }
 
   private resolveSubjectPath(subjectPath: string): { normalized: string; resolved: string } {
-    if (path.isAbsolute(subjectPath)) {
+    if (path.isAbsolute(subjectPath) || path.win32.isAbsolute(subjectPath)) {
       throw new PathValidationError('Absolute paths are not allowed');
     }
 
-    const normalizedSubjectPath = path.normalize(subjectPath);
-    if (path.isAbsolute(normalizedSubjectPath)) {
+    const sanitizedInput = subjectPath.replace(/\\/g, '/');
+    const normalizedSubjectPath = path.normalize(sanitizedInput);
+    if (path.isAbsolute(normalizedSubjectPath) || path.win32.isAbsolute(normalizedSubjectPath)) {
       throw new PathValidationError('Normalized path resolves to an absolute location');
     }
 
