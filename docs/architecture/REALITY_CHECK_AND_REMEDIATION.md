@@ -23,6 +23,7 @@
 
 ## 3. Governance 目錄統一規則 (Directory Conventions)
 
+
 - **主存放區**：`src/governance/` → 原始政策、維度、測試、腳本；所有新增治理資產必須先放此處。
 - **環境/租戶配置**：`config/governance/` → 租戶/環境/拓撲/系統清單 (manifest、module-map、tenant-tier)；不得存放原始政策檔。
 - **分發工件/落地策略**：根層 `governance/` → 發佈給 Gatekeeper/OPA/管線的策略包 (e.g., `governance/policies/**`)；只存放由 src 產出的成品或同步副本。

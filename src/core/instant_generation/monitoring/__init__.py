@@ -72,6 +72,7 @@ class RealTimeMonitor:
         self.metrics_store: Dict[str, deque] = defaultdict(lambda: deque(maxlen=1000))
         self.alerts: List[Alert] = []
         self.active_sessions: Dict[str, datetime] = {}
+        self.metrics_count: Dict[str, int] = defaultdict(int)  # Track metrics count per session
         
         # 監控配置
         self.metrics_interval = self.config.get("metrics_interval", 30)  # 秒
@@ -291,6 +292,7 @@ class RealTimeMonitor:
         """存儲指標"""
         metric_key = f"{session_id}_{metric.name}"
         self.metrics_store[metric_key].append(metric)
+        self.metrics_count[session_id] += 1
     
     async def _cleanup_old_data(self) -> None:
         """清理舊數據"""
@@ -299,10 +301,24 @@ class RealTimeMonitor:
         # 清理舊指標
         for key in list(self.metrics_store.keys()):
             metrics = self.metrics_store[key]
-            self.metrics_store[key] = deque(
-                (m for m in metrics if m.timestamp > cutoff_time),
-                maxlen=1000
-            )
+            old_count = len(metrics)
+            # 過濾出符合條件的指標
+            filtered_metrics = [m for m in metrics if m.timestamp > cutoff_time]
+            self.metrics_store[key] = deque(filtered_metrics, maxlen=1000)
+            new_count = len(filtered_metrics)
+            # 更新計數器 - 需要查找對應的session_id
+            diff = old_count - new_count
+            if diff > 0:
+                # 查找最長匹配的session_id以處理包含下劃線的情況
+                matched_session = None
+                max_length = 0
+                for session_id in list(self.metrics_count.keys()):
+                    if key.startswith(f"{session_id}_") and len(session_id) > max_length:
+                        matched_session = session_id
+                        max_length = len(session_id)
+                if matched_session:
+                    # Protect against negative counters
+                    self.metrics_count[matched_session] = max(0, self.metrics_count[matched_session] - diff)
         
         # 清理舊警報
         self.alerts = [a for a in self.alerts if a.timestamp > cutoff_time]
@@ -314,6 +330,9 @@ class RealTimeMonitor:
         ]
         for session_id in old_sessions:
             del self.active_sessions[session_id]
+            # 清理對應的計數器
+            if session_id in self.metrics_count:
+                del self.metrics_count[session_id]
     
     # 模擬方法（實際實現中會連接真實的監控系統）
     def _get_cpu_usage(self) -> float:
@@ -348,11 +367,7 @@ class RealTimeMonitor:
     
     def _get_metrics_count(self, session_id: str) -> int:
         """獲取會話指標總數"""
-        count = 0
-        for key in self.metrics_store.keys():
-            if key.startswith(f"{session_id}_"):
-                count += len(self.metrics_store[key])
-        return count
+        return self.metrics_count.get(session_id, 0)
     
     def get_current_metrics(self, session_id: str) -> Dict[str, Any]:
         """獲取當前指標"""
