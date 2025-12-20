@@ -223,7 +223,7 @@ except Exception as e:
 
 ### Q2: 如何偵錯 Docker 容器中的應用程式？
 
-**A:** 
+**A:**
 1. 在容器中安裝 debugpy
 2. 暴露偵錯端口
 3. 使用附加配置連接
