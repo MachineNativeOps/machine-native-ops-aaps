@@ -553,7 +553,7 @@ class TestModels:
         
         if score < 75:
             recommendations.append("降低代碼複雜度")
-            recommendations.append "完善文檔")
+            recommendations.append("完善文檔")
         
         return recommendations
     
