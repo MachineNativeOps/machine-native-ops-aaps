@@ -44,13 +44,13 @@ class SecurityManager:
     
     def _hash_password(self, password: str) -> str:
         """對密碼進行哈希處理"""
-        if not password:
-            raise ValueError("Password cannot be empty")
+        if password is None or not password:
+            raise ValueError("Password cannot be empty or None")
         return pwd_context.hash(password)
     
     def _verify_password(self, plain_password: str, hashed_password: str) -> bool:
         """驗證密碼是否匹配哈希值"""
-        if not plain_password or not hashed_password:
+        if plain_password is None or hashed_password is None or not plain_password or not hashed_password:
             return False
         return pwd_context.verify(plain_password, hashed_password)
     
@@ -95,8 +95,16 @@ class SecurityManager:
         """創建默認管理員 - 使用安全的密碼哈希"""
         if not self.users:
             # 生成安全的隨機密碼並進行哈希處理
-            # 在生產環境中，應該從環境變量或安全配置中獲取密碼
-            default_password = secrets.token_urlsafe(32)
+            # 優先從環境變量讀取管理員密碼（生產環境）
+            import os
+            default_password = os.environ.get('ADMIN_PASSWORD')
+            if not default_password:
+                # 僅在開發環境生成隨機密碼
+                default_password = secrets.token_urlsafe(32)
+                logger.warning("⚠️ 使用隨機生成的管理員密碼（僅限開發環境）")
+            else:
+                logger.info("✅ 從環境變量載入管理員密碼")
+            
             password_hash = self._hash_password(default_password)
             
             admin_user = User(
@@ -109,11 +117,7 @@ class SecurityManager:
             self.users[admin_user.id] = admin_user
             logger.info("👑 創建默認管理員用戶")
             logger.warning("⚠️ 默認管理員密碼已生成並已加密存儲")
-            logger.warning("🔒 在生產環境中，應從環境變量或安全配置中設置密碼")
-            # Note: In production, retrieve password from secure configuration/environment variables
-            # For development purposes only, the password is logged once at startup
-            if logger.level <= logging.DEBUG:
-                logger.debug(f"DEBUG ONLY - 管理員密碼: {default_password}")
+            logger.warning("🔒 生產環境請使用 ADMIN_PASSWORD 環境變量設置密碼")
     
     async def _log_security_event(self, event_type: str, details: Dict[str, Any]):
         """記錄安全事件"""
