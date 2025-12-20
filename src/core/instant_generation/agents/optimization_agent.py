@@ -365,13 +365,14 @@ class OptimizationAgent(BaseAgent):
     
     def _parse_percentage_value(self, value: Any) -> Optional[int]:
         """
-        安全地解析百分比值
+        安全地解析百分比值，返回絕對值
         
         Args:
             value: 可能包含百分比的值（例如 "30%", "-40%", "30-50%", "Enhanced security"）
         
         Returns:
-            解析後的整數值，如果無法解析則返回 None
+            解析後的整數絕對值，如果無法解析則返回 None。
+            注意：負值會被轉換為正數（例如 "-40%" → 40）
         """
         if value is None:
             return None
