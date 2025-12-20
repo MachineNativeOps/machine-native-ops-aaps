@@ -124,15 +124,16 @@ class CodeRunner(Tool):
                 f"Working directory '{normalized}' requires an allowlist; configure allowed_paths."
             )
 
-        allowed_roots = [Path(allowed).resolve() for allowed in self.config.allowed_paths]
+        allowed_roots: list[Path] = []
+        for allowed in self.config.allowed_paths:
+            try:
+                allowed_roots.append(Path(allowed).resolve(strict=True))
+            except FileNotFoundError:
+                raise ValueError(f"Configured allowed path '{allowed}' does not exist.")
 
         for base in allowed_roots:
-            try:
-                normalized.relative_to(base)
+            if normalized.is_relative_to(base):
                 return str(normalized)
-            except ValueError:
-                # Not relative to base; continue checking other roots
-                continue
 
         raise ValueError(
             f"Working directory '{normalized}' is not allowed; allowed roots: {[str(r) for r in allowed_roots]}"
