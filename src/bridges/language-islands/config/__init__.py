@@ -11,6 +11,9 @@ from pathlib import Path
 _module_path = Path(__file__).parent / 'island-config.py'
 _qualified_name = 'bridges.language_islands.config.island_config'
 
+if not _module_path.exists():
+    raise ImportError(f"Module file not found: {_module_path}")
+
 spec = importlib.util.spec_from_file_location(_qualified_name, _module_path)
 if spec and spec.loader:
     _module = importlib.util.module_from_spec(spec)

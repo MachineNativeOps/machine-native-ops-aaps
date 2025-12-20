@@ -27,7 +27,26 @@ import sys
 from pathlib import Path
 
 def _import_kebab_module(module_alias: str, file_name: str, legacy_alias: str | None = None):
-    """Import a module with a kebab-case filename and register namespaced aliases"""
+    """
+    Import a module from a kebab-case filename and register it under namespaced aliases.
+
+    Parameters
+    ----------
+    module_alias:
+        Underscore-based alias for the module (e.g. ``"base_agent"``), combined
+        with this package name to form ``qualified_name = f"{__name__}.{module_alias}"``.
+    file_name:
+        Kebab-case filename to load (e.g. ``"base-agent.py"``) relative to this directory.
+    legacy_alias:
+        Optional fully-qualified legacy import path (e.g. ``"agents.base_agent"``)
+        that will be registered to the same module object for backward compatibility.
+
+    Returns
+    -------
+    module | None
+        The loaded module object, or ``None`` if the source file is missing or could
+        not be loaded.
+    """
     module_path = Path(__file__).parent / file_name
     if not module_path.exists():
         return None

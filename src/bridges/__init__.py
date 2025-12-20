@@ -11,6 +11,7 @@ from pathlib import Path
 
 _pkg_root = Path(__file__).parent
 _hyphen_pkg = _pkg_root / "language-islands"
+language_islands = None
 
 if (_hyphen_pkg / "__init__.py").exists():
     spec = importlib.util.spec_from_file_location(
@@ -23,5 +24,4 @@ if (_hyphen_pkg / "__init__.py").exists():
         sys.modules[spec.name] = module
         spec.loader.exec_module(module)
         language_islands = module
-
 __all__ = ["language_islands"]

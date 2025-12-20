@@ -47,6 +47,8 @@ def _import_kebab_module(module_alias: str, file_name: str, legacy_alias: str | 
         成功載入時返回動態載入的模塊物件；載入失敗時返回 None。
     """
     module_path = Path(__file__).parent / file_name
+    if not module_path.exists():
+        return None
     qualified_name = f"{__name__}.{module_alias}"
     spec = importlib.util.spec_from_file_location(qualified_name, module_path)
     if spec and spec.loader:
@@ -96,7 +98,10 @@ language_island_orchestrator = _import_kebab_module(
     "language-island-orchestrator.py",
     legacy_alias="language_island_orchestrator"
 )
-LanguageIslandOrchestrator = language_island_orchestrator.LanguageIslandOrchestrator if language_island_orchestrator else None
+if language_island_orchestrator:
+    LanguageIslandOrchestrator = language_island_orchestrator.LanguageIslandOrchestrator
+else:
+    raise ImportError("Failed to import language-island-orchestrator.py")
 
 
 __all__ = [
