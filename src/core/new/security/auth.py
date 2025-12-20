@@ -3,13 +3,14 @@ MachineNativeOps Security Framework
 安全框架 - 認證、授權、加密
 """
 
-import secrets
 import hashlib
-from typing import Dict, Any, Optional
+import logging
+import os
+import secrets
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-import logging
+from typing import Any, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ class SecurityManager:
     """安全管理器主類"""
     
     def __init__(self):
-        self.users: Dict[str, User] = {}
+        self.users: dict[str, User] = {}
         self.is_initialized = False
         self.security_events: list = []
     
@@ -83,8 +84,8 @@ class SecurityManager:
             logger.warning(f"⚠️ 用戶不存在: {username}")
             return None
         
-        # 使用密碼哈希驗證
-        if user.password_hash and self._verify_password(user.password_hash, password):
+        # 驗證密碼哈希格式並進行驗證
+        if user.password_hash and ':' in user.password_hash and self._verify_password(user.password_hash, password):
             token = f"token_{secrets.token_hex(16)}"
             await self._log_security_event("user_authenticated", {
                 "username": username,
@@ -98,8 +99,13 @@ class SecurityManager:
     async def _create_default_admin(self):
         """創建默認管理員"""
         if not self.users:
-            # 生成安全的默認密碼（實際部署時應從環境變量或配置文件讀取）
-            default_password = secrets.token_urlsafe(16)
+            # 優先從環境變量讀取密碼，否則生成隨機密碼
+            default_password = os.environ.get('ADMIN_DEFAULT_PASSWORD')
+            password_from_env = default_password is not None
+            
+            if not default_password:
+                default_password = secrets.token_urlsafe(16)
+            
             admin_user = User(
                 id="admin_001",
                 username="admin",
@@ -109,9 +115,19 @@ class SecurityManager:
             )
             self.users[admin_user.id] = admin_user
             logger.info("👑 創建默認管理員用戶")
-            logger.warning(f"⚠️ 默認管理員密碼已生成，請妥善保管並立即修改: {default_password}")
+            
+            if password_from_env:
+                logger.info("✅ 使用環境變量 ADMIN_DEFAULT_PASSWORD 設置的管理員密碼")
+            else:
+                logger.warning("⚠️ 默認管理員密碼已生成，請妥善保管並立即修改。請查看安全日誌以獲取密碼。")
+                # 僅記錄到安全事件，不記錄到普通日誌
+                await self._log_security_event("admin_password_generated", {
+                    "username": "admin",
+                    "password": default_password,
+                    "warning": "請立即修改此密碼"
+                })
     
-    async def _log_security_event(self, event_type: str, details: Dict[str, Any]):
+    async def _log_security_event(self, event_type: str, details: dict[str, Any]):
         """記錄安全事件"""
         event = {
             "timestamp": datetime.now().isoformat(),
