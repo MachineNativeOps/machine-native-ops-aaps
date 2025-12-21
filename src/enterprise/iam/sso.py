@@ -15,6 +15,8 @@ from typing import Any, Dict, Optional, Protocol
 from urllib.parse import urlencode, urlparse
 from uuid import UUID
 
+import jwt
+
 from enterprise.iam.models import (
     Membership,
     Role,
@@ -333,6 +335,7 @@ class SSOManager:
             raise ValueError("Invalid or expired state parameter")
 
         org_id = UUID(pending["org_id"])
+        nonce = pending["nonce"]
         code_verifier = pending["code_verifier"]
         redirect_uri = pending["redirect_uri"]
 
