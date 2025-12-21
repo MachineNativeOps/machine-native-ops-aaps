@@ -370,16 +370,25 @@ class SSOManager:
         )
 
         # Validate ID token and nonce to prevent replay attacks
-        # NOTE: This implementation decodes the JWT without signature verification.
-        # In production, implement full JWT signature verification using the OIDC
-        # provider's JWKS endpoint to ensure token authenticity.
+        # Perform full JWT signature and claims verification using the provider's JWKS.
         try:
-            # Decode ID token to extract claims
+            jwks_uri = discovery.get("jwks_uri")
+            if not jwks_uri:
+                raise ValueError("OIDC discovery document missing 'jwks_uri'")
+
+            # Fetch the appropriate signing key for this ID token from the JWKS endpoint.
+            jwk_client = jwt.PyJWKClient(jwks_uri)
+            signing_key = jwk_client.get_signing_key_from_jwt(tokens.id_token)
+
+            # Decode and verify the ID token signature, issuer, audience, and expiry.
             id_token_claims = jwt.decode(
                 tokens.id_token,
-                options={"verify_signature": False}
+                key=signing_key.key,
+                algorithms=["RS256", "RS384", "RS512", "ES256", "ES384", "ES512"],
+                audience=config.client_id,
+                issuer=discovery.get("issuer"),
             )
-            
+
             # Verify nonce exists and matches to prevent replay attacks
             token_nonce = id_token_claims.get("nonce")
             if not token_nonce:
@@ -387,7 +396,7 @@ class SSOManager:
             if token_nonce != nonce:
                 raise ValueError("Nonce mismatch in ID token - possible replay attack")
         except jwt.PyJWTError as e:
-            raise ValueError(f"Failed to decode ID token: {e}")
+            raise ValueError(f"Failed to validate ID token: {e}")
 
         # Get user info
         userinfo_endpoint = discovery.get("userinfo_endpoint")
