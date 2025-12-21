@@ -104,6 +104,7 @@ This document provides comprehensive risk assessment for the governance complian
 - **Timeline**: Within 4 hours of detection
 
 #### Plan B: Compliance Violation
+
 - **Trigger**: Audit reveals non-compliance
 - **Response**: Immediate remediation and process review
 - **Timeline**: Within 24 hours of detection
