@@ -370,6 +370,21 @@ class SSOManager:
             expires_in=token_response.get("expires_in", 3600),
         )
 
+        # Validate ID token nonce to prevent replay attacks
+        import jwt as pyjwt
+        try:
+            # Decode without verification to extract nonce claim
+            # Full signature verification should be done with JWKS in production
+            id_token_claims = pyjwt.decode(
+                tokens.id_token,
+                options={"verify_signature": False}
+            )
+            token_nonce = id_token_claims.get("nonce")
+            if token_nonce != nonce:
+                raise ValueError("ID token nonce does not match expected nonce")
+        except pyjwt.DecodeError as e:
+            raise ValueError(f"Failed to decode ID token: {e}")
+
         # Get user info
         userinfo_endpoint = discovery.get("userinfo_endpoint")
         userinfo_response = await self.http_client.get(
