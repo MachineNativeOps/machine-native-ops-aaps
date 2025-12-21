@@ -42,11 +42,11 @@ class HttpSession:
     def get(self, url: str, timeout: float = 10) -> "SimpleResponse":
         return self._request("GET", url, data=None, headers=None, timeout=timeout)
 
-    def post(self, url: str, json: Dict[str, Any] | None = None, timeout: float = 10) -> "SimpleResponse":
+    def post(self, url: str, json_data: Dict[str, Any] | None = None, timeout: float = 10) -> "SimpleResponse":
         data = None
         headers: Dict[str, str] | None = None
-        if json is not None:
-            data = json.dumps(json).encode("utf-8")
+        if json_data is not None:
+            data = json.dumps(json_data).encode("utf-8")
             headers = {"Content-Type": "application/json"}
         return self._request("POST", url, data=data, headers=headers, timeout=timeout)
 
