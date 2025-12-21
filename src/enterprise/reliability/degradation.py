@@ -165,7 +165,7 @@ class CircuitBreaker:
                 duration_ms=(time.monotonic() - start) * 1000,
             )
 
-        except TimeoutError:
+        except asyncio.TimeoutError:
             self._record_failure()
             error = f"Operation timed out after {self.timeout_seconds}s"
 
