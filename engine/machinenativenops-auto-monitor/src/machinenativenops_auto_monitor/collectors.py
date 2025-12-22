@@ -1,4 +1,19 @@
 """
+MachineNativeOps Auto-Monitor - Metrics Collectors
+
+Collects metrics from various sources (system, services, custom).
+Metric Collectors
+指標收集器
+
+Collects various metrics from the system and services.
+"""
+
+import logging
+import platform
+import psutil
+import subprocess
+from abc import ABC, abstractmethod
+from typing import Any, Dict, List
 Data Collectors Module
 數據收集模組
 
@@ -7,6 +22,276 @@ Collects metrics, logs, and events from various sources for monitoring.
 
 import logging
 import psutil
+import requests
+from abc import ABC, abstractmethod
+from typing import Dict, List, Any, Optional
+from dataclasses import dataclass
+from datetime import datetime
+
+
+@dataclass
+class Metric:
+    """Represents a collected metric."""
+    name: str
+    value: float
+    labels: Dict[str, str]
+    timestamp: datetime = None
+    
+    def __post_init__(self):
+        if self.timestamp is None:
+            self.timestamp = datetime.now()
+    
+    def to_dict(self) -> Dict[str, Any]:
+        """Convert metric to dictionary."""
+        return {
+            'name': self.name,
+            'value': self.value,
+            'labels': self.labels,
+            'timestamp': self.timestamp.isoformat()
+        }
+
+
+class BaseCollector(ABC):
+    """Base class for all metric collectors."""
+    
+    def __init__(self, config: Dict[str, Any]):
+        """
+        Initialize collector.
+        
+        Args:
+            config: Collector configuration
+        """
+        self.config = config
+        self.logger = logging.getLogger(self.__class__.__name__)
+        self.enabled = config.get('enabled', True)
+    
+    @abstractmethod
+    def collect(self) -> Dict[str, float]:
+        """
+        Collect metrics.
+        
+        Returns:
+            Dictionary of metric name to value
+        """
+        pass
+    
+    def is_enabled(self) -> bool:
+        """Check if collector is enabled."""
+        return self.enabled
+
+
+class SystemCollector(BaseCollector):
+    """Collects system-level metrics (CPU, memory, disk, network)."""
+    
+    def collect(self) -> Dict[str, float]:
+        """Collect system metrics."""
+        if not self.enabled:
+            return {}
+        
+        metrics = {}
+        
+        try:
+            # CPU metrics
+            cpu_percent = psutil.cpu_percent(interval=1)
+            metrics['system_cpu_percent'] = cpu_percent
+            
+            cpu_count = psutil.cpu_count()
+            metrics['system_cpu_count'] = cpu_count
+            
+            # Memory metrics
+            memory = psutil.virtual_memory()
+            metrics['system_memory_total'] = memory.total
+            metrics['system_memory_available'] = memory.available
+            metrics['system_memory_percent'] = memory.percent
+            metrics['system_memory_used'] = memory.used
+            
+            # Disk metrics
+            disk = psutil.disk_usage('/')
+            metrics['system_disk_total'] = disk.total
+            metrics['system_disk_used'] = disk.used
+            metrics['system_disk_free'] = disk.free
+            metrics['system_disk_percent'] = disk.percent
+            
+            # Network metrics
+            net_io = psutil.net_io_counters()
+            metrics['system_network_bytes_sent'] = net_io.bytes_sent
+            metrics['system_network_bytes_recv'] = net_io.bytes_recv
+            metrics['system_network_packets_sent'] = net_io.packets_sent
+            metrics['system_network_packets_recv'] = net_io.packets_recv
+            
+            # Load average (Unix only)
+            try:
+                load1, load5, load15 = psutil.getloadavg()
+                metrics['system_load_1'] = load1
+                metrics['system_load_5'] = load5
+                metrics['system_load_15'] = load15
+            except (AttributeError, OSError):
+                # Not available on Windows
+                pass
+            
+            self.logger.debug(f"Collected {len(metrics)} system metrics")
+        
+        except Exception as e:
+            self.logger.error(f"Error collecting system metrics: {e}")
+        
+        return metrics
+
+
+class ServiceCollector(BaseCollector):
+    """Collects metrics from services via health endpoints."""
+    
+    def __init__(self, config: Dict[str, Any]):
+        """Initialize service collector."""
+        super().__init__(config)
+        self.services = config.get('services', [])
+        self.timeout = config.get('timeout', 5)
+    
+    def collect(self) -> Dict[str, float]:
+        """Collect service metrics."""
+        if not self.enabled:
+            return {}
+        
+        metrics = {}
+        
+        for service in self.services:
+            service_name = service.get('name')
+            health_url = service.get('health_url')
+            metrics_url = service.get('metrics_url')
+            
+            if not service_name or not health_url:
+                continue
+            
+            try:
+                # Check service health
+                health_response = requests.get(
+                    health_url,
+                    timeout=self.timeout
+                )
+                
+                is_healthy = health_response.status_code == 200
+                metrics[f'service_{service_name}_healthy'] = 1.0 if is_healthy else 0.0
+                metrics[f'service_{service_name}_response_time'] = health_response.elapsed.total_seconds()
+                
+                # Collect custom metrics if available
+                if metrics_url:
+                    metrics_response = requests.get(
+                        metrics_url,
+                        timeout=self.timeout
+                    )
+                    
+                    if metrics_response.status_code == 200:
+                        service_metrics = metrics_response.json()
+                        
+                        # Add service metrics with prefix
+                        for key, value in service_metrics.items():
+                            if isinstance(value, (int, float)):
+                                metrics[f'service_{service_name}_{key}'] = float(value)
+            
+            except requests.RequestException as e:
+                self.logger.error(f"Error collecting metrics for {service_name}: {e}")
+                metrics[f'service_{service_name}_healthy'] = 0.0
+            
+            except Exception as e:
+                self.logger.error(f"Unexpected error for {service_name}: {e}")
+        
+        self.logger.debug(f"Collected {len(metrics)} service metrics")
+        
+        return metrics
+
+
+class CustomMetricCollector(BaseCollector):
+    """Collects custom application-specific metrics."""
+    
+    def __init__(self, config: Dict[str, Any]):
+        """Initialize custom metric collector."""
+        super().__init__(config)
+        self.metric_sources = config.get('sources', [])
+    
+    def collect(self) -> Dict[str, float]:
+        """Collect custom metrics."""
+        if not self.enabled:
+            return {}
+        
+        metrics = {}
+        
+        # Placeholder for custom metric collection
+        # In production, this would integrate with application-specific
+        # metric sources, databases, APIs, etc.
+        
+        for source in self.metric_sources:
+            source_name = source.get('name')
+            source_type = source.get('type')
+            
+            # Example: could support different source types
+            # - database queries
+            # - file-based metrics
+            # - external APIs
+            # - message queues
+            
+            self.logger.debug(f"Collecting from custom source: {source_name}")
+        
+        return metrics
+
+
+class MetricsCollector:
+    """
+    Aggregates metrics from multiple collectors.
+    """
+    
+    def __init__(self, collectors: List[BaseCollector]):
+        """
+        Initialize metrics collector.
+        
+        Args:
+            collectors: List of metric collectors
+        """
+        self.collectors = collectors
+        self.logger = logging.getLogger(__name__)
+    
+    def collect_all(self) -> Dict[str, float]:
+        """
+        Collect metrics from all enabled collectors.
+        
+        Returns:
+            Dictionary of all collected metrics
+        """
+        all_metrics = {}
+        
+        for collector in self.collectors:
+            if not collector.is_enabled():
+                continue
+            
+            try:
+                collector_metrics = collector.collect()
+                all_metrics.update(collector_metrics)
+            
+            except Exception as e:
+                self.logger.error(
+                    f"Error collecting from {collector.__class__.__name__}: {e}"
+                )
+        
+        return all_metrics
+    
+    def add_collector(self, collector: BaseCollector):
+        """
+        Add a new collector.
+        
+        Args:
+            collector: Collector to add
+        """
+        self.collectors.append(collector)
+    
+    def remove_collector(self, collector_class):
+        """
+        Remove a collector by class.
+        
+        Args:
+            collector_class: Class of collector to remove
+        """
+        self.collectors = [
+            c for c in self.collectors
+            if not isinstance(c, collector_class)
+        ]
 import platform
 from typing import Dict, List, Optional
 from datetime import datetime
@@ -15,6 +300,219 @@ from dataclasses import dataclass, asdict
 logger = logging.getLogger(__name__)
 
 
+class MetricCollector(ABC):
+    """Base class for metric collectors"""
+    
+    def __init__(self, config: Dict[str, Any] = None):
+        """Initialize collector"""
+        self.config = config or {}
+    
+    @abstractmethod
+    def collect(self) -> Dict[str, Any]:
+        """Collect metrics"""
+        pass
+
+
+class SystemCollector(MetricCollector):
+    """Collects system-level metrics"""
+    
+    def collect(self) -> Dict[str, Any]:
+        """Collect system metrics"""
+        try:
+            metrics = {
+                "timestamp": psutil.time.time(),
+                "hostname": platform.node(),
+                "platform": platform.system(),
+                "cpu_count": psutil.cpu_count(),
+                "cpu_percent": psutil.cpu_percent(interval=1),
+                "memory": self._collect_memory(),
+                "memory_percent": psutil.virtual_memory().percent,
+                "disk": self._collect_disk(),
+                "disk_percent": psutil.disk_usage('/').percent,
+                "network": self._collect_network(),
+                "load_average": self._collect_load_average(),
+            }
+            return metrics
+        except Exception as e:
+            logger.error(f"Error collecting system metrics: {e}")
+            return {}
+    
+    def _collect_memory(self) -> Dict[str, Any]:
+        """Collect memory metrics"""
+        mem = psutil.virtual_memory()
+        return {
+            "total": mem.total,
+            "available": mem.available,
+            "used": mem.used,
+            "percent": mem.percent,
+        }
+    
+    def _collect_disk(self) -> Dict[str, Any]:
+        """Collect disk metrics"""
+        disk = psutil.disk_usage('/')
+        return {
+            "total": disk.total,
+            "used": disk.used,
+            "free": disk.free,
+            "percent": disk.percent,
+        }
+    
+    def _collect_network(self) -> Dict[str, Any]:
+        """Collect network metrics"""
+        net = psutil.net_io_counters()
+        return {
+            "bytes_sent": net.bytes_sent,
+            "bytes_recv": net.bytes_recv,
+            "packets_sent": net.packets_sent,
+            "packets_recv": net.packets_recv,
+            "errin": net.errin,
+            "errout": net.errout,
+            "dropin": net.dropin,
+            "dropout": net.dropout,
+        }
+    
+    def _collect_load_average(self) -> List[float]:
+        """Collect system load average"""
+        try:
+            return list(psutil.getloadavg())
+        except (AttributeError, OSError):
+            # getloadavg() may not be available on all platforms
+            return [0.0, 0.0, 0.0]
+
+
+class ServiceCollector(MetricCollector):
+    """Collects service health metrics"""
+    
+    def collect(self) -> Dict[str, Any]:
+        """Collect service metrics"""
+        services = self.config.get("monitored_services", [])
+        
+        service_metrics = {
+            "timestamp": psutil.time.time(),
+            "services": {}
+        }
+        
+        for service in services:
+            if isinstance(service, str):
+                service_name = service
+                service_config = {}
+            else:
+                service_name = service.get("name", "unknown")
+                service_config = service
+            
+            service_metrics["services"][service_name] = self._check_service(
+                service_name,
+                service_config
+            )
+        
+        return service_metrics
+    
+    def _check_service(self, service_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+        """Check individual service health"""
+        check_type = config.get("type", "process")
+        
+        if check_type == "process":
+            return self._check_process(service_name, config)
+        elif check_type == "http":
+            return self._check_http_endpoint(service_name, config)
+        elif check_type == "port":
+            return self._check_port(service_name, config)
+        else:
+            logger.warning(f"Unknown service check type: {check_type}")
+            return {"healthy": False, "error": "unknown check type"}
+    
+    def _check_process(self, service_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+        """Check if a process is running"""
+        process_name = config.get("process_name", service_name)
+        
+        try:
+            for proc in psutil.process_iter(['name', 'status']):
+                if proc.info['name'] == process_name:
+                    return {
+                        "healthy": True,
+                        "status": "running",
+                        "pid": proc.pid,
+                        "memory_percent": proc.memory_percent(),
+                        "cpu_percent": proc.cpu_percent(interval=0.1),
+                    }
+            
+            return {
+                "healthy": False,
+                "status": "not_found",
+                "error": f"Process {process_name} not found"
+            }
+        
+        except Exception as e:
+            logger.error(f"Error checking process {process_name}: {e}")
+            return {
+                "healthy": False,
+                "status": "error",
+                "error": str(e)
+            }
+    
+    def _check_http_endpoint(self, service_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+        """Check HTTP endpoint health"""
+        # TODO: Implement HTTP health check
+        logger.warning(f"HTTP health check not implemented for {service_name}")
+        return {"healthy": True, "status": "unknown"}
+    
+    def _check_port(self, service_name: str, config: Dict[str, Any]) -> Dict[str, Any]:
+        """Check if a port is listening"""
+        port = config.get("port")
+        if not port:
+            return {"healthy": False, "error": "No port specified"}
+        
+        try:
+            connections = psutil.net_connections(kind='inet')
+            for conn in connections:
+                if conn.laddr.port == port and conn.status == 'LISTEN':
+                    return {
+                        "healthy": True,
+                        "status": "listening",
+                        "port": port
+                    }
+            
+            return {
+                "healthy": False,
+                "status": "not_listening",
+                "port": port
+            }
+        
+        except Exception as e:
+            logger.error(f"Error checking port {port}: {e}")
+            return {
+                "healthy": False,
+                "status": "error",
+                "error": str(e)
+            }
+
+
+class ApplicationMetricCollector(MetricCollector):
+    """Collects application-specific metrics"""
+    
+    def collect(self) -> Dict[str, Any]:
+        """Collect application metrics"""
+        metrics = {
+            "timestamp": psutil.time.time(),
+            "applications": {}
+        }
+        
+        # Collect metrics for each configured application
+        apps = self.config.get("applications", [])
+        for app in apps:
+            app_name = app.get("name", "unknown")
+            metrics["applications"][app_name] = self._collect_app_metrics(app)
+        
+        return metrics
+    
+    def _collect_app_metrics(self, app_config: Dict[str, Any]) -> Dict[str, Any]:
+        """Collect metrics for a specific application"""
+        # TODO: Implement application-specific metric collection
+        # This could query application APIs, parse log files, etc.
+        return {
+            "status": "unknown",
+            "message": "Application metrics not implemented"
+        }
 @dataclass
 class MetricData:
     """Represents a metric data point."""
