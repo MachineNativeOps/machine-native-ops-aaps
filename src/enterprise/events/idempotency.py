@@ -17,6 +17,7 @@ from enum import Enum
 from typing import Any, Generic, Protocol, TypeVar
 from uuid import UUID, uuid4
 
+
 logger = logging.getLogger(__name__)
 
 T = TypeVar('T')

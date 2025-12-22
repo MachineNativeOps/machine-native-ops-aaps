@@ -317,6 +317,352 @@ status:
     total_rules: 4
     migration_paths: 3
     enforcement_gates: 3
+#                    命名空間配置 - 統一命名規範
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# Version: 1.0.0
+# Updated: 2025-12-22
+# Purpose: 定義所有 MachineNativeOps 相關的命名空間、標籤、倉庫和路徑
+#
+# This file defines the canonical naming conventions for all MachineNativeOps
+# components, ensuring consistency across:
+# - Container images and registries
+# - Kubernetes namespaces
+# - Certificate paths
+# - Cluster tokens
+# - Domain names
+# ═══════════════════════════════════════════════════════════════════════════════
+
+version: "1.0.0"
+name: "MachineNativeOps Namespace Configuration"
+
+# ============================================================================
+# Primary Namespace (主要命名空間)
+# ============================================================================
+namespace:
+  primary: "machinenativeops"
+  short: "mno"
+  full: "machine-native-ops"
+  
+  # Alternative forms for different contexts
+  variants:
+    camelCase: "machineNativeOps"
+    PascalCase: "MachineNativeOps"
+    snake_case: "machine_native_ops"
+    kebab-case: "machine-native-ops"
+    lowercase: "machinenativeops"
+
+# ============================================================================
+# Domain Configuration (域名配置)
+# ============================================================================
+domains:
+  primary: "machinenativeops.io"
+  registry: "registry.machinenativeops.io"
+  docs: "docs.machinenativeops.io"
+  api: "api.machinenativeops.io"
+  monitoring: "monitoring.machinenativeops.io"
+
+# ============================================================================
+# Registry Configuration (鏡像倉庫配置)
+# ============================================================================
+registries:
+  primary:
+    url: "registry.machinenativeops.io"
+    namespace: "machinenativeops"
+    type: "harbor"
+    
+  mirrors:
+    - url: "ghcr.io/machinenativeops"
+      type: "github"
+    - url: "docker.io/machinenativeops"
+      type: "dockerhub"
+
+# ============================================================================
+# Certificate Paths (證書路徑)
+# ============================================================================
+certificates:
+  base_path: "/etc/machinenativeops"
+  pkl_path: "/etc/machinenativeops/pkl"
+  
+  paths:
+    ca_cert: "/etc/machinenativeops/ca.crt"
+    server_cert: "/etc/machinenativeops/server.crt"
+    server_key: "/etc/machinenativeops/server.key"
+    client_cert: "/etc/machinenativeops/client.crt"
+    client_key: "/etc/machinenativeops/client.key"
+
+# ============================================================================
+# Cluster Configuration (集群配置)
+# ============================================================================
+clusters:
+  etcd:
+    token: "super-agent-etcd-cluster"
+    namespace: "machinenativeops-system"
+    service_name: "etcd-machinenativeops"
+    
+  kubernetes:
+    namespace: "machinenativeops"
+    system_namespace: "machinenativeops-system"
+    monitoring_namespace: "machinenativeops-monitoring"
+    
+# ============================================================================
+# Container Image Tags (容器鏡像標籤)
+# ============================================================================
+image_tags:
+  prefix: "machinenativeops"
+  
+  # Standard image naming pattern:
+  # registry.machinenativeops.io/machinenativeops/<component>:<version>
+  pattern: "${registry}/${namespace}/${component}:${version}"
+  
+  components:
+    core:
+      - "synergymesh-core"
+      - "ai-decision-engine"
+      - "contract-service"
+      
+    autonomous:
+      - "autonomous-drone"
+      - "intelligent-agent"
+      - "auto-monitor"
+      
+    governance:
+      - "policy-engine"
+      - "schema-validator"
+      - "governance-controller"
+      
+    services:
+      - "mcp-server"
+      - "code-analyzer"
+      - "security-scanner"
+
+# ============================================================================
+# Service Naming (服務命名)
+# ============================================================================
+services:
+  naming_pattern: "mno-${component}-${environment}"
+  
+  prefixes:
+    core: "mno-core"
+    agent: "mno-agent"
+    api: "mno-api"
+    worker: "mno-worker"
+    
+  examples:
+    - "mno-core-synergymesh-prod"
+    - "mno-agent-autonomous-dev"
+    - "mno-api-gateway-staging"
+
+# ============================================================================
+# Configuration Paths (配置路徑)
+# ============================================================================
+config_paths:
+  base: "/opt/machinenativeops"
+  config: "/opt/machinenativeops/config"
+  data: "/var/lib/machinenativeops"
+  logs: "/var/log/machinenativeops"
+  cache: "/var/cache/machinenativeops"
+  
+  # Application-specific paths
+  apps:
+    synergymesh: "/opt/machinenativeops/synergymesh"
+    autonomous: "/opt/machinenativeops/autonomous"
+    governance: "/opt/machinenativeops/governance"
+
+# ============================================================================
+# Label Standards (標籤標準)
+# ============================================================================
+labels:
+  # Kubernetes label recommendations
+  kubernetes:
+    app: "app.kubernetes.io/name"
+    version: "app.kubernetes.io/version"
+    component: "app.kubernetes.io/component"
+    part_of: "app.kubernetes.io/part-of"
+    managed_by: "app.kubernetes.io/managed-by"
+    
+  # Custom MachineNativeOps labels
+  custom:
+    namespace: "machinenativeops.io/namespace"
+    subsystem: "machinenativeops.io/subsystem"
+    tier: "machinenativeops.io/tier"
+    environment: "machinenativeops.io/environment"
+    
+  # Label values
+  values:
+    part_of: "machinenativeops"
+    managed_by: "machinenativeops-operator"
+
+# ============================================================================
+# Annotation Standards (註解標準)
+# ============================================================================
+annotations:
+  prefix: "machinenativeops.io"
+  
+  standard:
+    description: "machinenativeops.io/description"
+    version: "machinenativeops.io/version"
+    docs: "machinenativeops.io/docs"
+    owner: "machinenativeops.io/owner"
+    contact: "machinenativeops.io/contact"
+
+# ============================================================================
+# Environment Variables (環境變數)
+# ============================================================================
+env_vars:
+  prefix: "MNO"
+  
+  standard:
+    - "MNO_NAMESPACE"
+    - "MNO_ENVIRONMENT"
+    - "MNO_REGISTRY"
+    - "MNO_CLUSTER_TOKEN"
+    - "MNO_CONFIG_PATH"
+    - "MNO_DATA_PATH"
+    - "MNO_LOG_LEVEL"
+
+# ============================================================================
+# Validation Rules (驗證規則)
+# ============================================================================
+validation:
+  namespace_pattern: "^machinenativeops(-[a-z0-9]+)*$"
+  component_pattern: "^[a-z][a-z0-9-]*$"
+  version_pattern: "^v?\\d+\\.\\d+\\.\\d+(-[a-z0-9.-]+)?$"
+  
+  constraints:
+    max_namespace_length: 63
+    max_label_length: 63
+    allowed_characters: "a-z0-9-"
+
+# ============================================================================
+# Migration Support (遷移支援)
+# ============================================================================
+migration:
+  legacy_namespaces:
+    - "machine-native-ops-aaps"
+    - "aaps"
+    
+  mapping:
+    "machine-native-ops-aaps": "machinenativeops"
+    "aaps": "machinenativeops"
+    
+  deprecation_date: "2026-06-01"
+  migration_guide: "docs/migration/namespace-migration.md"
+apiVersion: machinenativeops.io/v2
+kind: MachineNativeOpsNamespaceConfig
+metadata:
+  name: machinenativeops-namespace-configuration
+  namespace: machinenativeops
+  labels:
+    machinenativeops.io/component: namespace-config
+    machinenativeops.io/version: v2
+  annotations:
+    machinenativeops.io/description: "MachineNativeOps 命名空間標準配置"
+    machinenativeops.io/urn: "urn:machinenativeops:config:namespace:v2"
+
+spec:
+  # 命名空間標準
+  namespace:
+    primary: "machinenativeops"
+    aliases:
+      - "mno"
+      - "machine-native-ops"
+  
+  # 域名標準
+  domains:
+    primary: "machinenativeops.io"
+    api_versions:
+      - "machinenativeops.io/v1"
+      - "machinenativeops.io/v2"
+    registry: "registry.machinenativeops.io"
+    documentation: "docs.machinenativeops.io"
+  
+  # URN 標準
+  urn:
+    prefix: "urn:machinenativeops:"
+    format: "urn:machinenativeops:{category}:{component}:{version}"
+    examples:
+      - "urn:machinenativeops:config:namespace:v2"
+      - "urn:machinenativeops:service:auth:v1"
+      - "urn:machinenativeops:policy:rbac:v2"
+  
+  # 標籤和註解標準
+  labels:
+    prefix: "machinenativeops.io/"
+    required:
+      - "machinenativeops.io/component"
+      - "machinenativeops.io/version"
+    recommended:
+      - "machinenativeops.io/environment"
+      - "machinenativeops.io/team"
+      - "machinenativeops.io/managed-by"
+  
+  # 證書路徑標準
+  certificates:
+    base_path: "/etc/machinenativeops/pkl"
+    ca_cert: "/etc/machinenativeops/pkl/ca.crt"
+    client_cert: "/etc/machinenativeops/pkl/client.crt"
+    client_key: "/etc/machinenativeops/pkl/client.key"
+  
+  # 集群標準
+  cluster:
+    etcd:
+      name: "super-agent-etcd-cluster"
+      namespace: "machinenativeops"
+      token_prefix: "super-agent-etcd-"
+    kubernetes:
+      namespace: "machinenativeops"
+      service_account_prefix: "machinenativeops-"
+  
+  # 遷移規則（從舊命名空間）
+  migration:
+    deprecated_patterns:
+      - pattern: "axiom\\.io"
+        replacement: "machinenativeops.io"
+        status: "deprecated"
+      - pattern: "AxiomGlobalBaseline"
+        replacement: "MachineNativeOpsGlobalBaseline"
+        status: "deprecated"
+      - pattern: "urn:axiom:"
+        replacement: "urn:machinenativeops:"
+        status: "deprecated"
+      - pattern: "axiom-"
+        replacement: "machinenativeops-"
+        status: "deprecated"
+    
+    conversion_rules:
+      strict_mode: true
+      preserve_comments: true
+      backup_originals: false
+  
+  # 驗證規則
+  validation:
+    enforce_urn_format: true
+    enforce_label_prefix: true
+    enforce_namespace: true
+    allow_legacy_references: false
+    
+    # 排除路徑
+    exclude_paths:
+      - ".git"
+      - ".github"
+      - "node_modules"
+      - "__pycache__"
+      - "dist"
+      - "build"
+      - ".venv"
+      - "venv"
+      - "archive"
+    
+    # 文件類型
+    file_extensions:
+      - ".yaml"
+      - ".yml"
+      - ".json"
+      - ".py"
+      - ".md"
+      - ".ts"
+      - ".js"
 ---
 # MachineNativeOps Namespace Configuration
 # 機器原生運維命名空間配置
