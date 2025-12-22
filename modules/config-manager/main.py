@@ -146,7 +146,7 @@ async def health_check():
             status_code=503,
             content={
                 "status": "unhealthy",
-                "error": str(e),
+                "error": "Service is currently unhealthy. Please try again later.",
                 "timestamp": datetime.utcnow().isoformat()
             }
         )
