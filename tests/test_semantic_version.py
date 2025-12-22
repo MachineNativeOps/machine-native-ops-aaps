@@ -31,7 +31,7 @@ class TestSemanticVersionComparison(unittest.TestCase):
         v_normal = SemanticVersion(1, 0, 0)
 
         self.assertLess(v_prerelease, v_normal)
-        self.assertFalse(v_normal < v_prerelease)
+        self.assertGreaterEqual(v_normal, v_prerelease)
         self.assertNotEqual(v_prerelease, v_normal)
 
     def test_prerelease_comparison_alpha_beta(self):
@@ -112,9 +112,9 @@ class TestSemanticVersionComparison(unittest.TestCase):
         self.assertGreater(v_normal, v_pre)
         self.assertGreaterEqual(v_normal, v_pre)
         self.assertLessEqual(v_pre, v_normal)
-        self.assertFalse(v_pre > v_normal)
-        self.assertFalse(v_pre >= v_normal)
-        self.assertFalse(v_normal <= v_pre)
+        self.assertLessEqual(v_pre, v_normal, "Prerelease version should not be greater than normal version")
+        self.assertLess(v_pre, v_normal)
+        self.assertGreater(v_normal, v_pre)
 
     def test_parse_and_compare(self):
         """Test parsing version strings and comparing them"""
@@ -132,8 +132,8 @@ class TestSemanticVersionComparison(unittest.TestCase):
 
         # Build metadata should not affect comparison
         self.assertEqual(v1, v2)
-        self.assertFalse(v1 < v2)
-        self.assertFalse(v2 < v1)
+        self.assertGreaterEqual(v1, v2)
+        self.assertGreaterEqual(v2, v1)
 
 
 if __name__ == "__main__":

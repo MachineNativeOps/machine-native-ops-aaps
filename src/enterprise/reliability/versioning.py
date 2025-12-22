@@ -14,8 +14,7 @@ import re
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-import re
-import logging
+from typing import Any
 
 
 logger = logging.getLogger(__name__)
@@ -76,16 +75,13 @@ class SemanticVersion:
         return self._compare_prerelease(self.prerelease, other.prerelease) < 0
 
     def __le__(self, other: "SemanticVersion") -> bool:
-        return (self.major, self.minor, self.patch) <= (other.major, other.minor, other.patch)
-
-    def __le__(self, other: "SemanticVersion") -> bool:
-        return (self.major, self.minor, self.patch) <= (other.major, other.minor, other.patch)
+        return self < other or self == other
 
     def __gt__(self, other: "SemanticVersion") -> bool:
-        return (self.major, self.minor, self.patch) > (other.major, other.minor, other.patch)
+        return not (self <= other)
 
     def __ge__(self, other: "SemanticVersion") -> bool:
-        return (self.major, self.minor, self.patch) >= (other.major, other.minor, other.patch)
+        return not (self < other)
 
     def __eq__(self, other: "SemanticVersion") -> bool:
         return (
@@ -142,12 +138,6 @@ class SemanticVersion:
                     return 1
         
         return 0  # Equal
-
-    def __ge__(self, other: "SemanticVersion") -> bool:
-        return (self.major, self.minor, self.patch) >= (other.major, other.minor, other.patch)
-
-    def __gt__(self, other: "SemanticVersion") -> bool:
-        return (self.major, self.minor, self.patch) > (other.major, other.minor, other.patch)
 
     @classmethod
     def parse(cls, version_string: str) -> "SemanticVersion":

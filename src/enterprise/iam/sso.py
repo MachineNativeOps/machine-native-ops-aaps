@@ -13,9 +13,10 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any, Protocol
 from urllib.parse import urlencode, urlparse
-import jwt as pyjwt
+from uuid import UUID
 
-import jwt
+import jwt as pyjwt
+from jwt import PyJWKClient
 
 from enterprise.iam.models import (
     Membership,
@@ -338,8 +339,6 @@ class SSOManager:
         nonce = pending["nonce"]
         code_verifier = pending["code_verifier"]
         redirect_uri = pending["redirect_uri"]
-        # TODO: Validate nonce against ID token for replay attack prevention
-        # nonce = pending["nonce"]
 
         # Clean up pending auth
         del self._pending_auth[state]
@@ -374,23 +373,38 @@ class SSOManager:
             expires_in=token_response.get("expires_in", 3600),
         )
 
-        # Validate ID token and critical claims
-        # NOTE: This implementation decodes the JWT without signature verification.
-        # In production, implement full JWT signature verification using the OIDC
-        # provider's JWKS endpoint to ensure token authenticity.
+        # Validate ID token with proper signature verification
+        # Get JWKS endpoint for signature verification
+        jwks_uri = discovery.get("jwks_uri")
+        if not jwks_uri:
+            raise ValueError("JWKS URI not found in OIDC discovery document")
+        
+        # Create JWKS client for fetching signing keys
+        jwks_client = PyJWKClient(jwks_uri)
+        
         try:
-            # Decode without verification to extract nonce claim
-            # SECURITY WARNING: Signature verification is disabled
+            # Get the signing key from JWKS
+            signing_key = jwks_client.get_signing_key_from_jwt(tokens.id_token)
+            
+            # Decode and verify the ID token with full signature verification
             id_token_claims = pyjwt.decode(
                 tokens.id_token,
                 key=signing_key.key,
                 algorithms=["RS256", "RS384", "RS512", "ES256", "ES384", "ES512"],
                 audience=config.client_id,
                 issuer=discovery.get("issuer"),
+                options={"verify_signature": True, "verify_exp": True, "verify_aud": True}
             )
+            
+            # Validate nonce to prevent replay attacks
             token_nonce = id_token_claims.get("nonce")
             if token_nonce != nonce:
                 raise ValueError("ID token nonce does not match expected nonce")
+                
+        except pyjwt.ExpiredSignatureError as e:
+            raise ValueError(f"ID token has expired: {e}")
+        except pyjwt.InvalidSignatureError as e:
+            raise ValueError(f"ID token signature is invalid: {e}")
         except pyjwt.DecodeError as e:
             raise ValueError(f"Failed to decode ID token: {e}")
 

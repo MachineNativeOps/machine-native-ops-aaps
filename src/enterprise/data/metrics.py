@@ -13,8 +13,7 @@ import logging
 import time
 from dataclasses import dataclass, field
 from enum import Enum
-import time
-import logging
+from typing import Any, Protocol
 
 
 logger = logging.getLogger(__name__)
