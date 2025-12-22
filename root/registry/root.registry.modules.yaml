@@ -1,0 +1,48 @@
+# MachineNativeOps Root Layer Modules Registry
+version: 1
+hash_policy:
+  authoritative: "sha3-512"
+  compatibility: "sha256"
+
+modules:
+  config-manager:
+    id: "config-manager"
+    name: "config-manager"
+    version: "1.0.0"
+    description: "Configuration management and validation"
+    type: "core"
+    language: "python"
+    status: "active"
+
+    dependencies: []
+
+    build:
+      builder: "python-wheel"
+      context: "engine/config-manager"
+      pyproject: "engine/config-manager/pyproject.toml"
+      lock_optional_paths:
+        - "engine/config-manager/requirements.lock.txt"
+        - "engine/config-manager/uv.lock"
+        - "engine/config-manager/poetry.lock"
+      outputs:
+        - kind: "python-wheel"
+          path: "dist/artifacts/config-manager/1.0.0/"
+
+    runtime:
+      command: "config-manager"
+      module: "config_manager"
+      serve_port: 8080
+      health_path: "/health"
+
+    install:
+      rootfs_fragment:
+        enabled: true
+        paths:
+          - from: "tools/templates/config-manager/rootfs"
+            to: "/"
+
+    health:
+      kind: "http"
+      port: 8080
+      path: "/health"
+      timeout_seconds: 2

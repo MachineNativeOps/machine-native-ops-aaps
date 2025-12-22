@@ -1,0 +1,104 @@
+name: 🚪 PR Evidence Gate - 強制執行證據驗證
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+    branches: [main, master]
+
+env:
+  EVIDENCE_REQUIRED: true
+  STRICT_MODE: true
+  AGENT_CONTRACT_ENFORCEMENT: true
+
+jobs:
+  validate-pr-evidence:
+    name: 🔍 驗證 PR 證據完整性
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      validation-status: ${{ steps.validation.outputs.status }}
+      missing-items: ${{ steps.validation.outputs.missing-items }}
+
+    steps:
+      - name: 📥 檢出代碼
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 驗證四大核心證據
+        id: validation
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const body = (pr && pr.body) ? pr.body : "";
+            const errors = [];
+
+            // 允許大小寫、允許欄位前後空白
+            // 1) repo: https://github.com/<owner>/<repo>
+            const repoRe = /(^|\n)\s*-\s*repo\s*:\s*https:\/\/github\.com\/[^\/\s]+\/[^\/\s]+(\s|$)/i;
+
+            // 2) branch: <something>
+            const branchRe = /(^|\n)\s*-\s*branch\s*:\s*\S+(\s|$)/i;
+
+            // 3) commit (40-char SHA): <40 hex>
+            const commitRe = /(^|\n)\s*-\s*commit(?:\s*\(40-char\s*sha\))?\s*:\s*[0-9a-f]{40}(\s|$)/i;
+
+            // 4) PR: https://github.com/<owner>/<repo>/pull/<number>
+            const prRe = /(^|\n)\s*-\s*pr\s*:\s*https:\/\/github\.com\/[^\/\s]+\/[^\/\s]+\/pull\/\d+(\s|$)/i;
+
+            if (!repoRe.test(body)) errors.push("缺少或格式錯誤：- repo: https://github.com/<owner>/<repo>");
+            if (!branchRe.test(body)) errors.push("缺少或格式錯誤：- branch: <branch-name>");
+            if (!commitRe.test(body)) errors.push("缺少或格式錯誤：- commit: <40位sha>");
+            if (!prRe.test(body)) errors.push("缺少或格式錯誤：- PR: https://github.com/<owner>/<repo>/pull/<number>");
+
+            // 檢查 placeholder
+            const placeholders = [
+              "<owner>", "<repo>", "<branch-name>", "<paste-full-sha-here>", "<this pr url>", "<number>", "[pr_number]", "[本 pr 編號]"
+            ];
+            const lowerBody = body.toLowerCase();
+            const badPlaceholders = placeholders.filter(p => lowerBody.includes(p.toLowerCase()));
+            if (badPlaceholders.length > 0) {
+              errors.push(`PR 仍包含未替換的 placeholder：${badPlaceholders.join(", ")}`);
+            }
+
+            if (errors.length > 0) {
+              core.setFailed(
+                [
+                  "PR 交付證據 Gate 未通過（缺一不可）。",
+                  "",
+                  "請在 PR 描述最上方加入以下四項（並填入真實值）：",
+                  "- repo: https://github.com/MachineNativeOps/MachineNativeOps",
+                  "- branch: <branch-name>",
+                  "- commit: <40位sha>",
+                  "- PR: https://github.com/MachineNativeOps/MachineNativeOps/pull/<number>",
+                  "",
+                  "錯誤清單：",
+                  ...errors.map(e => `- ${e}`),
+                ].join("\n")
+              );
+              core.setOutput('status', 'FAIL');
+              core.setOutput('missing-items', errors.join(','));
+            } else {
+              core.info("✅ PR 交付證據欄位齊全。");
+              core.setOutput('status', 'PASS');
+              core.setOutput('missing-items', '');
+            }
+
+      - name: 📊 驗證結果輸出
+        if: always()
+        run: |
+          echo "## 🚨 PR 驗證結果" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**驗證狀態:** ${{ steps.validation.outputs.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          
+          if [ "${{ steps.validation.outputs.status }}" = "FAIL" ]; then
+            echo "### ❌ 驗證失敗項目:" >> $GITHUB_STEP_SUMMARY
+            echo "${{ steps.validation.outputs.missing-items }}" | tr ',' '\n' | sed 's/^/- /' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### ✅ 驗證通過" >> $GITHUB_STEP_SUMMARY
+            echo "所有四大核心證據都已提供且格式正確。" >> $GITHUB_STEP_SUMMARY
+          fi
