@@ -383,8 +383,7 @@ class SSOManager:
                 tokens.id_token,
                 options={"verify_signature": False},
                 audience=config.client_id,
-                issuer=discovery.get("issuer"),
-                options={"verify_signature": False}
+                issuer=discovery.get("issuer")
             )
             token_nonce = id_token_claims.get("nonce")
             if token_nonce != nonce:
