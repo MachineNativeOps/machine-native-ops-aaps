@@ -1,0 +1,115 @@
+apiVersion: machinenativeops.io/v2
+kind: MachineNativeOpsNamespaceConfig
+metadata:
+  name: machinenativeops-namespace-configuration
+  namespace: machinenativeops
+  labels:
+    machinenativeops.io/component: namespace-config
+    machinenativeops.io/version: v2
+  annotations:
+    machinenativeops.io/description: "MachineNativeOps 命名空間標準配置"
+    machinenativeops.io/urn: "urn:machinenativeops:config:namespace:v2"
+
+spec:
+  # 命名空間標準
+  namespace:
+    primary: "machinenativeops"
+    aliases:
+      - "mno"
+      - "machine-native-ops"
+  
+  # 域名標準
+  domains:
+    primary: "machinenativeops.io"
+    api_versions:
+      - "machinenativeops.io/v1"
+      - "machinenativeops.io/v2"
+    registry: "registry.machinenativeops.io"
+    documentation: "docs.machinenativeops.io"
+  
+  # URN 標準
+  urn:
+    prefix: "urn:machinenativeops:"
+    format: "urn:machinenativeops:{category}:{component}:{version}"
+    examples:
+      - "urn:machinenativeops:config:namespace:v2"
+      - "urn:machinenativeops:service:auth:v1"
+      - "urn:machinenativeops:policy:rbac:v2"
+  
+  # 標籤和註解標準
+  labels:
+    prefix: "machinenativeops.io/"
+    required:
+      - "machinenativeops.io/component"
+      - "machinenativeops.io/version"
+    recommended:
+      - "machinenativeops.io/environment"
+      - "machinenativeops.io/team"
+      - "machinenativeops.io/managed-by"
+  
+  # 證書路徑標準
+  certificates:
+    base_path: "/etc/machinenativeops/pkl"
+    ca_cert: "/etc/machinenativeops/pkl/ca.crt"
+    client_cert: "/etc/machinenativeops/pkl/client.crt"
+    client_key: "/etc/machinenativeops/pkl/client.key"
+  
+  # 集群標準
+  cluster:
+    etcd:
+      name: "super-agent-etcd-cluster"
+      namespace: "machinenativeops"
+      token_prefix: "super-agent-etcd-"
+    kubernetes:
+      namespace: "machinenativeops"
+      service_account_prefix: "machinenativeops-"
+  
+  # 遷移規則（從舊命名空間）
+  migration:
+    deprecated_patterns:
+      - pattern: "axiom\\.io"
+        replacement: "machinenativeops.io"
+        status: "deprecated"
+      - pattern: "AxiomGlobalBaseline"
+        replacement: "MachineNativeOpsGlobalBaseline"
+        status: "deprecated"
+      - pattern: "urn:axiom:"
+        replacement: "urn:machinenativeops:"
+        status: "deprecated"
+      - pattern: "axiom-"
+        replacement: "machinenativeops-"
+        status: "deprecated"
+    
+    conversion_rules:
+      strict_mode: true
+      preserve_comments: true
+      backup_originals: false
+  
+  # 驗證規則
+  validation:
+    enforce_urn_format: true
+    enforce_label_prefix: true
+    enforce_namespace: true
+    allow_legacy_references: false
+    
+    # 排除路徑
+    exclude_paths:
+      - ".git"
+      - ".github"
+      - "node_modules"
+      - "__pycache__"
+      - "dist"
+      - "build"
+      - ".venv"
+      - "venv"
+      - "archive"
+    
+    # 文件類型
+    file_extensions:
+      - ".yaml"
+      - ".yml"
+      - ".json"
+      - ".py"
+      - ".md"
+      - ".ts"
+      - ".js"
