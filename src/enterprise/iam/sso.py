@@ -13,7 +13,10 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import Any, Protocol
 from urllib.parse import urlencode, urlparse
+from uuid import UUID
+
 import jwt as pyjwt
+from jwt import PyJWKClient
 
 from enterprise.iam.models import (
     Membership,
@@ -335,8 +338,7 @@ class SSOManager:
         org_id = UUID(pending["org_id"])
         code_verifier = pending["code_verifier"]
         redirect_uri = pending["redirect_uri"]
-        # TODO: Validate nonce against ID token for replay attack prevention
-        # nonce = pending["nonce"]
+        nonce = pending["nonce"]
 
         # Clean up pending auth
         del self._pending_auth[state]
@@ -371,13 +373,20 @@ class SSOManager:
             expires_in=token_response.get("expires_in", 3600),
         )
 
-        # Validate ID token nonce to prevent replay attacks
-        # TODO: Implement full JWT signature verification with JWKS
-        # Currently only validating nonce claim without signature verification
-        # This is a security limitation that should be addressed before production
+        # Validate ID token with proper JWT signature verification using JWKS
         try:
-            # Decode without verification to extract nonce claim
-            # SECURITY WARNING: Signature verification is disabled
+            # Get JWKS URI from discovery document
+            jwks_uri = discovery.get("jwks_uri")
+            if not jwks_uri:
+                raise ValueError("JWKS URI not found in discovery document")
+            
+            # Create JWKS client to fetch and cache signing keys
+            jwks_client = PyJWKClient(jwks_uri)
+            
+            # Get the signing key from the JWT header
+            signing_key = jwks_client.get_signing_key_from_jwt(tokens.id_token)
+            
+            # Verify and decode the ID token with full signature verification
             id_token_claims = pyjwt.decode(
                 tokens.id_token,
                 key=signing_key.key,
@@ -385,11 +394,13 @@ class SSOManager:
                 audience=config.client_id,
                 issuer=discovery.get("issuer"),
             )
+            
+            # Validate nonce to prevent replay attacks
             token_nonce = id_token_claims.get("nonce")
             if token_nonce != nonce:
                 raise ValueError("ID token nonce does not match expected nonce")
-        except pyjwt.DecodeError as e:
-            raise ValueError(f"Failed to decode ID token: {e}")
+        except pyjwt.InvalidTokenError as e:
+            raise ValueError(f"Invalid ID token: {e}")
 
         # Get user info
         userinfo_endpoint = discovery.get("userinfo_endpoint")
