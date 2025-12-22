@@ -19,7 +19,7 @@ from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import Any, Dict, Optional, Protocol
+from typing import Any, Protocol
 from uuid import UUID
 
 logger = logging.getLogger(__name__)

@@ -12,18 +12,14 @@ covering security-critical scenarios including:
 - Malformed JWT detection
 """
 
-import asyncio
-import json
 import pytest
 import sys
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Dict
-from unittest.mock import AsyncMock, MagicMock, Mock, patch
-from uuid import UUID, uuid4
+from unittest.mock import AsyncMock, Mock, patch
 
 import jwt
-from jwt.exceptions import ExpiredSignatureError, InvalidSignatureError, DecodeError
+from jwt.exceptions import DecodeError
 
 # Add src to path
 project_root = Path(__file__).parent.parent.parent
@@ -33,7 +29,6 @@ from enterprise.iam.models import Role, SSOConfig
 from enterprise.iam.sso import (
     HTTPClient,
     MembershipRepository,
-    OIDCTokens,
     SSOManager,
     SSORepository,
     UserRepository,
