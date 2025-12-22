@@ -205,19 +205,19 @@ SuperAgent 架構 → AAPS 功能映射:
       - 存儲與檢索管理
   
   新增 Services (TypeScript workspaces):
-    src/services/marketplace:
+    src/apps/marketplace:
       - GitHub OAuth 認證
       - Webhook 處理
       - 訂閱管理
     
-    src/services/prompt-management:
+    src/apps/prompt-management:
       - Prompt 版本控制
       - A/B 測試框架
       - 性能評分系統
 
 Workspace 整合策略:
-  - Python 服務: 整合到現有 Python 模組結構，無需 npm workspace
-  - TypeScript 服務: 作為獨立 npm workspace 添加到 src/services/
+  - Python 服務: 整合到現有 Python 模組結構 (src/services/, agents/), 無需 npm workspace
+  - TypeScript 應用: 作為獨立 npm workspace 添加到 src/apps/
   - 前端組件: 整合到現有 src/apps/web workspace
   - 共享依賴: 通過 workspace 機制共享，避免重複安裝
 ```
@@ -246,10 +246,10 @@ Workspace 整合策略:
 
 **重要說明**: 根據項目的 npm workspace 管理規範，新增的 TypeScript/Node.js 服務必須遵循以下原則：
 
-1. 所有新服務放置在 `src/` 目錄下
+1. 所有新 TypeScript 應用放置在 `src/apps/` 或 `src/mcp-servers/` 目錄下
 2. TypeScript/Node.js 服務應作為 npm workspace 添加到 `package.json`
-3. Python 服務整合到現有的 Python 模組結構
-4. 前端組件整合到現有的 `src/apps/web` workspace
+3. Python 服務整合到現有的 Python 模組結構 (`src/services/`, `agents/`, 或 `src/core/`)
+4. 前端組件整合到現有的 `src/apps/web` workspace (待創建)
 
 ```
 machine-native-ops-aaps/
@@ -264,11 +264,13 @@ machine-native-ops-aaps/
 │       ├── storage_manager.py
 │       └── requirements.txt
 ├── src/
-│   ├── services/             # 現有目錄，擴展新服務
+│   ├── services/             # 現有目錄，擴展 Python 服務
 │   │   ├── token-tracking/   # 新增 (Python)
 │   │   │   ├── tracker.py
 │   │   │   ├── cost_calculator.py
 │   │   │   └── alert_manager.py
+│   │   └── ...               # 其他現有 Python 服務
+│   ├── apps/                 # TypeScript 應用目錄
 │   │   ├── marketplace/      # 新增 (TypeScript workspace)
 │   │   │   ├── package.json  # 獨立 npm workspace
 │   │   │   ├── tsconfig.json
@@ -277,16 +279,15 @@ machine-native-ops-aaps/
 │   │   │   │   ├── webhooks.ts
 │   │   │   │   └── subscription.ts
 │   │   │   └── dist/
-│   │   └── prompt-management/ # 新增 (TypeScript workspace)
-│   │       ├── package.json   # 獨立 npm workspace
-│   │       ├── tsconfig.json
-│   │       ├── src/
-│   │       │   ├── version_control.ts
-│   │       │   ├── ab_testing.ts
-│   │       │   └── performance.ts
-│   │       └── dist/
-│   ├── apps/
-│   │   └── web/              # 現有 workspace，擴展新組件
+│   │   ├── prompt-management/ # 新增 (TypeScript workspace)
+│   │   │   ├── package.json   # 獨立 npm workspace
+│   │   │   ├── tsconfig.json
+│   │   │   ├── src/
+│   │   │   │   ├── version_control.ts
+│   │   │   │   ├── ab_testing.ts
+│   │   │   │   └── performance.ts
+│   │   │   └── dist/
+│   │   └── web/              # 現有 workspace (待創建)，擴展新組件
 │   │       ├── src/
 │   │       │   ├── components/
 │   │       │   │   ├── TokenMonitoring.tsx    # 新增
@@ -296,7 +297,7 @@ machine-native-ops-aaps/
 │   │       │   └── pages/
 │   │       │       └── dashboard/             # 新增儀表板頁面
 │   │       └── package.json
-│   └── api/                  # 現有 API 結構，擴展新路由
+│   └── api/                  # 現有 API 結構，擴展 Python 路由
 │       ├── routes/
 │       │   ├── auth.py       # 新增
 │       │   ├── artifacts.py  # 新增
@@ -328,26 +329,26 @@ machine-native-ops-aaps/
     "src/core/contract_service/contracts-L1/contracts",
     "src/core/advisory-database",
     "src/apps/web",
+    "src/apps/marketplace",
+    "src/apps/prompt-management",
     "src/ai/src/ai",
-    "src/services/marketplace",
-    "src/services/prompt-management",
     "archive/unmanned-engineer-ceo/80-skeleton-configs"
   ]
 }
 ```
 
-**註**: 新增的 workspace 路徑為 `src/services/marketplace` 和 `src/services/prompt-management`
+**註**: 新增的 workspace 路徑為 `src/apps/marketplace` 和 `src/apps/prompt-management`
 
 **Workspace 整合指引**:
 
-1. **新增 TypeScript 服務時**:
-   - 在 `src/services/<service-name>` 創建目錄
+1. **新增 TypeScript 應用時**:
+   - 在 `src/apps/<app-name>` 創建目錄
    - 添加 `package.json` 和 `tsconfig.json`
    - 更新根 `package.json` 的 workspaces 數組
    - 運行 `npm install` 重新鏈接 workspaces
 
 2. **新增 Python 服務時**:
-   - 整合到現有 Python 模組結構 (`src/core/` 或 `agents/`)
+   - 整合到現有 Python 模組結構 (`src/services/`, `src/core/`, 或 `agents/`)
    - 更新 `requirements.txt` 或 `pyproject.toml`
    - 不需要添加到 npm workspaces
 
@@ -359,7 +360,7 @@ machine-native-ops-aaps/
 4. **構建與測試**:
    - 使用 `npm run build --workspaces` 構建所有 TypeScript 服務
    - 使用 `npm run test --workspaces` 運行所有測試
-   - 單獨測試: `npm run test -w src/services/marketplace`
+   - 單獨測試: `npm run test --workspace=src/apps/marketplace`
 
 ### 配置管理
 
@@ -432,12 +433,12 @@ aaps:
 git checkout -b feature/aaps-marketplace-integration
 
 # 2. 設置 Workspace 結構
-# 2.1 創建 TypeScript 服務目錄
-mkdir -p src/services/marketplace/src
-mkdir -p src/services/prompt-management/src
+# 2.1 創建 TypeScript 應用目錄
+mkdir -p src/apps/marketplace/src
+mkdir -p src/apps/prompt-management/src
 
-# 2.2 初始化 TypeScript 服務
-cd src/services/marketplace
+# 2.2 初始化 TypeScript 應用
+cd src/apps/marketplace
 npm init -y
 # 配置 tsconfig.json, 添加依賴等
 
