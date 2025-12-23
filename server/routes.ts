@@ -127,6 +127,69 @@ router.post(
 );
 
 router.post(
+  "/api/connections/:provider/connect",
+  asyncHandler(async (req, res) => {
+    const { provider } = req.params;
+    const userId = req.headers["x-user-id"] as string || DEMO_USER_ID;
+
+    const connector = getConnector(provider);
+    if (!connector) {
+      return sendError(res, `Unknown provider: ${provider}`, 404);
+    }
+
+    try {
+      const tokens = await connector.exchangeCodeForToken("demo");
+
+      const connection = await storage.createConnection({
+        tenantId: DEMO_TENANT_ID,
+        userId,
+        provider,
+        accountId: "demo-account",
+        accountName: "Demo GitHub Account",
+        authLevel: "WRITE_HIGH",
+        scopes: ["repo", "read:org", "admin:repo_hook", "read:user"],
+        status: "ACTIVE",
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+        tokenExpiresAt: tokens.expiresAt,
+      });
+
+      const capabilities = await connector.discoverCapabilities(tokens.accessToken);
+      
+      await storage.createCapabilityProfile({
+        connectionId: connection.id,
+        actions: capabilities.actions,
+        readableCapabilities: capabilities.readableScopes,
+        writeCapabilities: capabilities.writableScopes,
+        limitations: capabilities.missingScopes,
+      });
+
+      await storage.updateConnection(connection.id, {
+        lastDiscoveredAt: new Date(),
+      });
+
+      await storage.createAuditEvent({
+        tenantId: DEMO_TENANT_ID,
+        actorId: userId,
+        actorType: "user",
+        action: "connection.create",
+        target: `connection:${connection.id}`,
+        resourceScope: provider,
+        result: "success",
+        payload: { provider, demoMode: true },
+      });
+
+      sendResponse(res, {
+        ...connection,
+        capabilities,
+      }, 201);
+    } catch (error: any) {
+      sendError(res, error.message, 400);
+    }
+  })
+);
+
+router.post(
   "/api/connections/:provider/discover",
   asyncHandler(async (req, res) => {
     const { provider } = req.params;

@@ -49,10 +49,10 @@ export default function ConnectionsPage() {
                   key={connection.id}
                   id={connection.id}
                   provider={connection.provider}
-                  accountName={connection.accountName}
-                  authLevel={connection.authLevel}
+                  accountName={connection.accountName || ""}
+                  authLevel={connection.authLevel || "READ"}
                   status={connection.status}
-                  capabilities={connection.capabilities}
+                  capabilities={connection.capabilities || []}
                   onDisconnect={disconnect}
                   onUpgrade={upgrade}
                 />

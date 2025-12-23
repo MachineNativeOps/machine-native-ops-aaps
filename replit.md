@@ -3,6 +3,13 @@
 ## Overview
 A web-based ChatOps automation assistant that allows users to manage infrastructure across multiple platforms (GitHub, Cloudflare, AWS, Azure, GCP, Kubernetes) through a conversational interface with approval workflows, rollback capabilities, and comprehensive audit logging.
 
+## Demo Mode
+**Note**: This MVP runs in demo mode without real OAuth connections:
+- GitHub connector uses mock data for capability discovery and action execution
+- All actions simulate realistic delays and responses
+- Snapshots and audit logs are created with mock data
+- To enable real OAuth, set `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, and `GITHUB_REDIRECT_URI` environment variables
+
 ## Core Features
 - **Chat Interface**: Natural language commands to manage infrastructure
 - **Plan Cards**: Visual representation of proposed changes with risk assessment

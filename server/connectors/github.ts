@@ -13,6 +13,8 @@ const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID || "";
 const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET || "";
 const GITHUB_REDIRECT_URI = process.env.GITHUB_REDIRECT_URI || "";
 
+const DEMO_MODE = !GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET;
+
 export interface GitHubConnector {
   id: string;
   name: string;
@@ -108,6 +110,9 @@ const GITHUB_ACTIONS: ActionCapability[] = [
 ];
 
 export function generateOAuthUrl(state: string): string {
+  if (DEMO_MODE) {
+    return `/api/connections/github/demo-callback?state=${state}`;
+  }
   const params = new URLSearchParams({
     client_id: GITHUB_CLIENT_ID,
     redirect_uri: GITHUB_REDIRECT_URI,
@@ -123,6 +128,14 @@ export async function exchangeCodeForToken(code: string): Promise<{
   refreshToken?: string;
   expiresAt?: Date;
 }> {
+  if (DEMO_MODE || code === "demo") {
+    return {
+      accessToken: "demo-access-token-" + Date.now(),
+      refreshToken: undefined,
+      expiresAt: new Date(Date.now() + 3600 * 1000 * 24 * 30),
+    };
+  }
+
   const response = await fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
     headers: {
@@ -152,9 +165,29 @@ export async function exchangeCodeForToken(code: string): Promise<{
   };
 }
 
+function isDemoToken(accessToken: string): boolean {
+  return !accessToken || accessToken.startsWith("demo-");
+}
+
 export async function discoverCapabilities(
   accessToken: string
 ): Promise<CapabilityDiscoveryResult> {
+  if (isDemoToken(accessToken)) {
+    return {
+      actions: GITHUB_ACTIONS,
+      readableScopes: ["repos", "commits", "branches", "pull_requests", "organizations", "teams", "members"],
+      writableScopes: ["repos", "branches", "settings", "webhooks"],
+      missingScopes: [],
+      metadata: {
+        login: "demo-user",
+        name: "Demo User",
+        avatarUrl: "https://github.com/ghost.png",
+        grantedScopes: ["repo", "read:org", "admin:repo_hook", "read:user"],
+        demoMode: true,
+      },
+    };
+  }
+
   const userResponse = await fetch("https://api.github.com/user", {
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -218,10 +251,217 @@ export function getActions(): ActionCapability[] {
   return GITHUB_ACTIONS;
 }
 
+async function simulateDelay(ms: number = 500): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function getRepoSettingsMock(
+  input: { owner: string; repo: string }
+): Promise<ActionResult<Record<string, unknown>>> {
+  await simulateDelay(300);
+  return {
+    output: {
+      private: false,
+      hasIssues: true,
+      hasProjects: true,
+      hasWiki: true,
+      hasDownloads: true,
+      allowSquashMerge: true,
+      allowMergeCommit: true,
+      allowRebaseMerge: true,
+      deleteBranchOnMerge: true,
+      defaultBranch: "main",
+      visibility: "public",
+    },
+    evidence: {
+      fetchedAt: new Date().toISOString(),
+      repoFullName: `${input.owner}/${input.repo}`,
+      demoMode: true,
+    },
+    executionMode: "READ_ONLY",
+  };
+}
+
+async function getBranchProtectionMock(
+  input: { owner: string; repo: string; branch: string }
+): Promise<ActionResult<Record<string, unknown>>> {
+  await simulateDelay(300);
+  return {
+    output: {
+      protected: false,
+      requiredStatusChecks: null,
+      enforceAdmins: false,
+      requiredPullRequestReviews: null,
+      restrictions: null,
+      requiredLinearHistory: false,
+      allowForcePushes: true,
+      allowDeletions: true,
+    },
+    evidence: {
+      fetchedAt: new Date().toISOString(),
+      demoMode: true,
+    },
+    executionMode: "READ_ONLY",
+  };
+}
+
+async function setBranchProtectionMock(
+  input: { owner: string; repo: string; branch: string; settings?: Record<string, unknown> },
+  dryRun?: boolean
+): Promise<ActionResult<Record<string, unknown>>> {
+  await simulateDelay(500);
+  
+  const currentState = {
+    protected: false,
+    requiredStatusChecks: null,
+    enforceAdmins: false,
+    requiredPullRequestReviews: null,
+  };
+
+  const newSettings = {
+    required_status_checks: { strict: true, contexts: ["ci/build"] },
+    enforce_admins: true,
+    required_pull_request_reviews: {
+      required_approving_review_count: 1,
+      dismiss_stale_reviews: true,
+    },
+    restrictions: null,
+    required_linear_history: false,
+    allow_force_pushes: false,
+    allow_deletions: false,
+  };
+
+  if (dryRun) {
+    return {
+      output: { wouldApply: newSettings },
+      evidence: { dryRun: true, currentState },
+      snapshot: currentState,
+      executionMode: "PLAN_ONLY",
+    };
+  }
+
+  return {
+    output: {
+      protected: true,
+      ...newSettings,
+    },
+    evidence: {
+      appliedAt: new Date().toISOString(),
+      previousState: currentState,
+      demoMode: true,
+    },
+    snapshot: currentState,
+    rollbackPlan: {
+      action: "github.repo.set_branch_protection",
+      params: { ...input, settings: currentState },
+    },
+    executionMode: "AUTO",
+  };
+}
+
+async function enableVulnerabilityAlertsMock(
+  input: { owner: string; repo: string },
+  dryRun?: boolean
+): Promise<ActionResult<Record<string, unknown>>> {
+  await simulateDelay(400);
+
+  if (dryRun) {
+    return {
+      output: { wouldEnable: true, feature: "vulnerability_alerts" },
+      evidence: { dryRun: true },
+      executionMode: "PLAN_ONLY",
+    };
+  }
+
+  return {
+    output: { enabled: true, feature: "vulnerability_alerts" },
+    evidence: {
+      enabledAt: new Date().toISOString(),
+      demoMode: true,
+    },
+    rollbackPlan: {
+      action: "github.repo.disable_vulnerability_alerts",
+      params: input,
+    },
+    executionMode: "AUTO",
+  };
+}
+
+async function enableAutomatedSecurityFixesMock(
+  input: { owner: string; repo: string },
+  dryRun?: boolean
+): Promise<ActionResult<Record<string, unknown>>> {
+  await simulateDelay(400);
+
+  if (dryRun) {
+    return {
+      output: { wouldEnable: true, feature: "automated_security_fixes" },
+      evidence: { dryRun: true },
+      executionMode: "PLAN_ONLY",
+    };
+  }
+
+  return {
+    output: { enabled: true, feature: "automated_security_fixes" },
+    evidence: {
+      enabledAt: new Date().toISOString(),
+      demoMode: true,
+    },
+    rollbackPlan: {
+      action: "github.repo.disable_automated_security_fixes",
+      params: input,
+    },
+    executionMode: "AUTO",
+  };
+}
+
+async function applySecurityBaselineMock(
+  input: { owner?: string; repo?: string },
+  dryRun?: boolean
+): Promise<ActionResult<Record<string, unknown>>> {
+  await simulateDelay(800);
+
+  const changes = [
+    { setting: "branch_protection", status: "enabled" },
+    { setting: "vulnerability_alerts", status: "enabled" },
+    { setting: "automated_security_fixes", status: "enabled" },
+    { setting: "secret_scanning", status: "enabled" },
+  ];
+
+  if (dryRun) {
+    return {
+      output: { wouldApply: changes },
+      evidence: { dryRun: true },
+      executionMode: "PLAN_ONLY",
+    };
+  }
+
+  return {
+    output: {
+      applied: true,
+      changes,
+      summary: "Security baseline applied successfully",
+    },
+    evidence: {
+      appliedAt: new Date().toISOString(),
+      demoMode: true,
+    },
+    rollbackPlan: {
+      action: "github.security.rollback_baseline",
+      params: input,
+    },
+    executionMode: "AUTO",
+  };
+}
+
 async function getRepoSettings(
   context: ConnectorContext,
   input: { owner: string; repo: string }
 ): Promise<ActionResult<Record<string, unknown>>> {
+  if (isDemoToken(context.accessToken)) {
+    return getRepoSettingsMock(input);
+  }
+
   const response = await fetch(
     `https://api.github.com/repos/${input.owner}/${input.repo}`,
     {
@@ -264,6 +504,10 @@ async function getBranchProtection(
   context: ConnectorContext,
   input: { owner: string; repo: string; branch: string }
 ): Promise<ActionResult<Record<string, unknown>>> {
+  if (isDemoToken(context.accessToken)) {
+    return getBranchProtectionMock(input);
+  }
+
   const response = await fetch(
     `https://api.github.com/repos/${input.owner}/${input.repo}/branches/${input.branch}/protection`,
     {
@@ -312,10 +556,14 @@ async function setBranchProtection(
     owner: string;
     repo: string;
     branch: string;
-    settings: Record<string, unknown>;
+    settings?: Record<string, unknown>;
   },
   dryRun?: boolean
 ): Promise<ActionResult<Record<string, unknown>>> {
+  if (isDemoToken(context.accessToken)) {
+    return setBranchProtectionMock(input, dryRun);
+  }
+
   const currentState = await getBranchProtection(context, {
     owner: input.owner,
     repo: input.repo,
@@ -331,6 +579,16 @@ async function setBranchProtection(
     };
   }
 
+  const settings = input.settings || {
+    required_status_checks: { strict: true, contexts: [] },
+    enforce_admins: true,
+    required_pull_request_reviews: {
+      required_approving_review_count: 1,
+      dismiss_stale_reviews: true,
+    },
+    restrictions: null,
+  };
+
   const response = await fetch(
     `https://api.github.com/repos/${input.owner}/${input.repo}/branches/${input.branch}/protection`,
     {
@@ -340,7 +598,7 @@ async function setBranchProtection(
         Accept: "application/vnd.github.v3+json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(input.settings),
+      body: JSON.stringify(settings),
     }
   );
 
@@ -370,6 +628,10 @@ async function enableVulnerabilityAlerts(
   input: { owner: string; repo: string },
   dryRun?: boolean
 ): Promise<ActionResult<Record<string, unknown>>> {
+  if (isDemoToken(context.accessToken)) {
+    return enableVulnerabilityAlertsMock(input, dryRun);
+  }
+
   if (dryRun) {
     return {
       output: { wouldEnable: true },
@@ -409,6 +671,10 @@ async function enableAutomatedSecurityFixes(
   input: { owner: string; repo: string },
   dryRun?: boolean
 ): Promise<ActionResult<Record<string, unknown>>> {
+  if (isDemoToken(context.accessToken)) {
+    return enableAutomatedSecurityFixesMock(input, dryRun);
+  }
+
   if (dryRun) {
     return {
       output: { wouldEnable: true },
@@ -466,6 +732,30 @@ export async function executeAction<I, O>(
 
     case "github.repo.enable_automated_security_fixes":
       return enableAutomatedSecurityFixes(context, input as any, dryRun) as Promise<ActionResult<O>>;
+
+    case "github.security.apply_baseline":
+      if (isDemoToken(context.accessToken)) {
+        return applySecurityBaselineMock(input as any, dryRun) as Promise<ActionResult<O>>;
+      }
+      throw new Error("Security baseline requires full implementation");
+
+    case "github.security.verify_baseline":
+      if (isDemoToken(context.accessToken)) {
+        await simulateDelay(500);
+        return {
+          output: {
+            compliant: true,
+            checks: [
+              { name: "branch_protection", status: "pass" },
+              { name: "vulnerability_alerts", status: "pass" },
+              { name: "automated_security_fixes", status: "pass" },
+            ],
+          } as unknown as O,
+          evidence: { verifiedAt: new Date().toISOString(), demoMode: true },
+          executionMode: "READ_ONLY",
+        };
+      }
+      throw new Error("Security baseline verification requires full implementation");
 
     default:
       throw new Error(`Unknown action: ${actionId}`);

@@ -97,7 +97,7 @@ export default function ConnectionCard({
         </div>
       </div>
 
-      {isConnected && capabilities.length > 0 && (
+      {isConnected && capabilities && capabilities.length > 0 && (
         <div className="mt-4">
           <h4 className="text-xs font-medium text-gray-500 uppercase mb-2">
             Capabilities
