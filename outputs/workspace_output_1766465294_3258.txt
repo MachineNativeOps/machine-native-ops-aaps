@@ -1,0 +1,72 @@
+📊 根層內容檢查：
+
+✅ FHS 標準目錄：
+bin/
+etc/
+home/
+init.d/
+lib/
+opt/
+sbin/
+srv/
+tmp/
+usr/
+var/
+
+✅ 引導文件：
+root.bootstrap.yaml
+root.env.sh
+root.fs.map
+
+📁 Controlplane 結構：
+controlplane
+├── config
+│   ├── root.config.yaml
+│   ├── root.devices.map
+│   ├── root.governance.yaml
+│   ├── root.integrity.yaml
+│   ├── root.kernel.map
+│   ├── root.modules.yaml
+│   ├── root.naming-policy.yaml
+│   ├── root.provenance.yaml
+│   ├── root.super-execution.yaml
+│   └── root.trust.yaml
+├── documentation
+├── integration
+├── registries
+│   ├── root.registry.modules.yaml
+│   └── root.registry.urns.yaml
+├── specifications
+│   ├── root.specs.context.yaml
+│   ├── root.specs.logic.yaml
+│   ├── root.specs.mapping.yaml
+│   ├── root.specs.naming.yaml
+│   └── root.specs.references.yaml
+└── validation
+    ├── root.validator.schema.yaml
+    ├── supply-chain-complete-verifier.py
+    └── verify_refactoring.py
+
+7 directories, 20 files
+
+📁 Workspace 內容：
+AAPS_INTEGRATION_SUMMARY.md
+AAPS_MARKETPLACE_INTEGRATION_PLAN.md
+AAPS_PHASE1_COMPLETION_SUMMARY.md
+AAPS_UNIFIED_GATES_OPTIMIZATION.md
+ACCEPTANCE_CHECKLIST.md
+AGENTS.md
+ARCHITECTURE.md
+AUTOMATED_MEMORY_SYSTEM_COMPLETE.md
+CHANGELOG.md
+CI_FIX_SUMMARY.md
+CI_ISSUES_FIX_REPORT.md
+CNAME
+CONVERSATION_LOG.md
+Cargo.toml
+DIRECTORY.md
+Dockerfile
+FALSE_SUCCESS_METRICS_FIXED_REPORT.md
+FINAL_SUCCESS_REPORT.md
+GITHUB_ACTIONS_SECURITY_FIX_COMPLETION_REPORT.md
+IMMEDIATE_TASKS.md

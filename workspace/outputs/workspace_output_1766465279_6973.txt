@@ -1,0 +1,163 @@
+🚀 開始項目重構...
+=
+
+📋 步驟 1: 移動文件到 controlplane/
+
+  → 移動配置文件到 controlplane/config/...
+    ✅ root.config.yaml
+    ✅ root.governance.yaml
+    ✅ root.modules.yaml
+    ✅ root.super-execution.yaml
+    ✅ root.trust.yaml
+    ✅ root.provenance.yaml
+    ✅ root.integrity.yaml
+    ✅ root.naming-policy.yaml
+    ✅ root.devices.map
+    ✅ root.kernel.map
+  → 移動規格文件到 controlplane/specifications/...
+    ✅ root.specs.naming.yaml
+    ✅ root.specs.references.yaml
+    ✅ root.specs.mapping.yaml
+    ✅ root.specs.logic.yaml
+    ✅ root.specs.context.yaml
+  → 移動註冊文件到 controlplane/registries/...
+    ✅ root.registry.modules.yaml
+    ✅ root.registry.urns.yaml
+  → 移動驗證文件到 controlplane/validation/...
+    ✅ root.validator.schema.yaml
+    ✅ verify_refactoring.py
+    ✅ supply-chain-complete-verifier.py
+
+📋 步驟 2: 移動目錄到 workspace/
+
+  ✅ archive/
+  ✅ cloudflare/
+  ✅ config/
+  ✅ deploy/
+  ✅ docs/
+  ✅ engine/
+  ✅ examples/
+  ✅ governance/
+  ✅ ops/
+  ✅ outputs/
+  ✅ root/
+  ✅ schemas/
+  ✅ scripts/
+  ✅ src/
+  ✅ teams/
+  ✅ templates/
+  ✅ tests/
+  ✅ tools/
+
+📋 步驟 3: 移動其他文件到 workspace/
+
+  ✅ AAPS_INTEGRATION_SUMMARY.md
+  ✅ AAPS_MARKETPLACE_INTEGRATION_PLAN.md
+  ✅ AAPS_PHASE1_COMPLETION_SUMMARY.md
+  ✅ AAPS_UNIFIED_GATES_OPTIMIZATION.md
+  ✅ ACCEPTANCE_CHECKLIST.md
+  ✅ AGENTS.md
+  ✅ ARCHITECTURE.md
+  ✅ AUTOMATED_MEMORY_SYSTEM_COMPLETE.md
+  ✅ CHANGELOG.md
+  ✅ CI_FIX_SUMMARY.md
+  ✅ CI_ISSUES_FIX_REPORT.md
+  ✅ CNAME
+  ✅ CONVERSATION_LOG.md
+  ✅ Cargo.toml
+  ✅ DIRECTORY.md
+  ✅ Dockerfile
+  ✅ FALSE_SUCCESS_METRICS_FIXED_REPORT.md
+  ✅ FINAL_SUCCESS_REPORT.md
+  ✅ GITHUB_ACTIONS_SECURITY_FIX_COMPLETION_REPORT.md
+  ✅ IMMEDIATE_TASKS.md
+  ✅ IMPLEMENTATION_GUIDE.md
+  ✅ IMPLEMENTATION_ROADMAP.md
+  ✅ INTEGRATION_TODO.md
+  ✅ LOCAL_FIXES_SUMMARY.md
+  ✅ MANIFEST.in
+  ✅ MULTI_AGENT_MPC_ARCHITECTURE_DESIGN.md
+  ✅ MULTI_AGENT_V1_SPECIFICATION_PACKAGE.md
+  ✅ Makefile
+  ✅ PHASE1_COMPREHENSIVE_AUDIT.md
+  ✅ PHASE2_DETAILED_ROADMAP.md
+  ✅ PLATFORM_CLOSURE_SUCCESS_REPORT.md
+  ✅ PROJECT_MEMORY.md
+  ✅ PR_666_IMPLEMENTATION_SUMMARY.md
+  ✅ PR_715_CI_STATUS_UPDATE.md
+  ✅ PR_715_QUALITY_REVIEW_REPORT.md
+  ✅ README.md
+  ✅ RISK_ASSESSMENT.md
+  ✅ ROOT_ARCHITECTURE.md
+  ✅ ROOT_SPECS_GUIDE.md
+  ✅ ROOT_SPECS_IMPLEMENTATION_REPORT.md
+  ✅ TASK_COMPLETION_SUMMARY.md
+  ✅ VERIFICATION_REPORT.md
+  ✅ WORKSPACE_CLEANUP_REPORT.md
+  ✅ auto-fix-bot.yml
+  ✅ axiom-namespace-migration-plan.md
+  ✅ chat_app.py
+  ✅ code_assistant.py
+  ✅ conversion-report-new.md
+  ✅ docker-compose.prod.yml
+  ✅ gates.map.yaml
+  ✅ go.work
+  ✅ governance-closed-loop-system.md
+  ✅ governance-config.yaml
+  ✅ governance-execution-report.json
+  ✅ governance-system-implementation.py
+  ✅ guardrails_client.py
+  ✅ machinenativeops.yaml
+  ✅ memory-update-summary.md
+  ✅ mno-namespace.yaml
+  ✅ namespace-converter.py
+  ✅ namespace-validator.py
+  ✅ package-lock.json
+  ✅ package.json
+  ✅ pom.xml
+  ✅ pyproject.toml
+  ✅ replit.md
+  ✅ requirements-debug.txt
+  ✅ requirements-prod.txt
+  ✅ requirements-workflow.txt
+  ✅ restructure-project.sh
+  ✅ restructure_log.md
+  ✅ restructure_project.py
+  ✅ root.bootstrap.minimal.yaml
+  ✅ root.bootstrap.yaml.backup
+  ✅ root.config.yaml.backup
+  ✅ root.governance.yaml.backup2
+  ✅ root.integrity.yaml.backup
+  ✅ root.provenance.yaml.backup
+  ✅ root.super-execution.yaml.backup
+  ✅ root.trust.yaml.backup
+  ✅ setup.py
+  ✅ test-results.json
+  ✅ todo.md
+  ✅ uv.lock
+  ✅ validation-report-final.md
+  ✅ validation-report-new.md
+  ✅ validation_report.json
+  ✅ wrangler.toml
+
+📋 步驟 4: 創建引導文件
+
+  ✅ root.bootstrap.yaml
+  ✅ root.fs.map
+  ✅ root.env.sh
+
+=
+
+✅ 項目重構完成！
+
+📊 重構結果：
+  根層 FHS 目錄: 11 個
+  引導文件: 3 個
+  Controlplane 文件: 20 個
+  Workspace 項目: 106 個
+
+🎯 下一步：
+  1. 檢查重構結果: ls -la
+  2. 驗證 controlplane: ls -la controlplane/
+  3. 驗證 workspace: ls -la workspace/
+  4. 提交變更: git add . && git commit -m 'refactor: Restructure to FHS + controlplane + workspace'

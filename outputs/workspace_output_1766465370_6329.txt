@@ -1,0 +1,2 @@
+mv: cannot stat 'WORKSPACE_CLEANUP_REPORT.md': No such file or directory
+mv: cannot stat 'restructure-project.sh': No such file or directory
