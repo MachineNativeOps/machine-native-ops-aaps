@@ -1,1 +1,0 @@
-error: pathspec 'feature/axiom-namespace-alignment' did not match any file(s) known to git

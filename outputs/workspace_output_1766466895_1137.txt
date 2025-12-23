@@ -1,6 +1,0 @@
-remote: Bypassed rule violations for refs/heads/main:        
-remote: 
-remote: - Code scanning is waiting for results from CodeQL for the commit 9c9076f.        
-remote: 
-To https://github.com/MachineNativeOps/machine-native-ops-aaps.git
-   2dc00ad..9c9076f  main -> main

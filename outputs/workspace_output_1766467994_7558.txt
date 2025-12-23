@@ -1,1 +1,0 @@
-lrwxrwxrwx 1 root root 30 Dec 23 05:33 wrangler.toml -> workspace/config/wrangler.toml

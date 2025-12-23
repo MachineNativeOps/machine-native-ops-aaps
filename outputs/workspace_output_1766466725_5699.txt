@@ -1,2 +1,0 @@
-root.env.sh: line 397: [: hBs: integer expression expected
-MACHINENATIVEOPS_CONTROLPLANE=/workspace/controlplane

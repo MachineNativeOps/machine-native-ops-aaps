@@ -1,6 +1,0 @@
-remote: 
-remote: Create a pull request for 'feature/fhs-standard-implementation' on GitHub by visiting:        
-remote:      https://github.com/MachineNativeOps/machine-native-ops-aaps/pull/new/feature/fhs-standard-implementation        
-remote: 
-To https://github.com/MachineNativeOps/machine-native-ops-aaps.git
- * [new branch]      feature/fhs-standard-implementation -> feature/fhs-standard-implementation

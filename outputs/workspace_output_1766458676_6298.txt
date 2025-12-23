@@ -1,9 +1,0 @@
-  clean-aaps-phase1
-  feature/etcd-mno-reconstruction
-  feature/fhs-directory-structure
-* feature/fhs-standard-implementation
-  fhs-clean-implementation
-  fhs-structure-implementation
-  main
-  remotes/origin/clean-aaps-phase1
-  remotes/origin/main

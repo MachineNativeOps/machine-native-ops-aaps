@@ -1,2 +1,0 @@
-Switched to a new branch 'feature/axiom-namespace-alignment'
-branch 'feature/axiom-namespace-alignment' set up to track 'origin/feature/axiom-namespace-alignment'.

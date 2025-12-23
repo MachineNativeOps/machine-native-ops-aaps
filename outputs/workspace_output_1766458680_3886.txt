@@ -1,3 +1,0 @@
-From https://github.com/MachineNativeOps/machine-native-ops-aaps
- * branch            feature/axiom-namespace-alignment -> FETCH_HEAD
- * [new branch]      feature/axiom-namespace-alignment -> origin/feature/axiom-namespace-alignment

@@ -1,5 +1,0 @@
-completed	failure	feat: Implement complete FHS 3.0 standard directory structure	🚪 PR Evidence Gate - 強制執行證據驗證	feature/fhs-standard-implementation	pull_request	20449994013	9s	2025-12-23T02:55:59Z
-completed	failure	feat: Implement complete FHS 3.0 standard directory structure	AAPS Unified Gates v2	feature/fhs-standard-implementation	pull_request	20449993994	6s	2025-12-23T02:55:59Z
-completed	failure	feat: Implement complete FHS 3.0 standard directory structure	🚪 Root Naming Policy Gate	feature/fhs-standard-implementation	pull_request	20449993991	6s	2025-12-23T02:55:59Z
-completed	failure	feat: Implement complete FHS 3.0 standard directory structure	🚀 CI Pipeline	feature/fhs-standard-implementation	pull_request	20449993989	13s	2025-12-23T02:55:59Z
-completed	failure	feat: Implement complete FHS 3.0 standard directory structure	Stage 1 - Environment Preparation	feature/fhs-standard-implementation	pull_request	20449993986	12s	2025-12-23T02:55:59Z

@@ -1,6 +1,0 @@
-total 28
-drwxr-xr-x 2 root root   114 Dec 23 05:09 .
-drwxr-xr-x 3 root root    32 Dec 23 05:09 ..
--rw-r--r-- 1 root root   281 Dec 23 05:09 controlplane.manifest.json
--rw-r--r-- 1 root root 16001 Dec 23 05:09 validation.report.json
--rw-r--r-- 1 root root  7007 Dec 23 05:09 validation.report.md
