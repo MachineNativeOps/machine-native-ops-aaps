@@ -1,0 +1,50 @@
+# 📁 Root 系統層級目錄映射
+# MachineNativeOps Root Layer Filesystem Mapping
+# Version: 1.0.0
+# Last Modified: 2025-12-20T22:00:00Z
+
+# =============================================================================
+# MachineNativeOps Filesystem Mapping Configuration
+# =============================================================================
+# This file defines the mapping between logical directory names and their physical
+# filesystem paths. It ensures consistent directory access across different
+# system configurations and provides abstraction for filesystem management.
+# =============================================================================
+
+# === 目錄對應格式說明 ===
+# 格式: logical_name:physical_path:filesystem_type:mount_options:permissions:description
+# logical_name: 邏輯目錄名稱
+# physical_path: 實體目錄路徑
+# filesystem_type: 檔案系統類型 (ext4, xfs, btrfs, nfs, tmpfs, etc.)
+# mount_options: 掛載選項
+# permissions: 目錄權限
+# description: 目錄描述
+
+# === 根目錄結構 (Root Directory Structure) ===
+
+# 系統根目錄
+fs_root:/:rootfs:-rwxr-xr-x:System root directory
+fs_bin:/bin:ext4:ro,relatime,rw:-rwxr-xr-x:Essential user binaries
+fs_sbin:/sbin:ext4:ro,relatime,rw:-rwxr-xr-x:Essential system binaries
+fs_lib:/lib:ext4:ro,relatime,rw:-r-xr-xr-x:Essential shared libraries
+fs_lib64:/lib64:ext4:ro,relatime,rw:-r-xr-xr-x:Essential 64-bit shared libraries
+fs_etc:/etc:ext4:relatime,rw:-rwxr-xr-x:System configuration files
+fs_var:/var:ext4:relatime,rw:-rwxr-xr-x:Variable data files
+fs_usr:/usr:ext4:relatime,rw:-rwxr-xr-x:User programs and data
+fs_opt:/opt:ext4:relatime,rw:-rwxr-xr-x:Optional application software
+fs_home:/home:ext4:relatime,rw:-rwxr-xr-x:User home directories
+fs_tmp:/tmp:tmpfs:size=2G,rw,nosuid,nodev:-rwxrwxrwx:Temporary files
+fs_boot:/boot:ext4:ro,relatime:-rwxr-xr-x:Boot loader files
+fs_dev:/dev:devtmpfs:size=10M,mode=0755:-rwxr-xr-x:Device files
+fs_proc:/proc:proc:-r-xr-xr-x:Process information
+fs_sys:/sys:sysfs:-r-xr-xr-x:System information
+fs_run:/run:tmpfs:size=100M,rw,nosuid,nodev:-rwxr-xr-x:Runtime variable data
+
+# === MachineNativeOps 核心目錄 (MachineNativeOps Core Directories) ===
+
+# 主要安裝目錄
+mno_root:/opt/machinenativenops:ext4:relatime,rw:-rwxr-xr-x:MachineNativeOps root directory
+mno_bin:/opt/machinenativenops/bin:ext4:relatime,rw:-rwxr-xr-x:MachineNativeOps executable binaries
+mno_sbin:/opt/machinenativenops/sbin:ext4:relatime,rw:-rwxr-xr-x:MachineNativeOps system binaries
+mno_lib:/opt/machinenativenops/lib:ext4:relatime,rw:-r-xr-xr-x:MachineNativeOps libraries
+mno_lib64:/opt/machinenativenops/lib64:ext4:relatime,rw:-r-xr-xr-x:MachineNativeOps 64-bit libraries

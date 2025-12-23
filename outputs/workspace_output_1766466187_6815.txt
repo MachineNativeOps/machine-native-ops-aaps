@@ -1,0 +1,17 @@
+controlplane
+├── active
+├── baseline
+│   ├── config
+│   ├── documentation
+│   ├── integration
+│   ├── registries
+│   ├── specifications
+│   └── validation
+│       └── vectors
+└── overlay
+    ├── evidence
+    ├── hotfix
+    ├── journal
+    └── patches
+
+15 directories, 0 files

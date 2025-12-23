@@ -1,0 +1,114 @@
+{
+  "name": "syntax",
+  "checks": [
+    {
+      "name": "yaml_syntax_controlplane_baseline_config_root_config_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/config/root.config.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/config/root.config.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_config_root_governance_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/config/root.governance.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/config/root.governance.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_config_root_modules_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/config/root.modules.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/config/root.modules.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_config_root_super-execution_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/config/root.super-execution.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/config/root.super-execution.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_config_root_trust_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/config/root.trust.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/config/root.trust.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_config_root_provenance_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/config/root.provenance.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/config/root.provenance.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_config_root_integrity_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/config/root.integrity.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/config/root.integrity.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_config_root_naming-policy_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/config/root.naming-policy.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/config/root.naming-policy.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_specifications_root_specs_naming_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/specifications/root.specs.naming.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/specifications/root.specs.naming.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_specifications_root_specs_references_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/specifications/root.specs.references.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/specifications/root.specs.references.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_specifications_root_specs_mapping_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/specifications/root.specs.mapping.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/specifications/root.specs.mapping.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_specifications_root_specs_logic_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/specifications/root.specs.logic.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/specifications/root.specs.logic.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_specifications_root_specs_context_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/specifications/root.specs.context.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/specifications/root.specs.context.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_registries_root_registry_modules_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/registries/root.registry.modules.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/registries/root.registry.modules.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_registries_root_registry_devices_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/registries/root.registry.devices.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/registries/root.registry.devices.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_validation_vectors_root_validation_vectors_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/validation/vectors/root.validation.vectors.yaml",
+      "passed": false,
+      "message": "Invalid YAML: controlplane/baseline/validation/vectors/root.validation.vectors.yaml - mapping values are not allowed here\n  in \"/workspace/controlplane/baseline/validation/vectors/root.validation.vectors.yaml\", line 244, column 33"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_integration_root_integration_yaml",
+      "description": "Check YAML syntax: controlplane/baseline/integration/root.integration.yaml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/integration/root.integration.yaml"
+    },
+    {
+      "name": "yaml_syntax_controlplane_baseline_validation_gate-root-specs_yml",
+      "description": "Check YAML syntax: controlplane/baseline/validation/gate-root-specs.yml",
+      "passed": true,
+      "message": "Valid YAML: controlplane/baseline/validation/gate-root-specs.yml"
+    }
+  ],
+  "passed": false
+}

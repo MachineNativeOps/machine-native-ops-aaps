@@ -1,0 +1,10 @@
+/workspace/root.bootstrap.minimal.yaml
+/workspace/root.bootstrap.yaml
+/workspace/root.bootstrap.yaml.backup
+/workspace/root.config.yaml
+/workspace/root.config.yaml.backup
+/workspace/root.devices.map
+/workspace/root.env.sh
+/workspace/root.fs.map
+/workspace/root.governance.yaml
+/workspace/root.governance.yaml.backup2

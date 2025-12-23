@@ -1,0 +1,27 @@
+ M root.bootstrap.yaml
+ M root.env.sh
+ M root.fs.map
+ M todo.md
+?? CONTROLPLANE_IMPLEMENTATION_REPORT.md
+?? controlplane/
+?? outputs/workspace_output_1766466152_8367.txt
+?? outputs/workspace_output_1766466182_2616.txt
+?? outputs/workspace_output_1766466187_6815.txt
+?? outputs/workspace_output_1766466296_5650.txt
+?? outputs/workspace_output_1766466367_2223.txt
+?? outputs/workspace_output_1766466373_6065.txt
+?? outputs/workspace_output_1766466559_3025.txt
+?? outputs/workspace_output_1766466564_1791.txt
+?? outputs/workspace_output_1766466569_4880.txt
+?? outputs/workspace_output_1766466575_3915.txt
+?? outputs/workspace_output_1766466588_5671.txt
+?? outputs/workspace_output_1766466595_1973.txt
+?? outputs/workspace_output_1766466601_4469.txt
+?? outputs/workspace_output_1766466607_188.txt
+?? outputs/workspace_output_1766466627_4111.txt
+?? outputs/workspace_output_1766466648_1544.txt
+?? outputs/workspace_output_1766466652_3537.txt
+?? outputs/workspace_output_1766466657_2191.txt
+?? outputs/workspace_output_1766466661_6412.txt
+?? outputs/workspace_output_1766466725_5699.txt
+?? outputs/workspace_output_1766466832_5040.txt

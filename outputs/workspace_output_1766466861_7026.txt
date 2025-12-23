@@ -1,0 +1,29 @@
+[main 9c9076f] 🏗️ Implement Controlplane Architecture (Baseline+Overlay+Active)
+ 31 files changed, 4232 insertions(+), 25 deletions(-)
+ create mode 100644 CONTROLPLANE_IMPLEMENTATION_REPORT.md
+ create mode 100644 controlplane/CONTROLPLANE_USAGE.md
+ create mode 100644 controlplane/baseline/config/root.config.yaml
+ create mode 100644 controlplane/baseline/config/root.devices.map
+ create mode 100644 controlplane/baseline/config/root.governance.yaml
+ create mode 100644 controlplane/baseline/config/root.integrity.yaml
+ create mode 100644 controlplane/baseline/config/root.kernel.map
+ create mode 100644 controlplane/baseline/config/root.modules.yaml
+ create mode 100644 controlplane/baseline/config/root.naming-policy.yaml
+ create mode 100644 controlplane/baseline/config/root.provenance.yaml
+ create mode 100644 controlplane/baseline/config/root.super-execution.yaml
+ create mode 100644 controlplane/baseline/config/root.trust.yaml
+ create mode 100644 controlplane/baseline/documentation/BASELINE_ARCHITECTURE.md
+ create mode 100644 controlplane/baseline/integration/root.integration.yaml
+ create mode 100644 controlplane/baseline/registries/root.registry.devices.yaml
+ create mode 100644 controlplane/baseline/registries/root.registry.modules.yaml
+ create mode 100644 controlplane/baseline/specifications/root.specs.context.yaml
+ create mode 100644 controlplane/baseline/specifications/root.specs.logic.yaml
+ create mode 100644 controlplane/baseline/specifications/root.specs.mapping.yaml
+ create mode 100644 controlplane/baseline/specifications/root.specs.naming.yaml
+ create mode 100644 controlplane/baseline/specifications/root.specs.references.yaml
+ create mode 100644 controlplane/baseline/validation/gate-root-specs.yml
+ create mode 100755 controlplane/baseline/validation/validate-root-specs.py
+ create mode 100644 controlplane/baseline/validation/vectors/root.validation.vectors.yaml
+ create mode 100644 controlplane/overlay/evidence/validation/controlplane.manifest.json
+ create mode 100644 controlplane/overlay/evidence/validation/validation.report.json
+ create mode 100644 controlplane/overlay/evidence/validation/validation.report.md
