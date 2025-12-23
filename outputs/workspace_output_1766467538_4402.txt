@@ -1,0 +1,50 @@
+A  PROJECT_REORGANIZATION_REPORT.md
+M  README.md
+R  ACCEPTANCE_CHECKLIST.md -> controlplane/governance/docs/ACCEPTANCE_CHECKLIST.md
+R  AGENTS.md -> controlplane/governance/docs/AGENTS.md
+R  ARCHITECTURE.md -> controlplane/governance/docs/ARCHITECTURE.md
+R  CHANGELOG.md -> controlplane/governance/docs/CHANGELOG.md
+R  DIRECTORY.md -> controlplane/governance/docs/DIRECTORY.md
+R  IMPLEMENTATION_GUIDE.md -> controlplane/governance/docs/IMPLEMENTATION_GUIDE.md
+R  IMPLEMENTATION_ROADMAP.md -> controlplane/governance/docs/IMPLEMENTATION_ROADMAP.md
+R  MULTI_AGENT_MPC_ARCHITECTURE_DESIGN.md -> controlplane/governance/docs/MULTI_AGENT_MPC_ARCHITECTURE_DESIGN.md
+R  MULTI_AGENT_V1_SPECIFICATION_PACKAGE.md -> controlplane/governance/docs/MULTI_AGENT_V1_SPECIFICATION_PACKAGE.md
+R  PHASE1_COMPREHENSIVE_AUDIT.md -> controlplane/governance/docs/PHASE1_COMPREHENSIVE_AUDIT.md
+R  PHASE2_DETAILED_ROADMAP.md -> controlplane/governance/docs/PHASE2_DETAILED_ROADMAP.md
+R  PROJECT_MEMORY.md -> controlplane/governance/docs/PROJECT_MEMORY.md
+R  RISK_ASSESSMENT.md -> controlplane/governance/docs/RISK_ASSESSMENT.md
+R  ROOT_ARCHITECTURE.md -> controlplane/governance/docs/ROOT_ARCHITECTURE.md
+R  ROOT_SPECS_GUIDE.md -> controlplane/governance/docs/ROOT_SPECS_GUIDE.md
+R  auto-fix-bot.yml -> controlplane/governance/policies/auto-fix-bot.yml
+R  gates.map.yaml -> controlplane/governance/policies/gates.map.yaml
+R  governance-config.yaml -> controlplane/governance/policies/governance-config.yaml
+R  AAPS_INTEGRATION_SUMMARY.md -> controlplane/governance/reports/AAPS_INTEGRATION_SUMMARY.md
+R  AAPS_PHASE1_COMPLETION_SUMMARY.md -> controlplane/governance/reports/AAPS_PHASE1_COMPLETION_SUMMARY.md
+R  AAPS_UNIFIED_GATES_OPTIMIZATION.md -> controlplane/governance/reports/AAPS_UNIFIED_GATES_OPTIMIZATION.md
+R  AUTOMATED_MEMORY_SYSTEM_COMPLETE.md -> controlplane/governance/reports/AUTOMATED_MEMORY_SYSTEM_COMPLETE.md
+R  CI_FIX_SUMMARY.md -> controlplane/governance/reports/CI_FIX_SUMMARY.md
+R  CI_ISSUES_FIX_REPORT.md -> controlplane/governance/reports/CI_ISSUES_FIX_REPORT.md
+R  CONTROLPLANE_IMPLEMENTATION_REPORT.md -> controlplane/governance/reports/CONTROLPLANE_IMPLEMENTATION_REPORT.md
+R  FALSE_SUCCESS_METRICS_FIXED_REPORT.md -> controlplane/governance/reports/FALSE_SUCCESS_METRICS_FIXED_REPORT.md
+R  FINAL_MACHINE_NATIVE_OPS_COMPLETION_REPORT.md -> controlplane/governance/reports/FINAL_MACHINE_NATIVE_OPS_COMPLETION_REPORT.md
+R  LOCAL_FIXES_SUMMARY.md -> controlplane/governance/reports/LOCAL_FIXES_SUMMARY.md
+R  PLATFORM_CLOSURE_SUCCESS_REPORT.md -> controlplane/governance/reports/PLATFORM_CLOSURE_SUCCESS_REPORT.md
+R  PR_666_IMPLEMENTATION_SUMMARY.md -> controlplane/governance/reports/PR_666_IMPLEMENTATION_SUMMARY.md
+R  ROOT_SPECS_IMPLEMENTATION_REPORT.md -> controlplane/governance/reports/ROOT_SPECS_IMPLEMENTATION_REPORT.md
+A  controlplane/governance/reports/STEP2_COMPLETION_SUMMARY.md
+R  SUPERAGENT_NAMESPACE_CONVERSION_SUMMARY.md -> controlplane/governance/reports/SUPERAGENT_NAMESPACE_CONVERSION_SUMMARY.md
+R  VERIFICATION_REPORT.md -> controlplane/governance/reports/VERIFICATION_REPORT.md
+R  conversion-report-new.md -> controlplane/governance/reports/conversion-report-new.md
+R  memory-update-summary.md -> controlplane/governance/reports/memory-update-summary.md
+R  restructure_log.md -> controlplane/governance/reports/restructure_log.md
+R  validation-report-final.md -> controlplane/governance/reports/validation-report-final.md
+R  validation-report-new.md -> controlplane/governance/reports/validation-report-new.md
+M  controlplane/overlay/evidence/validation/controlplane.manifest.json
+M  controlplane/overlay/evidence/validation/validation.report.json
+M  controlplane/overlay/evidence/validation/validation.report.md
+A  outputs/workspace_output_1766466152_8367.txt
+A  outputs/workspace_output_1766466182_2616.txt
+A  outputs/workspace_output_1766466187_6815.txt
+A  outputs/workspace_output_1766466296_5650.txt
+A  outputs/workspace_output_1766466367_2223.txt
+A  outputs/workspace_output_1766466373_6065.txt

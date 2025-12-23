@@ -1,63 +1,66 @@
-updates:
-- assignees:
-  - security-team
-  commit-message:
-    include: scope
-    prefix: chore(deps)
-  directory: /
-  ignore:
-  - dependency-name: '*'
-    update-types:
-    - version-update:semver-major
-  labels:
-  - dependencies
-  - security
-  open-pull-requests-limit: 10
-  package-ecosystem: npm
-  reviewers:
-  - security-team
-  schedule:
-    day: monday
-    interval: weekly
-    time: 09:00
-  versioning-strategy: increase
-- commit-message:
-    prefix: chore(deps)
-  directory: /scripts
-  labels:
-  - dependencies
-  - python
-  - security
-  open-pull-requests-limit: 5
-  package-ecosystem: pip
-  reviewers:
-  - security-team
-  schedule:
-    day: monday
-    interval: weekly
-    time: 09:00
-- commit-message:
-    prefix: chore(ci)
-  directory: /
-  labels:
-  - github-actions
-  - dependencies
-  open-pull-requests-limit: 5
-  package-ecosystem: github-actions
-  schedule:
-    day: tuesday
-    interval: weekly
-    time: 09:00
-- commit-message:
-    prefix: chore(docker)
-  directory: /
-  labels:
-  - docker
-  - dependencies
-  open-pull-requests-limit: 5
-  package-ecosystem: docker
-  schedule:
-    day: wednesday
-    interval: weekly
-    time: 09:00
 version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+    open-pull-requests-limit: 10
+    assignees:
+      - security-team
+    reviewers:
+      - security-team
+    labels:
+      - dependencies
+      - security
+    commit-message:
+      prefix: chore(deps)
+      include: scope
+    versioning-strategy: increase
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - version-update:semver-major
+
+  - package-ecosystem: pip
+    directory: /scripts
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - security-team
+    labels:
+      - dependencies
+      - python
+      - security
+    commit-message:
+      prefix: chore(deps)
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: tuesday
+      time: "09:00"
+    open-pull-requests-limit: 5
+    labels:
+      - github-actions
+      - dependencies
+    commit-message:
+      prefix: chore(ci)
+
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+      day: wednesday
+      time: "09:00"
+    open-pull-requests-limit: 5
+    labels:
+      - docker
+      - dependencies
+    commit-message:
+      prefix: chore(docker)
