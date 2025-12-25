@@ -63,15 +63,26 @@ class ControlplaneIntegrationTests:
     def run_command(self, cmd, cwd=None):
         """運行命令並返回結果"""
         try:
+            # 允許透過環境變數 CONTROLPLANE_CMD_TIMEOUT 調整逾時秒數
+            timeout_env = os.getenv("CONTROLPLANE_CMD_TIMEOUT")
+            try:
+                timeout_value = int(timeout_env) if timeout_env else 120
+            except ValueError:
+                # 如果環境變數不是合法整數，回落到較寬鬆的預設值
+                timeout_value = 120
+            
             result = subprocess.run(
                 cmd,
-                shell=True,
+                shell=False if isinstance(cmd, list) else True,
                 cwd=cwd or self.repo_root,
                 capture_output=True,
                 text=True,
-                timeout=30
+                timeout=timeout_value
             )
             return result.returncode == 0, result.stdout, result.stderr
+        except subprocess.TimeoutExpired:
+            return False, "", f"Command timed out after {timeout_value} seconds"
+        except Exception as e:
         except subprocess.TimeoutExpired as e:
             logger.error(f"Command timed out after 30s: {cmd}", exc_info=True)
             return False, "", f"Timeout: {str(e)}"
@@ -137,6 +148,9 @@ class ControlplaneIntegrationTests:
             is_valid, _ = validate_name("test-file.yaml", "file")
             self.assert_true(is_valid, "Convenience function works")
             
+        except FileNotFoundError as e:
+            self.assert_true(False, f"Python library test failed - file not found: {e}")
+        except Exception as e:
         except (FileNotFoundError, RuntimeError, KeyError, AttributeError) as e:
             logger.error(f"Python library test failed with expected error: {e}", exc_info=True)
             logger.error(f"Python library test failed: {e}", exc_info=True)

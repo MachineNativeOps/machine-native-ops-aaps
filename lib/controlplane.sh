@@ -87,6 +87,9 @@ import sys
 import yaml
 
 try:
+    with open('${yaml_file}', 'r') as f:
+        data = yaml.safe_load(f)
+    keys = '${key_path}'.split('.')
     with open(sys.argv[1], 'r') as f:
         data = yaml.safe_load(f)
     keys = sys.argv[2].split('.')
@@ -97,6 +100,10 @@ try:
         else:
             value = None
             break
+    print(value if value is not None else '${default_value}')
+except:
+    print('${default_value}')
+"
     print(value if value is not None else sys.argv[3])
 except Exception:
     print(sys.argv[3])
@@ -169,8 +176,10 @@ cp_validate_name() {
             # 檢查雙重擴展名
             local dot_count=$(echo "$name" | tr -cd '.' | wc -c)
             if [[ $dot_count -gt 1 ]]; then
-                local parts=(${name//./ })
-                if [[ ${#parts[@]} -gt 2 ]]; then
+                # 允許 root.*.yaml 和 root.*.yml 和 root.*.map 和 root.*.sh 這類三段式名稱
+                if [[ "$name" =~ ^root\.[a-z][a-z0-9-]*\.(yaml|yml|map|sh)$ ]]; then
+                    : # 允許此格式
+                else
                     cp_log_error "File has double extension: $name"
                     return 1
                 fi
@@ -288,6 +297,7 @@ cp_synthesize_active() {
     
     # 複製 baseline 配置
     if [[ -d "$CP_BASELINE_PATH/config" ]]; then
+        # 使用 nullglob 確保沒有匹配時不會把萬用字元當成字串傳給 cp
         shopt -s nullglob
         local yaml_files=("$CP_BASELINE_PATH"/config/*.yaml)
         if ((${#yaml_files[@]} > 0)); then
