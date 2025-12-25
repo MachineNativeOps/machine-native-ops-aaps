@@ -39,6 +39,7 @@
 ```
 
 #### 引導文件 (3 個)
+
 ```
 ✅ root.bootstrap.yaml  - Controlplane 入口、版本、啟動模式
 ✅ root.fs.map          - Controlplane 掛載/路徑映射
