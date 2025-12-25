@@ -296,6 +296,7 @@ git commit -m "Add file"
 ### 功能特性
 
 #### ✅ 已實現
+
 - [x] CLI 工具 (cp-cli)
 - [x] Python 配置庫
 - [x] Shell 配置庫
