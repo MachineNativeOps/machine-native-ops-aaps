@@ -1,0 +1,40 @@
+name: ♻️ Baseline Validation (Reusable)
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Baseline validation (docs + root specs)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+
+      - name: Verify docs surface
+        run: |
+          if [ ! -f docs/README.md ]; then
+            echo "ERROR: docs/README.md file not found"; exit 1;
+          fi
+
+      - name: Verify validator script
+        run: |
+          if [ ! -f controlplane/baseline/validation/validate-root-specs.py ]; then
+            echo "ERROR: validate-root-specs.py script not found at controlplane/baseline/validation/"; exit 1;
+          fi
+
+      - name: Run root specification validation
+        run: python controlplane/baseline/validation/validate-root-specs.py

@@ -1,0 +1,17 @@
+name: 🛡️ Governance Validation
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate-governance:
+    uses: ./.github/workflows/baseline-validation.yml
+    secrets: inherit

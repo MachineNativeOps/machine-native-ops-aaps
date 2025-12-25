@@ -1,10 +1,9 @@
 name: aaps-phase1-gates
-true:
-  pull_request: null
+on:
+  pull_request:
+    branches: [main, develop]
   push:
-    branches:
-    - main
-    - develop
+    branches: [main, develop]
 jobs:
   phase1:
     permissions:
