@@ -11,12 +11,20 @@ on:
       - root.*.sh
       - root.specs.*.yaml
       - root.registry.*.yaml
+      - controlplane/baseline/**/*.yaml
+      - controlplane/baseline/**/*.map
+      - controlplane/baseline/**/*.sh
+      - workspace/config/**/*.{yaml,yml}
+      - controlplane/governance/docs/**/*.md
   push:
     branches: [main]
     paths:
       - root.*.yaml
       - root.*.map
       - root.*.sh
+      - controlplane/baseline/**/*.yaml
+      - controlplane/baseline/**/*.map
+      - controlplane/baseline/**/*.sh
 
 jobs:
   validate-root-specs:

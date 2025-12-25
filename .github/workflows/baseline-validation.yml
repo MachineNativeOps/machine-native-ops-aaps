@@ -38,3 +38,41 @@ jobs:
 
       - name: Run root specification validation
         run: python controlplane/baseline/validation/validate-root-specs.py
+
+      - name: Upload validation artifacts
+        if: always()
+        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808
+        with:
+          name: validation-report
+          path: |
+            controlplane/overlay/evidence/validation/validation.report.md
+            controlplane/overlay/evidence/validation/validation.report.json
+
+      - name: Comment validation result on PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b
+        with:
+          script: |
+            const fs = require('fs');
+            const reportPath = 'controlplane/overlay/evidence/validation/validation.report.md';
+            const summary = fs.existsSync(reportPath)
+              ? fs.readFileSync(reportPath, 'utf8').slice(0, 6000)
+              : 'Validation report not found.';
+            const status = '${{ job.status }}';
+            const body = [
+              `## Root Specification Validation - ${status.toUpperCase()}`,
+              '',
+              '詳細報告：',
+              '```markdown',
+              summary,
+              '```',
+              '',
+              '修復建議：請根據報告中的錯誤訊息調整檔案並重新提交。'
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body
+            });

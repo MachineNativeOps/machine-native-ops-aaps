@@ -12,6 +12,8 @@ on:
       - lib/**
       - var/**
       - usr/**
+      - controlplane/baseline/**
+      - workspace/config/**
 
 permissions:
   contents: read
@@ -29,19 +31,40 @@ jobs:
         run: |
           set -euo pipefail
           violations=0
-          for file in root.* init.d/* bin/* sbin/* etc/* lib/* var/* usr/*; do
-            [ -e "$file" ] || continue
-            basename=$(basename "$file")
-            case "$basename" in
-              *[A-Z]*)
-                echo "❌ 文件含有大寫字母: $file" >> "$GITHUB_STEP_SUMMARY"
-                violations=$((violations+1))
-                ;;
-              *\ * )
-                echo "❌ 文件含有空白: $file" >> "$GITHUB_STEP_SUMMARY"
-                violations=$((violations+1))
-                ;;
-            esac
+          targets=(root.* init.d bin sbin etc lib var usr controlplane/baseline workspace/config)
+          for target in "${targets[@]}"; do
+            if compgen -G "$target" > /dev/null; then
+              if [ -d "$target" ]; then
+                while IFS= read -r file; do
+                  basename=$(basename "$file")
+                  case "$basename" in
+                    *[A-Z]*)
+                      echo "❌ 文件含有大寫字母: $file" >> "$GITHUB_STEP_SUMMARY"
+                      violations=$((violations+1))
+                      ;;
+                    *\ * )
+                      echo "❌ 文件含有空白: $file" >> "$GITHUB_STEP_SUMMARY"
+                      violations=$((violations+1))
+                      ;;
+                  esac
+                done < <(find "$target" -maxdepth 3 -type f)
+              else
+                for file in $target; do
+                  [ -e "$file" ] || continue
+                  basename=$(basename "$file")
+                  case "$basename" in
+                    *[A-Z]*)
+                      echo "❌ 文件含有大寫字母: $file" >> "$GITHUB_STEP_SUMMARY"
+                      violations=$((violations+1))
+                      ;;
+                    *\ * )
+                      echo "❌ 文件含有空白: $file" >> "$GITHUB_STEP_SUMMARY"
+                      violations=$((violations+1))
+                      ;;
+                  esac
+                done
+              fi
+            fi
           done
 
           if [ $violations -eq 0 ]; then

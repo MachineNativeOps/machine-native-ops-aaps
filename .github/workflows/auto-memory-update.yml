@@ -8,12 +8,40 @@ on:
     branches: [main]
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: write
 
 jobs:
-  noop:
-    name: Keep memory workflow healthy
+  update-memory:
+    name: Sync memory + architecture
+    if: github.actor != 'github-actions[bot]' && (github.event_name == 'push' || github.event.pull_request.merged == true)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
-      - run: echo "Memory update placeholder - no automated changes applied."
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+
+      - name: Run auto memory + architecture sync
+        run: python workspace/src/scripts/automation/auto_memory_arch_sync.py
+
+      - name: Commit changes
+        id: commit
+        run: |
+          if git diff --quiet; then
+            echo "changes=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "machine-native-ops-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git commit -am "chore: auto memory + architecture sync [skip ci]"
+          echo "changes=true" >> "$GITHUB_OUTPUT"
+
+      - name: Push changes
+        if: steps.commit.outputs.changes == 'true'
+        run: git push
