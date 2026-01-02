@@ -13,6 +13,7 @@ import os
 import sys
 import json
 import subprocess
+import tempfile
 from typing import Dict, List, Any
 from dataclasses import dataclass, asdict
 from datetime import datetime
@@ -34,9 +35,26 @@ class VulnerabilityReport:
     confidence: float
 
 class AdvancedCodeScanner:
-    """高階代碼掃描器"""
+    """
+    高階代碼掃描器
     
-    def __init__(self, repo_path: str = ".", output_dir: str = ".github/code-scanning/reports"):
+    提供全面的代碼安全、依賴、質量、性能和合規性掃描功能。
+    
+    Attributes:
+        repo_path: 待掃描的儲存庫路徑
+        output_dir: 掃描報告輸出目錄
+        findings: 掃描發現的問題列表
+        scan_results: 掃描結果的完整數據結構
+    """
+    
+    def __init__(self, repo_path: str = ".", output_dir: str = ".github/code-scanning/reports") -> None:
+        """
+        初始化代碼掃描器
+        
+        Args:
+            repo_path: 儲存庫根目錄路徑，默認為當前目錄
+            output_dir: 掃描報告輸出目錄路徑
+        """
         self.repo_path = Path(repo_path).resolve()
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -56,7 +74,12 @@ class AdvancedCodeScanner:
         }
     
     def deep_scan(self) -> Dict:
-        """執行多層次深度掃描"""
+        """
+        執行多層次深度掃描
+        
+        Returns:
+            包含所有掃描結果的字典，包括安全、依賴、質量、性能和合規性等類別
+        """
         print("🔍 開始高階深度掃描...")
         
         # 1. 安全掃描
@@ -93,17 +116,22 @@ class AdvancedCodeScanner:
         findings = []
         
         # Python 安全掃描 (Bandit)
+        bandit_output_path = None
         try:
             print("  - 執行 Bandit 掃描...")
+            # 使用臨時文件來存儲 Bandit 輸出
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as tmp_file:
+                bandit_output_path = tmp_file.name
+            
             result = subprocess.run(
-                ["bandit", "-r", str(self.repo_path), "-f", "json", "-o", "/tmp/bandit.json"],
+                ["bandit", "-r", str(self.repo_path), "-f", "json", "-o", bandit_output_path],
                 capture_output=True,
                 text=True,
                 timeout=300
             )
             
-            if os.path.exists("/tmp/bandit.json"):
-                with open("/tmp/bandit.json") as f:
+            if os.path.exists(bandit_output_path):
+                with open(bandit_output_path) as f:
                     bandit_data = json.load(f)
                 
                 for issue in bandit_data.get("results", []):
@@ -122,6 +150,14 @@ class AdvancedCodeScanner:
                     })
         except Exception as e:
             print(f"  ⚠️ Bandit 掃描失敗: {e}")
+        finally:
+            # 確保臨時文件總是被清理
+            if bandit_output_path and os.path.exists(bandit_output_path):
+                try:
+                    os.unlink(bandit_output_path)
+                except Exception:
+                    pass  # 忽略清理錯誤
+        
         
         # 自定義安全規則檢查
         print("  - 執行自定義安全規則...")
@@ -396,7 +432,13 @@ class AdvancedCodeScanner:
         print(f"  - 中: {self.scan_results['summary']['medium']} 個")
         print(f"  - 低: {self.scan_results['summary']['low']} 個")
 
-def main():
+def main() -> None:
+    """
+    主執行函數
+    
+    從命令行參數讀取儲存庫路徑並執行掃描。
+    如果發現嚴重或高嚴重性問題，將以非零狀態碼退出。
+    """
     if len(sys.argv) > 1:
         repo_path = sys.argv[1]
     else:

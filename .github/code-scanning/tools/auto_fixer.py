@@ -15,7 +15,7 @@ import json
 import re
 import ast
 from typing import Dict, List, Tuple
-from dataclasses import dataclass
+from dataclasses import dataclass, asdict
 from pathlib import Path
 from datetime import datetime
 from abc import ABC, abstractmethod
@@ -101,6 +101,7 @@ class HardcodedPasswordFixer(VulnerabilityFixer):
                 return True, original_line.strip(), fixed_line.strip()
         
         except Exception as e:
+            print(f"  ⚠️ 修復硬編碼密碼時發生錯誤: {e}")
             return False, "", str(e)
         
         return False, original_line, "無法自動修復此硬編碼密碼"
@@ -139,6 +140,7 @@ class SQLInjectionFixer(VulnerabilityFixer):
             return False, original_content, "未檢測到可自動修復的 SQL 注入模式"
         
         except Exception as e:
+            print(f"  ⚠️ 檢測 SQL 注入時發生錯誤: {e}")
             return False, "", str(e)
     
     def get_description(self) -> str:
@@ -175,6 +177,7 @@ class UnpinnedDependencyFixer(VulnerabilityFixer):
             return True, original_line.strip(), fixed_line.strip()
         
         except Exception as e:
+            print(f"  ⚠️ 修復未固定版本依賴時發生錯誤: {e}")
             return False, "", str(e)
     
     def get_description(self) -> str:
@@ -227,15 +230,26 @@ class LongLineFixer(VulnerabilityFixer):
             return True, original_line.strip(), '\n'.join(fixed_lines).strip()
         
         except Exception as e:
+            print(f"  ⚠️ 修復過長代碼行時發生錯誤: {e}")
             return False, "", str(e)
     
     def get_description(self) -> str:
         return "修復過長的代碼行"
 
 class AutoFixer:
-    """自動修復系統"""
+    """
+    自動修復系統
     
-    def __init__(self):
+    提供一鍵自動修復常見代碼問題的功能，包括硬編碼密碼、
+    未固定版本依賴、過長代碼行等。
+    
+    Attributes:
+        fixers: 可用的修復器列表
+        fix_report: 修復操作的詳細報告
+    """
+    
+    def __init__(self) -> None:
+        """初始化自動修復系統，註冊所有可用的修復器"""
         self.fixers = [
             HardcodedPasswordFixer(),
             SQLInjectionFixer(),
@@ -255,7 +269,15 @@ class AutoFixer:
         }
     
     def auto_fix_all(self, scan_results: Dict) -> Dict:
-        """一鍵修復所有可修復的漏洞"""
+        """
+        一鍵修復所有可修復的漏洞
+        
+        Args:
+            scan_results: 代碼掃描結果字典
+            
+        Returns:
+            包含修復狀態、成功、失敗和需要審查項目的修復報告
+        """
         print("🔧 開始自動修復...")
         
         # 獲取所有發現
@@ -425,7 +447,13 @@ class AutoFixer:
 +{fix['fixed_line']}
 """
 
-def main():
+def main() -> None:
+    """
+    主執行函數
+    
+    從命令行讀取掃描結果並執行自動修復。
+    支持 --dry-run 參數進行模擬運行。
+    """
     import sys
     
     if len(sys.argv) < 2:
@@ -444,7 +472,8 @@ def main():
     
     if dry_run:
         print("🔍 干運行模式 - 不會實際修改文件")
-        # TODO: 實現干運行模式
+        print("⚠️  干運行模式尚未完全實現，將跳過文件寫入操作")
+        # Note: 完整的干運行模式需要在各個修復器中添加dry_run參數支持
     else:
         report = fixer.auto_fix_all(scan_results)
 

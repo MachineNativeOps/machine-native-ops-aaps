@@ -160,8 +160,13 @@ def dashboard():
     """儀表板頁面"""
     return render_template('dashboard.html')
 
-def main():
-    """主函數"""
+def main() -> None:
+    """
+    主函數
+    
+    啟動 Web 儀表板服務器，監聽 0.0.0.0:5000。
+    如果模板文件不存在，會自動創建默認模板。
+    """
     # 確保目錄存在
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     TEMPLATE_DIR.mkdir(parents=True, exist_ok=True)
@@ -176,8 +181,13 @@ def main():
     print("📊 訪問 http://localhost:5000 查看儀表板")
     app.run(debug=True, host='0.0.0.0', port=5000)
 
-def create_default_template(template_path: Path):
-    """創建默認 HTML 模板"""
+def create_default_template(template_path: Path) -> None:
+    """
+    創建默認 HTML 模板
+    
+    Args:
+        template_path: 模板文件的輸出路徑
+    """
     html_content = """<!DOCTYPE html>
 <html lang="zh-TW">
 <head>

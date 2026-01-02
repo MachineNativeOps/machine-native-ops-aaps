@@ -16,6 +16,7 @@ from dataclasses import dataclass, asdict
 from datetime import datetime
 from enum import Enum
 from collections import defaultdict
+from pathlib import Path
 
 class RootCauseType(Enum):
     """根因類型枚舉"""
@@ -46,7 +47,15 @@ class RootCause:
     recommendations: List[str]
 
 class RootCauseAnalyzer:
-    """根因分析器"""
+    """
+    根因分析器
+    
+    智能分析代碼掃描結果，識別漏洞的根本原因、影響鏈和風險評估。
+    
+    Attributes:
+        scan_results: 代碼掃描器生成的掃描結果
+        analysis: 根因分析的完整結果數據結構
+    """
     
     # CWE 到根因類型的映射
     CWE_MAPPING = {
@@ -70,7 +79,13 @@ class RootCauseAnalyzer:
         'low': 2.5
     }
     
-    def __init__(self, scan_results: Dict):
+    def __init__(self, scan_results: Dict) -> None:
+        """
+        初始化根因分析器
+        
+        Args:
+            scan_results: 代碼掃描結果字典
+        """
         self.scan_results = scan_results
         self.analysis = {
             "metadata": {
@@ -85,7 +100,12 @@ class RootCauseAnalyzer:
         }
     
     def analyze(self) -> Dict:
-        """執行完整的根因分析"""
+        """
+        執行完整的根因分析
+        
+        Returns:
+            包含根因、影響鏈、受影響組件、風險評估和修復建議的字典
+        """
         print("🔍 開始根因分析...")
         
         # 1. 識別根本原因
@@ -480,13 +500,23 @@ class RootCauseAnalyzer:
                 "定期進行代碼質量檢查"
             ]
     
-    def save_analysis(self, output_path: str):
-        """保存分析結果"""
+    def save_analysis(self, output_path: str) -> None:
+        """
+        保存分析結果到 JSON 文件
+        
+        Args:
+            output_path: 輸出文件路徑
+        """
         with open(output_path, 'w') as f:
             json.dump(self.analysis, f, indent=2, ensure_ascii=False)
         print(f"\n📊 根因分析結果已保存至: {output_path}")
 
-def main():
+def main() -> None:
+    """
+    主執行函數
+    
+    從命令行讀取掃描結果並執行根因分析，將結果保存到指定文件。
+    """
     import sys
     
     if len(sys.argv) < 2:
