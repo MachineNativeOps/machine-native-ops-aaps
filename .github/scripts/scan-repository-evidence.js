@@ -6,22 +6,17 @@
  * Scans the entire repository using PR Evidence Gate strategy
  * 
  * 功能：
- * 1. 掃描所有 Markdown 檔案中的證據標記
- * 2. 檢查 YAML 配置檔案的完整性
- * 3. 驗證程式碼檔案的註解規範
- * 4. 生成合規報告
+ * 1. 掃描 Markdown 和 YAML 檔案中的未填寫 placeholder
+ * 2. 排除模板檔案 (PR templates 本來就該有 placeholder)
+ * 3. 生成合規報告
+ * 
+ * Note: Evidence markers (repo, branch, commit, PR) are validated
+ * dynamically by gate-pr-evidence.yml against PR body content,
+ * not by this static file scanner.
  */
 
 const fs = require('fs');
 const path = require('path');
-
-// Evidence patterns (from validate-pr-evidence.js)
-const EVIDENCE_PATTERNS = {
-  repo: /(^|\n)\s*-\s*repo\s*:\s*https:\/\/github\.com\/[^\/\s]+\/[^\/\s]+(\s|$)/i,
-  branch: /(^|\n)\s*-\s*branch\s*:\s*\S+(\s|$)/i,
-  commit: /(^|\n)\s*-\s*commit(?:\s*\(40-char\s*sha\))?\s*:\s*[0-9a-f]{40}(\s|$)/i,
-  pr: /(^|\n)\s*-\s*pr\s*:\s*https:\/\/github\.com\/[^\/\s]+\/[^\/\s]+\/pull\/\d+(\s|$)/i
-};
 
 // Placeholder patterns to detect unfilled templates
 const PLACEHOLDER_PATTERNS = [
@@ -32,23 +27,15 @@ const PLACEHOLDER_PATTERNS = [
 
 // File patterns for scanning
 const SCAN_CONFIG = {
-  // Files that should contain evidence markers (none by default for static files)
-  // Evidence is checked dynamically by gate-pr-evidence.yml on PR body content
-  evidenceRequired: [],
-  // Template files (should have placeholders - this is expected)
+  // Template files (expected to have placeholders - these are intentionally excluded from validation)
+  // Evidence markers are validated dynamically by gate-pr-evidence.yml against PR body content
   templateFiles: [
     'PULL_REQUEST_TEMPLATE.md',
     'pull_request_template.md',
     'ISSUE_TEMPLATE',
-    'PR_DESCRIPTION.md'  // Legacy docs file, not an active PR template
+    'PR_DESCRIPTION.md'  // Legacy documentation file
   ],
-  // Files to scan for placeholders (exclude templates)
-  placeholderCheck: [
-    '**/*.md',
-    '**/*.yml',
-    '**/*.yaml'
-  ],
-  // Directories to exclude
+  // Directories to exclude from scanning
   excludeDirs: [
     'node_modules',
     '.git',
@@ -58,8 +45,8 @@ const SCAN_CONFIG = {
     'workspace-archive',
     'workspace-problematic'
   ],
-  // File extensions to scan
-  scanExtensions: ['.md', '.yml', '.yaml', '.js', '.ts', '.py', '.json']
+  // File extensions to scan for placeholder issues
+  scanExtensions: ['.md', '.yml', '.yaml']
 };
 
 class RepositoryScanner {
@@ -118,54 +105,6 @@ class RepositoryScanner {
   }
 
   /**
-   * Check file for evidence markers
-   */
-  checkEvidence(content, filePath) {
-    const issues = [];
-    const relativePath = path.relative(this.rootDir, filePath);
-    
-    // Check if file should have evidence markers
-    const fileName = path.basename(filePath);
-    const requiresEvidence = SCAN_CONFIG.evidenceRequired.some(pattern => {
-      if (pattern.includes('*')) {
-        const regex = new RegExp(pattern.replace(/\*/g, '.*'));
-        return regex.test(relativePath);
-      }
-      return fileName === pattern || relativePath.endsWith(pattern);
-    });
-    
-    if (requiresEvidence) {
-      // Check for all four core evidence items
-      if (!EVIDENCE_PATTERNS.repo.test(content)) {
-        issues.push({
-          type: 'error',
-          message: '缺少 repo 證據標記 (Missing repo evidence marker)'
-        });
-      }
-      if (!EVIDENCE_PATTERNS.branch.test(content)) {
-        issues.push({
-          type: 'error', 
-          message: '缺少 branch 證據標記 (Missing branch evidence marker)'
-        });
-      }
-      if (!EVIDENCE_PATTERNS.commit.test(content)) {
-        issues.push({
-          type: 'error',
-          message: '缺少 commit 證據標記 (Missing commit evidence marker)'
-        });
-      }
-      if (!EVIDENCE_PATTERNS.pr.test(content)) {
-        issues.push({
-          type: 'error',
-          message: '缺少 PR 證據標記 (Missing PR evidence marker)'
-        });
-      }
-    }
-    
-    return issues;
-  }
-
-  /**
    * Check if file is a template file (templates are expected to have placeholders)
    */
   isTemplateFile(filePath) {
@@ -214,15 +153,9 @@ class RepositoryScanner {
     try {
       const content = fs.readFileSync(filePath, 'utf-8');
       
-      // Check for evidence markers
-      const evidenceIssues = this.checkEvidence(content, filePath);
-      result.issues.push(...evidenceIssues);
-      
-      // Check for placeholders in markdown files
-      if (filePath.endsWith('.md')) {
-        const placeholderIssues = this.checkPlaceholders(content, filePath);
-        result.issues.push(...placeholderIssues);
-      }
+      // Check for placeholders in markdown and YAML files
+      const placeholderIssues = this.checkPlaceholders(content, filePath);
+      result.issues.push(...placeholderIssues);
       
       // Determine overall status
       if (result.issues.some(i => i.type === 'error')) {
@@ -356,4 +289,4 @@ if (require.main === module) {
   }
 }
 
-module.exports = { RepositoryScanner, EVIDENCE_PATTERNS, PLACEHOLDER_PATTERNS };
+module.exports = { RepositoryScanner, PLACEHOLDER_PATTERNS };

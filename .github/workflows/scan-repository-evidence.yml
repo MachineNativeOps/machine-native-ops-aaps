@@ -53,25 +53,23 @@ jobs:
           echo "🚪 PR Evidence Gate - 全儲存庫掃描"
           echo ""
           
-          # Run scanner
+          # Always use JSON output for reliable metric extraction
+          node .github/scripts/scan-repository-evidence.js --json > scan-results.json
+          EXIT_CODE=$?
+          
+          # Display results based on user preference
           if [ "${{ github.event.inputs.output_format }}" = "json" ]; then
-            node .github/scripts/scan-repository-evidence.js --json > scan-results.json
             cat scan-results.json
-            
-            # Extract metrics for outputs
-            ERRORS=$(jq '.summary.errors' scan-results.json)
-            WARNINGS=$(jq '.summary.warnings' scan-results.json)
-            TOTAL=$(jq '.summary.total_scanned' scan-results.json)
-            RATE=$(jq -r '.summary.compliance_rate' scan-results.json)
           else
-            node .github/scripts/scan-repository-evidence.js 2>&1 | tee scan-output.txt
-            
-            # Extract metrics from console output
-            ERRORS=$(grep "錯誤 (Errors):" scan-output.txt | grep -oP '\d+' || echo "0")
-            WARNINGS=$(grep "警告 (Warnings):" scan-output.txt | grep -oP '\d+' || echo "0")
-            TOTAL=$(grep "總掃描檔案數 (Total Scanned):" scan-output.txt | grep -oP '\d+' || echo "0")
-            RATE=$(grep "合規率 (Compliance Rate):" scan-output.txt | grep -oP '[\d.]+%' || echo "0%")
+            # Also run with console output for human-readable display
+            node .github/scripts/scan-repository-evidence.js 2>&1 | tee scan-output.txt || true
           fi
+          
+          # Extract metrics from JSON (reliable parsing)
+          ERRORS=$(jq '.summary.errors' scan-results.json)
+          WARNINGS=$(jq '.summary.warnings' scan-results.json)
+          TOTAL=$(jq '.summary.total_scanned' scan-results.json)
+          RATE=$(jq -r '.summary.compliance_rate' scan-results.json)
           
           echo "errors=$ERRORS" >> $GITHUB_OUTPUT
           echo "warnings=$WARNINGS" >> $GITHUB_OUTPUT
@@ -79,7 +77,8 @@ jobs:
           echo "compliance_rate=$RATE" >> $GITHUB_OUTPUT
           
           # Fail if there are errors (but allow warnings)
-          if [ "$ERRORS" -gt 0 ] 2>/dev/null; then
+          # Use explicit numeric validation
+          if [[ "$ERRORS" =~ ^[0-9]+$ ]] && [ "$ERRORS" -gt 0 ]; then
             echo "status=FAIL" >> $GITHUB_OUTPUT
           else
             echo "status=PASS" >> $GITHUB_OUTPUT
