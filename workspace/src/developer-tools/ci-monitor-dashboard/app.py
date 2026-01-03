@@ -7,7 +7,7 @@ import os
 import json
 import time
 import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional, Any
 from dataclasses import dataclass
 from enum import Enum
@@ -38,6 +38,7 @@ class PipelineMetrics:
     name: str
     status: PipelineStatus
     duration: int
+    queue_time: int
     timestamp: datetime
     triggered_by: str
     branch: str
@@ -138,6 +139,10 @@ class CIMonitorDashboard:
                 runs = workflow.get_runs(per_page=10)
                 
                 for run in runs:
+                    try:
+                        run_started_at = run.run_started_at
+                    except AttributeError:
+                        run_started_at = None
                     workflow_data = {
                         'id': run.id,
                         'name': workflow.name,
@@ -146,6 +151,7 @@ class CIMonitorDashboard:
                         'created_at': run.created_at,
                         'updated_at': run.updated_at,
                         'duration': (run.updated_at - run.created_at).total_seconds() if run.updated_at and run.created_at else 0,
+                        'queue_time': (run_started_at - run.created_at).total_seconds() if run_started_at and run.created_at else 0,
                         'head_branch': run.head_branch,
                         'head_sha': run.head_sha,
                         'triggered_by': run.triggered_by,
@@ -201,6 +207,7 @@ class CIMonitorDashboard:
                 name=workflow['name'],
                 status=status,
                 duration=int(workflow['duration']),
+                queue_time=int(workflow.get('queue_time', 0)),
                 timestamp=workflow['created_at'],
                 triggered_by=workflow['triggered_by'],
                 branch=workflow['head_branch'],
@@ -255,6 +262,13 @@ class CIMonitorDashboard:
             dbc.Row([
                 dbc.Col([
                     self._create_overview_cards()
+                ], width=12)
+            ], className="mb-4"),
+            
+            # 組織月度指標卡片
+            dbc.Row([
+                dbc.Col([
+                    self._create_org_overview_cards()
                 ], width=12)
             ], className="mb-4"),
             
@@ -371,6 +385,47 @@ class CIMonitorDashboard:
             ], width=3),
         ])
     
+    def _create_org_overview_cards(self) -> html.Div:
+        """創建組織月度指標卡片"""
+        return dbc.Row([
+            dbc.Col([
+                dbc.Card([
+                    dbc.CardBody([
+                        html.H5("平均作業運行時間", className="card-title mb-2"),
+                        html.H2(html.Span("0秒", id="org-avg-runtime"), className="mb-0"),
+                        html.P("本組織本月作業的平均運行時間", className="text-muted mb-0")
+                    ])
+                ], color="light")
+            ], width=3),
+            dbc.Col([
+                dbc.Card([
+                    dbc.CardBody([
+                        html.H5("平均作業排隊時間", className="card-title mb-2"),
+                        html.H2(html.Span("0秒", id="org-avg-queue"), className="mb-0"),
+                        html.P("本組織本月作業平均排隊時間", className="text-muted mb-0")
+                    ])
+                ], color="light")
+            ], width=3),
+            dbc.Col([
+                dbc.Card([
+                    dbc.CardBody([
+                        html.H5("工作失敗率", className="card-title mb-2"),
+                        html.H2(html.Span("0%", id="org-failure-rate"), className="mb-0"),
+                        html.P("本組織本月各項工作的失敗率", className="text-muted mb-0")
+                    ])
+                ], color="light")
+            ], width=3),
+            dbc.Col([
+                dbc.Card([
+                    dbc.CardBody([
+                        html.H5("失敗的作業使用", className="card-title mb-2"),
+                        html.H2(html.Span("0秒", id="org-failed-usage"), className="mb-0"),
+                        html.P("本組織本月所有失敗作業所用總時長", className="text-muted mb-0")
+                    ])
+                ], color="light")
+            ], width=3),
+        ])
+    
     def _create_pipeline_table(self) -> html.Div:
         """創建流水線詳細表格"""
         return dbc.Card([
@@ -394,7 +449,11 @@ class CIMonitorDashboard:
                 Output('success-rate-value', 'children'),
                 Output('avg-duration-value', 'children'),
                 Output('active-pipelines-value', 'children'),
-                Output('security-issues-value', 'children')
+                Output('security-issues-value', 'children'),
+                Output('org-avg-runtime', 'children'),
+                Output('org-avg-queue', 'children'),
+                Output('org-failure-rate', 'children'),
+                Output('org-failed-usage', 'children')
             ],
             [Input('interval-component', 'n_intervals')]
         )
@@ -405,8 +464,9 @@ class CIMonitorDashboard:
             
             # 計算總覽指標
             if metrics:
+                current_time = datetime.now(timezone.utc)
                 # 計算成功率（過去7天）
-                seven_days_ago = datetime.now() - timedelta(days=7)
+                seven_days_ago = current_time - timedelta(days=7)
                 recent_metrics = [m for m in metrics if m.timestamp > seven_days_ago]
                 
                 success_count = sum(1 for m in recent_metrics if m.status == PipelineStatus.SUCCESS)
@@ -422,15 +482,36 @@ class CIMonitorDashboard:
                 # 計算安全問題總數
                 security_issues = sum(m.security_issues for m in metrics)
                 
+                # 計算本月組織指標
+                month_ago = current_time - timedelta(days=30)
+                monthly_metrics = [m for m in metrics if m.timestamp > month_ago]
+                total_monthly = len(monthly_metrics)
+                runtime_sum = queue_sum = failure_count_month = failed_usage_month = 0
+                
+                for m in monthly_metrics:
+                    runtime_sum += m.duration
+                    queue_sum += m.queue_time
+                    if m.status == PipelineStatus.FAILURE:
+                        failure_count_month += 1
+                        failed_usage_month += m.duration
+                
+                avg_runtime_month = (runtime_sum / total_monthly) if total_monthly else 0
+                avg_queue_month = (queue_sum / total_monthly) if total_monthly else 0
+                failure_rate_month = (failure_count_month / total_monthly * 100) if total_monthly else 0
+                
                 return [
                     [self._metric_to_dict(m) for m in metrics],
                     f"{success_rate:.1f}%",
                     f"{avg_duration/60:.1f}分鐘",
                     str(active_count),
-                    str(security_issues)
+                    str(security_issues),
+                    f"{avg_runtime_month:.0f}秒",
+                    f"{avg_queue_month:.0f}秒",
+                    f"{failure_rate_month:.1f}%",
+                    f"{failed_usage_month:.0f}秒"
                 ]
             else:
-                return [[], "0%", "0分鐘", "0", "0"]
+                return [[], "0%", "0分鐘", "0", "0", "0秒", "0秒", "0%", "0秒"]
         
         @self.app.callback(
             Output('status-distribution-chart', 'figure'),
@@ -683,6 +764,7 @@ class CIMonitorDashboard:
             'name': metric.name,
             'status': metric.status.value,
             'duration': metric.duration,
+            'queue_time': metric.queue_time,
             'timestamp': metric.timestamp.isoformat(),
             'triggered_by': metric.triggered_by,
             'branch': metric.branch,
