@@ -694,7 +694,6 @@ Examples:
         incorrect_patterns = [
             r'docker\.io/machine-native-ops',
             r'ghcr\.io/machine-native-ops-machine-native-ops',
-            r'docker\.io/machine-native-ops-machine-native-ops',
             r'docker\.io/machine-native-ops-apps',
             r'ghcr\.io/machine-native-ops-apps',
         ]
@@ -717,7 +716,6 @@ Examples:
         
         # Check for incorrect certificate paths
         incorrect_paths = [
-            r'/etc/machine-native-ops',
             r'/etc/machine-native-ops',
             r'/etc/apps',
         ]
