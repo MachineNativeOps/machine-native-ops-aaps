@@ -218,38 +218,53 @@ class AdvancedCodeScanner:
                     # 檢查硬編碼憑證
                     for key_type, keywords in patterns.items():
                         for keyword in keywords:
-                            if f"{keyword} = " in code_part_lower or f'"{keyword}": ' in code_part_lower:
-                                if '=' in code_part and any(c in code_part for c in ['"', "'"]):
-                                    # Extract the value part
-                                    value_part = code_part.split('=', 1)[1].strip() if '=' in code_part else ""
-                                    value_part_lower = value_part.lower()
-                                    
-                                    # Filter out false positives
-                                    # 1. Empty strings
-                                    if value_part.strip() in ['""', "''", '""""""', "''''''", 'None', 'null']:
-                                        continue
-                                    
-                                    # 2. Environment variable references
-                                    if any(env_ref in value_part for env_ref in ['os.getenv', 'os.environ', 'env.get', 'ENV[']):
-                                        continue
-                                    
-                                    # 3. Placeholder values
-                                    if any(placeholder in value_part_lower for placeholder in placeholder_patterns):
-                                        continue
-                                    
-                                    findings.append({
-                                        "severity": "high",
-                                        "type": "Hardcoded Credential",
-                                        "location": f"{file_path}:{line_num}",
-                                        "file_path": str(file_path),
-                                        "line_number": line_num,
-                                        "code_snippet": line.strip(),
-                                        "cwe_id": "CWE-798",
-                                        "description": f"檢測到可能的硬編碼 {key_type}",
-                                        "recommendation": "使用環境變量或密鑰管理服務存儲敏感信息",
-                                        "tool": "custom",
-                                        "confidence": 0.7
-                                    })
+                            # Check for both assignment and dictionary patterns
+                            has_assignment = f"{keyword} = " in code_part_lower
+                            has_dict_syntax = f'"{keyword}": ' in code_part_lower
+                            
+                            if has_assignment or has_dict_syntax:
+                                # Must have quotes to be a potential hardcoded credential
+                                if not any(c in code_part for c in ['"', "'"]):
+                                    continue
+                                
+                                # Extract the value part based on pattern type
+                                if has_assignment and '=' in code_part:
+                                    value_part = code_part.split('=', 1)[1].strip()
+                                elif has_dict_syntax and ':' in code_part:
+                                    value_part = code_part.split(':', 1)[1].strip()
+                                else:
+                                    continue
+                                
+                                value_part_lower = value_part.lower()
+                                
+                                # Filter out false positives
+                                # 1. Empty strings or null values
+                                # Check if value is empty quotes or None/null
+                                stripped_value = value_part.strip().strip('"').strip("'").strip()
+                                if not stripped_value or stripped_value.lower() in ['none', 'null']:
+                                    continue
+                                
+                                # 2. Environment variable references
+                                if any(env_ref in value_part for env_ref in ['os.getenv', 'os.environ', 'env.get', 'ENV["', "ENV['"]):
+                                    continue
+                                
+                                # 3. Placeholder values
+                                if any(placeholder in value_part_lower for placeholder in placeholder_patterns):
+                                    continue
+                                
+                                findings.append({
+                                    "severity": "high",
+                                    "type": "Hardcoded Credential",
+                                    "location": f"{file_path}:{line_num}",
+                                    "file_path": str(file_path),
+                                    "line_number": line_num,
+                                    "code_snippet": line.strip(),
+                                    "cwe_id": "CWE-798",
+                                    "description": f"檢測到可能的硬編碼 {key_type}",
+                                    "recommendation": "使用環境變量或密鑰管理服務存儲敏感信息",
+                                    "tool": "custom",
+                                    "confidence": 0.7
+                                })
             
             except Exception as e:
                 continue
