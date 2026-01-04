@@ -204,7 +204,7 @@ jobs:
         uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
+          cache: ${{ hashFiles(format('{0}/package-lock.json', matrix.workspace)) != '' && 'npm' || '' }}
           cache-dependency-path: ${{ matrix.workspace }}/package-lock.json
 
       - name: "📦 安裝工作區依賴"
