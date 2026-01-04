@@ -1,0 +1,9 @@
+environment: production
+namespace: machinenativenops
+services:
+  instant_generation:
+    debug: false
+    enabled: true
+  phase4:
+    debug: false
+    enabled: true
