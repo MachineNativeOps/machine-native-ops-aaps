@@ -61,14 +61,14 @@ jobs:
 
       - name: Scan for high-risk patterns
         run: |
-          # Note: Using case-insensitive grep with -i flag instead of (?i) PCRE syntax
+          # Note: Using explicit character class patterns for case-insensitive matching instead of (?i) PCRE syntax
           # git grep -E doesn't support Perl regex features
           set +e  # Don't fail on grep matches
           patterns=(
             '[Aa][Ww][Ss][_-]?[Aa][Cc][Cc][Ee][Ss][Ss][_-]?[Kk][Ee][Yy][_-]?[Ii][Dd]'
             '[Aa][Ww][Ss][_-]?[Ss][Ee][Cc][Rr][Ee][Tt][_-]?[Aa][Cc][Cc][Ee][Ss][Ss][_-]?[Kk][Ee][Yy]'
-            'ghp_[A-Za-z0-9]{36}'
-            'github_pat_[A-Za-z0-9_]{80,}'
+            '[Gg][Hh][Pp]_[A-Za-z0-9]{36}'
+            '[Gg][Ii][Tt][Hh][Uu][Bb]_[Pp][Aa][Tt]_[A-Za-z0-9_]{80,}'
             '[Aa][Pp][Ii][_-]?[Kk][Ee][Yy]'
             '[Ss][Ee][Cc][Rr][Ee][Tt][_-]?[Kk][Ee][Yy]'
             '[Pp][Rr][Ii][Vv][Aa][Tt][Ee][_-]?[Kk][Ee][Yy]'
@@ -77,7 +77,7 @@ jobs:
           regex="($(printf '%s|' "${patterns[@]}" | sed 's/|$//'))"
 
           found=0
-          if git grep -nE "$regex" -- . ':!node_modules' ':!.git' ':!*.md' ':!*.yml' ':!*.yaml' 2>/dev/null; then
+          if git grep -nE "$regex" -- . ':!node_modules' ':!.git' ':!.github/workflows/security.yml' 2>/dev/null; then
             echo "⚠️ Potential secrets detected. Please review the matches above."
             found=1
           fi
