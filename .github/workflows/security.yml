@@ -82,12 +82,21 @@ jobs:
           )
           
           # Exclude specific safe files, not all yml/md files
-          exclusions=':!node_modules :!.git :!.github/workflows/security.yml :!docs/examples/*.md :!*.example.yml :!*.example.yaml :!*.template.yml :!*.template.yaml'
+          exclusions=(
+            ':!node_modules'
+            ':!.git'
+            ':!.github/workflows/security.yml'
+            ':!docs/examples/*.md'
+            ':!*.example.yml'
+            ':!*.example.yaml'
+            ':!*.template.yml'
+            ':!*.template.yaml'
+          )
           
           # Check high-confidence patterns (fail on match)
           high_conf_regex="($(printf '%s|' "${high_confidence_patterns[@]}" | sed 's/|$//'))"
           high_conf_found=0
-          if git grep -nE "$high_conf_regex" -- . $exclusions 2>/dev/null; then
+          if git grep -nE "$high_conf_regex" -- . "${exclusions[@]}" 2>/dev/null; then
             echo "❌ High-confidence secrets detected (GitHub tokens with specific format)."
             high_conf_found=1
           fi
@@ -95,7 +104,7 @@ jobs:
           # Check warning patterns (warn but don't fail)
           warn_regex="($(printf '%s|' "${warning_patterns[@]}" | sed 's/|$//'))"
           warn_found=0
-          if git grep -nE "$warn_regex" -- . $exclusions 2>/dev/null; then
+          if git grep -nE "$warn_regex" -- . "${exclusions[@]}" 2>/dev/null; then
             echo "⚠️ Potential secrets detected. Please review the matches above."
             warn_found=1
           fi
