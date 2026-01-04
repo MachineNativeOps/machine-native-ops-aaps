@@ -1,0 +1,239 @@
+name: 🚪 Gate Enforcer - 閘門強制器
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+    branches: [main, develop]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+jobs:
+  enforce-gates:
+    name: 🔒 Enforce PR Gates
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.11"
+
+      - name: 📝 Save PR Body to File
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          echo "$PR_BODY" > /tmp/pr_body.md
+
+      - name: 🚪 Run Gate Enforcer
+        id: gate-enforcer
+        env:
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+        run: |
+          chmod +x .github/scripts/gate-enforcer.py
+
+          # 運行閘門強制器並捕獲輸出
+          python .github/scripts/gate-enforcer.py \
+            --pr-body-file /tmp/pr_body.md \
+            --pr-number ${{ github.event.pull_request.number }} \
+            --output both \
+            --repo-root . \
+            > /tmp/gate_report.txt 2>&1 || true
+
+          # 提取 markdown 和 json 報告
+          cat /tmp/gate_report.txt
+
+          # 解析 JSON 報告獲取分數
+          SCORE=$(grep -A 100 '^{' /tmp/gate_report.txt | python -c "import sys,json; data=json.load(sys.stdin); print(data['score'])" 2>/dev/null || echo "0")
+          PASSED=$(grep -A 100 '^{' /tmp/gate_report.txt | python -c "import sys,json; data=json.load(sys.stdin); print(data['passed'])" 2>/dev/null || echo "0")
+          FAILED=$(grep -A 100 '^{' /tmp/gate_report.txt | python -c "import sys,json; data=json.load(sys.stdin); print(data['failed'])" 2>/dev/null || echo "0")
+
+          echo "score=$SCORE" >> $GITHUB_OUTPUT
+          echo "passed=$PASSED" >> $GITHUB_OUTPUT
+          echo "failed=$FAILED" >> $GITHUB_OUTPUT
+
+          # 保存報告
+          cp /tmp/gate_report.txt gate-report.md
+
+      - name: 📊 Generate Summary
+        run: |
+          echo "## 🚪 閘門驗證結果" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**驗證分數**: ${{ steps.gate-enforcer.outputs.score }}%" >> $GITHUB_STEP_SUMMARY
+          echo "**通過**: ${{ steps.gate-enforcer.outputs.passed }}" >> $GITHUB_STEP_SUMMARY
+          echo "**失敗**: ${{ steps.gate-enforcer.outputs.failed }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # 添加詳細報告
+          head -50 gate-report.md >> $GITHUB_STEP_SUMMARY || true
+
+      - name: 💬 Comment on PR
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v7.0.2
+        with:
+          script: |
+            const fs = require('fs');
+
+            // 讀取報告
+            let report = '';
+            try {
+              report = fs.readFileSync('gate-report.md', 'utf8');
+              // 只取 markdown 部分 (在 --- 之前)
+              const parts = report.split('---\n');
+              report = parts[0];
+            } catch (e) {
+              report = '無法讀取閘門報告';
+            }
+
+            const score = parseFloat('${{ steps.gate-enforcer.outputs.score }}') || 0;
+            const failed = parseInt('${{ steps.gate-enforcer.outputs.failed }}') || 0;
+
+            // 構建評論
+            let body = report;
+
+            // 添加狀態標籤
+            if (score >= 80) {
+              body = '# ✅ 閘門檢查通過\n\n' + body;
+            } else if (score >= 50) {
+              body = '# ⚠️ 閘門檢查部分通過\n\n' + body;
+            } else {
+              body = '# ❌ 閘門檢查失敗\n\n' + body;
+            }
+
+            body += '\n\n---\n*此報告由 Gate Enforcer 自動生成*';
+
+            // 查找現有評論
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+
+            const botComment = comments.find(c =>
+              c.user.type === 'Bot' &&
+              c.body.includes('Gate Enforcer')
+            );
+
+            if (botComment) {
+              // 更新現有評論
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body
+              });
+            } else {
+              // 創建新評論
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body
+              });
+            }
+
+      - name: 📤 Upload Report
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: gate-enforcer-report
+          path: gate-report.md
+          retention-days: 30
+
+      - name: 🚫 Fail if Gates Failed
+        if: ${{ steps.gate-enforcer.outputs.failed > 0 }}
+        run: |
+          echo "::error::閘門檢查失敗: ${{ steps.gate-enforcer.outputs.failed }} 個閘門未通過"
+          echo "請修復上述問題後重新提交"
+          exit 1
+
+
+  # =============================================================================
+  # 自動修復作業 (可選 - 嘗試自動填寫模板)
+  # =============================================================================
+  auto-fill-template:
+    name: 🤖 Auto-fill PR Template
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'  # 只在 PR 首次開啟時運行
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: 📥 Checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: 🔍 Collect PR Evidence
+        id: evidence
+        env:
+          GITHUB_BASE_REF: ${{ github.base_ref }}
+        run: |
+          # 收集證據
+          REPO="https://github.com/${{ github.repository }}"
+          BRANCH="${{ github.head_ref }}"
+          COMMIT="${{ github.event.pull_request.head.sha }}"
+          PR_URL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
+
+          echo "repo=$REPO" >> $GITHUB_OUTPUT
+          echo "branch=$BRANCH" >> $GITHUB_OUTPUT
+          echo "commit=$COMMIT" >> $GITHUB_OUTPUT
+          echo "pr_url=$PR_URL" >> $GITHUB_OUTPUT
+
+          # 獲取變更檔案
+          git diff --name-only origin/${{ github.base_ref }}...HEAD > /tmp/changed_files.txt
+          CHANGED_FILES=$(cat /tmp/changed_files.txt | head -20 | sed 's/^/  - /' | tr '\n' '\n')
+          echo "changed_files<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED_FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: 📝 Generate Suggested Update
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v7.0.2
+        with:
+          script: |
+            const currentBody = context.payload.pull_request.body || '';
+
+            // 檢查是否已經填寫了證據
+            if (currentBody.includes('${{ steps.evidence.outputs.commit }}')) {
+              console.log('證據已填寫，跳過');
+              return;
+            }
+
+            // 構建建議的證據區塊
+            const evidenceBlock = `
+            ### 📋 四大核心證據
+            \`\`\`yaml
+            - repo: ${{ steps.evidence.outputs.repo }}
+            - branch: ${{ steps.evidence.outputs.branch }}
+            - commit: ${{ steps.evidence.outputs.commit }}
+            - PR: ${{ steps.evidence.outputs.pr_url }}
+            \`\`\`
+
+            ### 📊 變更檔案 (自動檢測)
+            \`\`\`yaml
+            modified_files:
+            ${{ steps.evidence.outputs.changed_files }}
+            \`\`\`
+            `;
+
+            // 創建一個建議評論
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## 🤖 自動收集的證據
+
+            以下是自動收集的 PR 證據，請將其添加到 PR 描述中：
+
+            ${evidenceBlock}
+
+            ---
+            *提示：您可以複製上述內容並更新 PR 描述，或者使用編輯功能直接修改。*`
+            });
