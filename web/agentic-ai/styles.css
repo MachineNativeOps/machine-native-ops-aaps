@@ -1,0 +1,440 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #2563eb;
+    --secondary-color: #1e40af;
+    --accent-color: #3b82f6;
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --bg-light: #f9fafb;
+    --bg-white: #ffffff;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --error-color: #ef4444;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.8;
+    color: var(--text-dark);
+    background-color: var(--bg-white);
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header and Navigation */
+header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    padding: 80px 0 100px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    line-height: 1.2;
+}
+
+header .subtitle {
+    font-size: 1.3rem;
+    opacity: 0.95;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Navigation */
+nav {
+    background: var(--bg-white);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+}
+
+nav .logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+nav ul {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+nav a:hover {
+    color: var(--primary-color);
+}
+
+/* Main Content */
+main {
+    padding: 60px 0;
+}
+
+section {
+    margin-bottom: 80px;
+}
+
+section h2 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+section h3 {
+    font-size: 1.8rem;
+    color: var(--text-dark);
+    margin: 30px 0 15px;
+}
+
+section p {
+    margin-bottom: 15px;
+    color: var(--text-light);
+    font-size: 1.1rem;
+}
+
+/* Introduction Section */
+.introduction {
+    background: var(--bg-light);
+    padding: 80px 0;
+    border-radius: 10px;
+    margin-bottom: 80px;
+}
+
+.introduction .content {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* How It Works Section */
+.how-it-works {
+    padding: 60px 0;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.step-card {
+    background: var(--bg-white);
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.step-card .step-number {
+    background: var(--primary-color);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0 auto 20px;
+}
+
+.step-card h4 {
+    font-size: 1.3rem;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+}
+
+/* Use Cases Section */
+.use-cases {
+    background: var(--bg-light);
+    padding: 80px 0;
+    border-radius: 10px;
+}
+
+.use-cases-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.use-case-card {
+    background: var(--bg-white);
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.use-case-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.use-case-card .icon {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.use-case-card h4 {
+    font-size: 1.4rem;
+    color: var(--text-dark);
+    margin-bottom: 15px;
+}
+
+/* Company Case Studies Section */
+.case-studies {
+    padding: 60px 0;
+}
+
+.case-studies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.case-study-card {
+    background: var(--bg-white);
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    padding: 30px;
+    transition: transform 0.3s ease;
+}
+
+.case-study-card:hover {
+    transform: scale(1.02);
+}
+
+.case-study-card h4 {
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.case-study-card .company {
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+}
+
+.case-study-card .result {
+    background: var(--bg-light);
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 15px;
+    border-left: 4px solid var(--success-color);
+}
+
+/* Statistics Section */
+.statistics {
+    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+    color: white;
+    padding: 80px 0;
+    border-radius: 10px;
+    margin: 80px 0;
+}
+
+.statistics h2 {
+    color: white;
+}
+
+.statistics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+    margin-top: 50px;
+}
+
+.stat-card {
+    text-align: center;
+    padding: 30px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+.stat-card .number {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--accent-color);
+}
+
+.stat-card .label {
+    font-size: 1.2rem;
+    opacity: 0.95;
+}
+
+.stat-card .description {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-top: 10px;
+}
+
+/* Future Opportunities Section */
+.future {
+    padding: 60px 0;
+}
+
+.future-list {
+    list-style: none;
+    margin-top: 30px;
+}
+
+.future-list li {
+    padding: 20px;
+    margin-bottom: 15px;
+    background: var(--bg-light);
+    border-radius: 8px;
+    border-left: 4px solid var(--primary-color);
+    transition: transform 0.3s ease;
+}
+
+.future-list li:hover {
+    transform: translateX(10px);
+}
+
+.future-list li strong {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+}
+
+/* Conclusion Section */
+.conclusion {
+    background: var(--bg-light);
+    padding: 80px 0;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 80px;
+}
+
+.conclusion .content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.conclusion h2 {
+    margin-bottom: 30px;
+}
+
+.conclusion p {
+    font-size: 1.2rem;
+    color: var(--text-dark);
+}
+
+/* Footer */
+footer {
+    background: var(--text-dark);
+    color: white;
+    padding: 40px 0;
+    text-align: center;
+    margin-top: 80px;
+}
+
+footer p {
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    header .subtitle {
+        font-size: 1rem;
+    }
+    
+    nav ul {
+        gap: 15px;
+    }
+    
+    nav a {
+        font-size: 0.9rem;
+    }
+    
+    section h2 {
+        font-size: 1.8rem;
+    }
+    
+    .steps-grid,
+    .use-cases-grid,
+    .case-studies-grid,
+    .statistics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stat-card .number {
+        font-size: 2.5rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body {
+        font-size: 12pt;
+    }
+    
+    header {
+        background: white;
+        color: var(--text-dark);
+        padding: 40px 0;
+    }
+    
+    nav {
+        display: none;
+    }
+    
+    .statistics {
+        background: white;
+        color: var(--text-dark);
+    }
+    
+    .statistics h2,
+    .stat-card .number {
+        color: var(--text-dark);
+    }
+    
+    a {
+        text-decoration: none;
+        color: var(--text-dark);
+    }
+}
