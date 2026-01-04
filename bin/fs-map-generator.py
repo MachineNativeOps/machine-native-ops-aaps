@@ -40,13 +40,14 @@ def normalize_physical_path(physical_path: str) -> str:
     """
     normalized = physical_path.strip()
 
-    if normalized in {'', '.', './'}:
+    if normalized in {'', '.'}:
         return '.'
 
     if normalized.startswith('./'):
         normalized = normalized[2:]
+    elif normalized.startswith('/'):
+        normalized = normalized.lstrip('/')
 
-    normalized = normalized.lstrip('/')
     return normalized or '.'
 
 # =============================================================================
@@ -119,7 +120,7 @@ class FsMapEntry:
         return f"{self.logical_name}:{self.physical_path}:{self.fs_type}:{self.mount_options}:{self.permissions}:{self.description}"
 
 
-def get_mapped_directories(generated_maps: Dict[str, List["FsMapEntry"]]) -> Set[str]:
+def get_mapped_directories(generated_maps: Dict[str, List[FsMapEntry]]) -> Set[str]:
     """Return normalized, deduplicated directory paths from generated maps.
 
     Example:
@@ -679,7 +680,7 @@ class DriftChecker:
                         if line and not line.startswith('#') and ':' in line:
                             parts = line.split(':')
                             if len(parts) >= 2:
-                                path = parts[1].lstrip('./')
+                                path = normalize_physical_path(parts[1])
                                 if path:
                                     mapped.add(path)
             except Exception:
