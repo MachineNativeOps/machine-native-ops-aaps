@@ -72,9 +72,10 @@ jobs:
           )
           
           # Lower-confidence patterns that should warn but not fail
+          # Note: Using alternation for optional segments since ERE doesn't support non-capturing groups
           warning_patterns=(
-            '[Aa][Ww][Ss][_-]([Aa][Cc][Cc][Ee][Ss][Ss][_-])?[Kk][Ee][Yy]([_-][Ii][Dd])?'
-            '[Aa][Ww][Ss][_-][Ss][Ee][Cc][Rr][Ee][Tt]([_-][Aa][Cc][Cc][Ee][Ss][Ss])?[_-][Kk][Ee][Yy]'
+            '[Aa][Ww][Ss][_-][Aa][Cc][Cc][Ee][Ss][Ss][_-][Kk][Ee][Yy][_-][Ii][Dd]|[Aa][Ww][Ss][_-][Kk][Ee][Yy][_-][Ii][Dd]|[Aa][Ww][Ss][_-][Aa][Cc][Cc][Ee][Ss][Ss][_-][Kk][Ee][Yy]|[Aa][Ww][Ss][_-][Kk][Ee][Yy]'
+            '[Aa][Ww][Ss][_-][Ss][Ee][Cc][Rr][Ee][Tt][_-][Aa][Cc][Cc][Ee][Ss][Ss][_-][Kk][Ee][Yy]|[Aa][Ww][Ss][_-][Ss][Ee][Cc][Rr][Ee][Tt][_-][Kk][Ee][Yy]'
             '[Aa][Pp][Ii][_-][Kk][Ee][Yy]'
             '[Ss][Ee][Cc][Rr][Ee][Tt][_-][Kk][Ee][Yy]'
             '[Pp][Rr][Ii][Vv][Aa][Tt][Ee][_-][Kk][Ee][Yy]'
@@ -94,7 +95,7 @@ jobs:
           )
           
           # Check high-confidence patterns (fail on match)
-          high_conf_regex="($(printf '%s|' "${high_confidence_patterns[@]}" | sed 's/|$//'))"
+          high_conf_regex="$(printf '%s|' "${high_confidence_patterns[@]}" | sed 's/|$//')"
           high_conf_found=0
           if git grep -nE "$high_conf_regex" -- . "${exclusions[@]}" 2>/dev/null; then
             echo "❌ High-confidence secrets detected (GitHub tokens with specific format)."
@@ -102,7 +103,7 @@ jobs:
           fi
           
           # Check warning patterns (warn but don't fail)
-          warn_regex="($(printf '%s|' "${warning_patterns[@]}" | sed 's/|$//'))"
+          warn_regex="$(printf '%s|' "${warning_patterns[@]}" | sed 's/|$//')"
           warn_found=0
           if git grep -nE "$warn_regex" -- . "${exclusions[@]}" 2>/dev/null; then
             echo "⚠️ Potential secrets detected. Please review the matches above."

@@ -60,14 +60,16 @@ jobs:
           fetch-depth: 0
 
       - name: "🔍 驗證路徑存在"
+        env:
+          SERVICE_PATH: ${{ env.CONTRACTS_SERVICE_PATH }}
         run: |
-          if [ ! -d "$GITHUB_WORKSPACE/${{ env.CONTRACTS_SERVICE_PATH }}" ]; then
-            echo "::error::Required path does not exist: ${{ env.CONTRACTS_SERVICE_PATH }}"
+          if [ ! -d "$GITHUB_WORKSPACE/$SERVICE_PATH" ]; then
+            echo "::error::Required path does not exist: $SERVICE_PATH"
             echo "This workflow requires the contract service to be implemented first."
             exit 1
           fi
-          if [ ! -f "$GITHUB_WORKSPACE/${{ env.CONTRACTS_SERVICE_PATH }}/package-lock.json" ]; then
-            echo "::error::Required file does not exist: ${{ env.CONTRACTS_SERVICE_PATH }}/package-lock.json"
+          if [ ! -f "$GITHUB_WORKSPACE/$SERVICE_PATH/package-lock.json" ]; then
+            echo "::error::Required file does not exist: $SERVICE_PATH/package-lock.json"
             echo "Cannot cache dependencies without package-lock.json"
             exit 1
           fi
