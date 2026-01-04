@@ -14,25 +14,25 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 
-- **[docs/WORKFLOW_SYSTEM.md](docs/WORKFLOW_SYSTEM.md)** - Complete system guide
+- **[docs/WORKFLOW_SYSTEM.md](./WORKFLOW_SYSTEM.md)** - Complete system guide
   (422 lines)
-- **[docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)** - Deployment
+- **[docs/DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Deployment
   instructions
-- **[docs/ARCHITECTURE_DETAILED.md](docs/ARCHITECTURE_DETAILED.md)** -
+- **[docs/ARCHITECTURE_DETAILED.md](./ARCHITECTURE_DETAILED.md)** -
   Architecture deep dive
 =======
-- **[docs/WORKFLOW_SYSTEM.md](docs/WORKFLOW_SYSTEM.md)** - Complete system guide (422 lines)
-- **[docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)** - Deployment instructions
-- **[docs/ARCHITECTURE_DETAILED.md](docs/ARCHITECTURE_DETAILED.md)** - Architecture deep dive
+- **[docs/WORKFLOW_SYSTEM.md](./WORKFLOW_SYSTEM.md)** - Complete system guide (422 lines)
+- **[docs/DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Deployment instructions
+- **[docs/ARCHITECTURE_DETAILED.md](./ARCHITECTURE_DETAILED.md)** - Architecture deep dive
 >>>>>>> origin/alert-autofix-37
 =======
 
-- **[docs/WORKFLOW_SYSTEM.md](docs/WORKFLOW_SYSTEM.md)** - Complete system guide (422 lines)
-- **[docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)** - Deployment instructions
-- **[docs/ARCHITECTURE_DETAILED.md](docs/ARCHITECTURE_DETAILED.md)** - Architecture deep dive
+- **[docs/WORKFLOW_SYSTEM.md](./WORKFLOW_SYSTEM.md)** - Complete system guide (422 lines)
+- **[docs/DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Deployment instructions
+- **[docs/ARCHITECTURE_DETAILED.md](./ARCHITECTURE_DETAILED.md)** - Architecture deep dive
 >>>>>>> origin/copilot/sub-pr-402
-- **[docs/API_REFERENCE.md](docs/API_REFERENCE.md)** - API documentation
-- **[docs/VALIDATION_GUIDE.md](docs/VALIDATION_GUIDE.md)** - Validation system guide
+- **[docs/API_REFERENCE.md](./API_REFERENCE.md)** - API documentation
+- **[docs/VALIDATION_GUIDE.md](./VALIDATION_GUIDE.md)** - Validation system guide
 
 ## 🗂️ File Organization | 文件組織
 
