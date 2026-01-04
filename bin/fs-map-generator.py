@@ -31,6 +31,12 @@ from pathlib import Path
 from typing import Dict, List, Set, Tuple, Optional
 from dataclasses import dataclass, field
 
+
+def normalize_physical_path(physical_path: str) -> str:
+    """Normalize physical paths for consistent coverage calculations."""
+    normalized = physical_path.lstrip('./')
+    return normalized or '.'
+
 # =============================================================================
 # Configuration
 # =============================================================================
@@ -383,12 +389,21 @@ class IndexUpdater:
 
     def _calculate_coverage(self, generated_maps: Dict[str, List[FsMapEntry]]) -> float:
         """Calculate coverage percentage"""
-        total_dirs = len([d for d in self.config.repo_root.rglob('*')
-                         if d.is_dir() and not any(p in str(d) for p in self.config.exclude_patterns)])
-        mapped_dirs = sum(len(entries) for entries in generated_maps.values())
+        total_dirs = len([
+            d for d in self.config.repo_root.rglob('*')
+            if d.is_dir() and not any(p in str(d) for p in self.config.exclude_patterns)
+        ])
+
+        mapped_dirs = {
+            normalize_physical_path(entry.physical_path)
+            for entries in generated_maps.values()
+            for entry in entries
+        }
+
         if total_dirs == 0:
             return 100.0
-        return round((mapped_dirs / total_dirs) * 100, 2)
+
+        return round((len(mapped_dirs) / total_dirs) * 100, 2)
 
 
 # =============================================================================
@@ -672,6 +687,12 @@ class ReportGenerator:
         total_dirs = len(scanner.directories)
         module_boundaries = len([d for d in scanner.directories.values() if d.is_module_boundary])
         total_mappings = sum(len(entries) for entries in generator.generated_maps.values())
+        mapped_dirs = {
+            normalize_physical_path(entry.physical_path)
+            for entries in generator.generated_maps.values()
+            for entry in entries
+        }
+        coverage_percentage = round((len(mapped_dirs) / total_dirs * 100) if total_dirs else 0, 2)
 
         report = f"""# Filesystem Mapping Report
 # Generated: {timestamp}
@@ -684,7 +705,7 @@ class ReportGenerator:
 | Module Boundaries Detected | {module_boundaries} |
 | fs.map Files Generated | {len(generator.generated_maps)} |
 | Total Mappings | {total_mappings} |
-| Coverage | {round((total_mappings / total_dirs * 100) if total_dirs else 0, 2)}% |
+| Coverage | {coverage_percentage}% |
 
 ## Module Boundaries
 
