@@ -19,7 +19,6 @@ import json
 import subprocess
 from pathlib import Path
 from dataclasses import dataclass, field
-from typing import Optional
 from enum import Enum
 
 
@@ -110,7 +109,7 @@ class GateEnforcer:
 
     # Checkbox 模式匹配
     CHECKBOX_PATTERN = re.compile(
-        r'^(\s*)-\s*\[([ xX✅❌⏭️🔄⏸️]?)\]\s*(.+)$',
+        r'^(\s*)-\s*\[((?:[ xX]|✅|❌|⏭️|🔄|⏸️)?)\]\s*(.+)$',
         re.MULTILINE
     )
 
@@ -132,8 +131,9 @@ class GateEnforcer:
             )
             if result.returncode == 0:
                 self.changed_files = [f.strip() for f in result.stdout.strip().split('\n') if f.strip()]
-        except Exception:
-            pass
+        except Exception as e:
+            # 如果無法取得變更檔案，記錄錯誤但不要中止流程，維持默認/既有的 changed_files
+            print(f"[GateEnforcer] Failed to get changed files: {e}", file=sys.stderr)
         return self.changed_files
 
     def parse_checkboxes(self) -> list:
@@ -295,7 +295,7 @@ class GateEnforcer:
                 # 排除允許大寫的檔案
                 allowed = ['README.md', 'LICENSE', 'Dockerfile', 'Makefile',
                           'CHANGELOG.md', 'CONTRIBUTING.md', 'CODEOWNERS']
-                if basename not in allowed and not basename.endswith('.md'):
+                if basename not in allowed:
                     violations.append(f)
 
         if violations:
@@ -341,11 +341,58 @@ class GateEnforcer:
                 auto_verified=True
             )
 
+        # 解析 modified_files 區塊中的檔案列表
+        documented_block = match.group(1)
+        documented_files = []
+        for line in documented_block.splitlines():
+            stripped = line.strip()
+            if not stripped or not stripped.startswith("-"):
+                continue
+            # 移除前綴的 "-" 並取得路徑
+            path_str = stripped[1:].strip()
+            if path_str:
+                documented_files.append(path_str)
+
+        # 正規化路徑後比對實際變更檔案與 PR 中記錄的檔案
+        normalized_changed = {
+            Path(p).as_posix().lstrip("./") for p in self.changed_files
+        }
+        normalized_documented = {
+            Path(p).as_posix().lstrip("./") for p in documented_files
+        }
+
+        missing_in_docs = sorted(normalized_changed - normalized_documented)
+        extra_in_docs = sorted(normalized_documented - normalized_changed)
+
+        if not missing_in_docs and not extra_in_docs:
+            return GateResult(
+                gate_id="files.modified_documented",
+                name="Files Documented",
+                status=GateStatus.PASS,
+                message=f"已完整記錄 {len(self.changed_files)} 個變更檔案",
+                auto_verified=True
+            )
+
+        # 若有不一致，回報詳細資訊以便修正
+        message_parts = []
+        if missing_in_docs:
+            preview_missing = ", ".join(missing_in_docs[:5])
+            more_missing = "..." if len(missing_in_docs) > 5 else ""
+            message_parts.append(
+                f"有 {len(missing_in_docs)} 個變更檔案未在 modified_files 中記錄：{preview_missing}{more_missing}"
+            )
+        if extra_in_docs:
+            preview_extra = ", ".join(extra_in_docs[:5])
+            more_extra = "..." if len(extra_in_docs) > 5 else ""
+            message_parts.append(
+                f"modified_files 中包含 {len(extra_in_docs)} 個未變更的檔案：{preview_extra}{more_extra}"
+            )
+
         return GateResult(
             gate_id="files.modified_documented",
             name="Files Documented",
-            status=GateStatus.PASS,
-            message=f"已記錄 {len(self.changed_files)} 個變更檔案",
+            status=GateStatus.FAIL,
+            message="；".join(message_parts),
             auto_verified=True
         )
 
@@ -430,9 +477,20 @@ class GateEnforcer:
         manual_passed = 0
         manual_total = 0
 
+        # 建立自動驗證閘門名稱的標準化集合，避免以子字串方式誤判
+        auto_gate_names = {
+            gate.name.strip().lower()
+            for gate in self.report.gates
+            if getattr(gate, "name", None)
+        }
+
         for cb in checkboxes:
-            # 跳過自動驗證的項目
-            if any(gate.name.lower() in cb['text'].lower() for gate in self.report.gates):
+            # 跳過自動驗證的項目（使用精確匹配而非子字串匹配）
+            cb_text = cb.get("text", "")
+            if not isinstance(cb_text, str):
+                cb_text = str(cb_text)
+            normalized_cb_text = cb_text.strip().lower()
+            if normalized_cb_text in auto_gate_names:
                 continue
 
             manual_total += 1
