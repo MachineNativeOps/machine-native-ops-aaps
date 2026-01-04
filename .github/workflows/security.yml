@@ -141,9 +141,6 @@ jobs:
             echo "✅ No secrets found."
             exit 0
           fi
-          # Note: Using explicit character class patterns for case-insensitive matching
-          # git grep -E doesn't support PCRE (?i) syntax
-          set +e  # Don't fail immediately on grep matches
           
           # High-confidence patterns that should fail the build
           high_confidence_patterns=(
