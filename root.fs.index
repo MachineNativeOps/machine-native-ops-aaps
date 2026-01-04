@@ -1,0 +1,214 @@
+# =============================================================================
+# Root Filesystem Index
+# MachineNativeOps Hierarchical Filesystem Mapping Index
+# =============================================================================
+# Version: 1.0.0
+# Generated: 2026-01-04
+#
+# This file is the MASTER INDEX for all fs.map files in the repository.
+# It is automatically maintained by: bin/fs-map-generator.py
+#
+# DO NOT MANUALLY EDIT - Run `./bin/fs-map-generator.py --regenerate` instead
+# =============================================================================
+
+apiVersion: machinenativeops.io/v1
+kind: FilesystemIndex
+metadata:
+  name: root-filesystem-index
+  namespace: machinenativenops
+  labels:
+    machinenativeops.io/component: filesystem
+    machinenativeops.io/layer: root
+    machinenativeops.io/managed-by: fs-map-generator
+  annotations:
+    machinenativeops.io/description: "Master index for hierarchical fs.map architecture"
+    machinenativeops.io/auto-generated: "true"
+    machinenativeops.io/last-sync: "2026-01-04T00:00:00Z"
+
+spec:
+  # ==========================================================================
+  # Generation Configuration
+  # ==========================================================================
+  generator:
+    script: bin/fs-map-generator.py
+    trigger:
+      - on_commit: true
+      - on_directory_change: true
+      - schedule: "daily"
+
+    # Directories to scan for fs.map generation
+    scan_roots:
+      - path: "."
+        max_depth: 4
+        exclude_patterns:
+          - ".git"
+          - "node_modules"
+          - "__pycache__"
+          - ".venv"
+          - "*.egg-info"
+          - "workspace-archive"
+          - "workspace-problematic"
+
+    # Module boundary detection (where to create fs.map files)
+    module_boundary_markers:
+      - "package.json"
+      - "pyproject.toml"
+      - "Cargo.toml"
+      - "go.mod"
+      - "README.md"
+      - "fs.map"  # Existing fs.map indicates module boundary
+
+    # Default permissions by directory pattern
+    default_permissions:
+      - pattern: "*/config/*"
+        permissions: "-rwxr-xr-x"
+        filesystem_type: "ext4"
+        mount_options: "relatime,rw"
+      - pattern: "*/secrets/*"
+        permissions: "-rwx------"
+        filesystem_type: "ext4"
+        mount_options: "relatime,rw"
+      - pattern: "*/logs/*"
+        permissions: "-rwxr-xr-x"
+        filesystem_type: "ext4"
+        mount_options: "relatime,rw"
+      - pattern: "*/tmp/*"
+        permissions: "-rwxrwxrwx"
+        filesystem_type: "tmpfs"
+        mount_options: "size=1G,rw,nosuid,nodev"
+      - pattern: "*"
+        permissions: "-rwxr-xr-x"
+        filesystem_type: "ext4"
+        mount_options: "relatime,rw"
+
+  # ==========================================================================
+  # Included fs.map Files (Auto-discovered)
+  # ==========================================================================
+  includes:
+    # Layer 0: Root
+    - path: root.fs.map
+      scope: root
+      priority: 1000
+      type: manual  # Core file, manually maintained
+      description: "Root layer - FHS directories and production paths"
+
+    # Layer 1: Primary Modules
+    - path: controlplane/fs.map
+      scope: controlplane
+      priority: 900
+      type: auto-generated
+      description: "Controlplane governance layer"
+
+    - path: workspace/fs.map
+      scope: workspace
+      priority: 800
+      type: auto-generated
+      description: "Workspace project layer"
+
+    - path: chatops/fs.map
+      scope: chatops
+      priority: 700
+      type: auto-generated
+      description: "ChatOps automation layer"
+
+    - path: web/fs.map
+      scope: web
+      priority: 600
+      type: auto-generated
+      description: "Web frontend layer"
+
+    # Layer 2: Sub-modules (auto-discovered)
+    - path: workspace/src/fs.map
+      scope: workspace.src
+      priority: 500
+      type: auto-generated
+      description: "Source code modules"
+
+    - path: workspace/config/fs.map
+      scope: workspace.config
+      priority: 500
+      type: auto-generated
+      description: "Configuration modules"
+
+    - path: chatops/services/fs.map
+      scope: chatops.services
+      priority: 500
+      type: auto-generated
+      description: "ChatOps services"
+
+    - path: chatops/deploy/fs.map
+      scope: chatops.deploy
+      priority: 500
+      type: auto-generated
+      description: "Deployment configurations"
+
+  # ==========================================================================
+  # Aggregation Rules
+  # ==========================================================================
+  aggregation:
+    # How to merge multiple fs.map files
+    strategy: hierarchical  # hierarchical | flat | override
+
+    # Conflict resolution when same logical name in multiple files
+    conflict_resolution:
+      strategy: priority  # priority | error | last-wins
+      log_conflicts: true
+
+    # Namespace prefixing
+    namespace_prefix:
+      enabled: true
+      separator: "_"
+      # e.g., workspace/src/fs.map entries become workspace_src_*
+
+  # ==========================================================================
+  # Validation Rules
+  # ==========================================================================
+  validation:
+    # Ensure all included files exist
+    require_all_includes: true
+
+    # Check for naming conflicts
+    check_conflicts: true
+
+    # Verify permissions are valid
+    validate_permissions: true
+
+    # Check path references exist
+    verify_paths: true
+
+    # Maximum allowed drift before warning
+    drift_threshold:
+      new_directories: 10
+      removed_directories: 5
+      modified_permissions: 3
+
+  # ==========================================================================
+  # Sync Configuration
+  # ==========================================================================
+  sync:
+    # Auto-regenerate on these events
+    triggers:
+      - event: pre-commit
+        action: validate
+      - event: post-commit
+        action: regenerate-if-drift
+      - event: manual
+        action: regenerate
+
+    # What to do when drift detected
+    on_drift:
+      action: warn  # warn | auto-fix | error
+      notify: true
+      create_issue: false
+
+# =============================================================================
+# Statistics (Auto-updated)
+# =============================================================================
+status:
+  last_sync: "2026-01-04T00:00:00Z"
+  total_fs_maps: 9
+  total_mappings: 0  # Will be populated by generator
+  total_directories: 0  # Will be populated by generator
+  coverage_percentage: 0  # Will be populated by generator
+  drift_status: unknown
+  validation_status: pending
