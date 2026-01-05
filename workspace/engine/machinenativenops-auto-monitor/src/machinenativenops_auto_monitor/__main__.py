@@ -83,10 +83,8 @@ def main():
     
     try:
         if args.daemon:
-            logger.info("Running in daemon mode...")
-            # TODO: Implement daemon mode
-            # For now, daemon mode is not implemented, so we exit early
-            return
+            # Run in daemon mode with background thread
+            app.run_daemon()
         else:
             # Run in normal (foreground) mode
             app.run()
