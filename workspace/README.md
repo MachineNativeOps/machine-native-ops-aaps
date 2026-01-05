@@ -97,6 +97,19 @@ The main packages (paths are relative to this directory) include:
 
 For the authoritative list of all workspace packages, see the root `/package.json` file or `workspace/package.json`
 
+1. **Root-level (`/package.json`)**: Points to actual workspace packages under `workspace/src/` directories
+2. **This directory (`workspace/package.json`)**: Contains its own nested workspace definitions
+
+The actual workspace packages (paths relative to repository root) include:
+
+- MCP server implementations (`workspace/src/mcp-servers`)
+- Core contract services (`workspace/src/core/contract_service/contracts-L1/contracts`)
+- Advisory database (`workspace/src/core/advisory-database`)
+- Web applications (`workspace/src/apps/web`)
+- AI components (`workspace/src/ai/src/ai`)
+- Other components as defined in `/package.json` and `workspace/package.json`
+
+For the authoritative list of all workspace packages, see the root `/package.json` file.
 ## Guidelines
 
 Please refer to:

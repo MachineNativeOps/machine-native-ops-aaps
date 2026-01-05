@@ -7,7 +7,7 @@ Manages alert rules, evaluation, generation, and notification routing for Machin
 
 import logging
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Callable
+from typing import Dict, List, Optional, Any
 from datetime import datetime
 from enum import Enum
 
@@ -29,6 +29,7 @@ class AlertState(Enum):
     RESOLVED = "resolved"
 
 
+logger = logging.getLogger(__name__)
 class AlertStatus(Enum):
     """Alert status."""
     FIRING = "firing"
