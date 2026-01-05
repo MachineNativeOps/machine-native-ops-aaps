@@ -9,6 +9,13 @@
 
 ---
 
+## 🎯 當前焦點
+
+- 專案已鎖定執行既定的三階段重構計劃（解構 → 集成 → 重構），詳見 `INSTANT-EXECUTION-REFACTOR-PLAN.md` 與 `workspace/docs/refactor_playbooks/README.md`
+- 所有工作優先支持架構重構與自動化執行，不引入與計劃無關的需求
+
+---
+
 ## 🏗️ AAPS Root Layer
 
 ## 🏗️ 架構概述

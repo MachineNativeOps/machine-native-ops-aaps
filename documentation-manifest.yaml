@@ -200,6 +200,9 @@ spec:
     current_status:
       overall: "production"
       last_updated: "2026-01-05"
+      focus:
+        - "執行已確定的三階段重構計劃（解構 → 集成 → 重構）"
+        - "保持架構重構與自動化執行的專注範圍"
 
     # 階段完成狀態（替代 PHASE*_COMPLETION.md）
     phases:
