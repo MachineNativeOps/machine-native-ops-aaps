@@ -2,13 +2,12 @@
 MachineNativeOps Auto-Monitor - Alert Management
 警報管理模組
 
-Manages alert rules, evaluation, and notification delivery.
-Handles alert rules, alert generation, and alert routing for MachineNativeOps monitoring.
+Manages alert rules, evaluation, generation, and notification routing for MachineNativeOps monitoring.
 """
 
 import logging
 from dataclasses import dataclass, field
-from typing import Dict, List, Optional, Any, Callable
+from typing import Dict, List, Optional, Any
 from datetime import datetime
 from enum import Enum
 
@@ -30,7 +29,6 @@ class AlertState(Enum):
     RESOLVED = "resolved"
 
 
-logger = logging.getLogger(__name__)
 class AlertStatus(Enum):
     """Alert status."""
     FIRING = "firing"
