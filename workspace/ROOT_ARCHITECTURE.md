@@ -217,12 +217,16 @@ MachineNativeOps/
 │       ├── root.config.yaml
 │       ├── root.governance.yaml
 │       ├── root.modules.yaml
+│       ├── root.super-execution.yaml
 │       ├── root.trust.yaml
 │       ├── root.provenance.yaml
 │       ├── root.integrity.yaml
+│       ├── root.devices.map
+│       ├── root.kernel.map
 │       └── root.naming-policy.yaml
 ├── root.bootstrap.yaml       # 根層啟動設定
 ├── root.fs.map               # 根層映射
+├── root.env.sh               # 根層環境變數
 ├── bin/                      # 新增 FHS 目錄
 ├── sbin/                     # 新增 FHS 目錄
 ├── etc/                      # 新增 FHS 目錄
@@ -240,14 +244,14 @@ MachineNativeOps/
 ## 📱 行動裝置友善性
 
 ### 優勢
-- ✅ 治理配置在根層直接可見
-- ✅ 無需 `ls -a` 查看隱藏檔案
+- ✅ 治理配置集中於 `controlplane/config/` 並保持唯讀
+- ✅ 無需 `ls -a` 查看隱藏檔案即可找到核心配置
 - ✅ 目錄結構清晰易懂
 - ✅ 快速定位關鍵配置
 
 ### 驗證流程
 1. 打開 repo 根目錄
-2. 直接看到所有 `root.*` 配置
+2. 展開 `controlplane/config/` 即可看到所有 `root.*` 配置
 3. 點擊檔案即可查看內容
 4. 標準目錄結構易於導航
 
@@ -256,10 +260,10 @@ MachineNativeOps/
 ## 🔍 配置查找指南
 
 ### 快速查找
-- **系統配置**: `root.config.yaml`
-- **權限管理**: `root.governance.yaml`
-- **模組管理**: `root.modules.yaml`
-- **安全配置**: `root.trust.yaml`
+- **系統配置**: `controlplane/config/root.config.yaml`
+- **權限管理**: `controlplane/config/root.governance.yaml`
+- **模組管理**: `controlplane/config/root.modules.yaml`
+- **安全配置**: `controlplane/config/root.trust.yaml`
 - **初始化**: `init.d/` 目錄
 
 ### 文檔位置
