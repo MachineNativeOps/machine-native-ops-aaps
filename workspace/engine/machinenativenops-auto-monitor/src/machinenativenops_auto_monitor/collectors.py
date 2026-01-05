@@ -9,19 +9,16 @@ Collects various metrics from the system and services.
 """
 
 import logging
+import os
 import platform
 import psutil
-import subprocess
-from abc import ABC, abstractmethod
-from typing import Any, Dict, List
-
-import logging
-import psutil
 import requests
+import subprocess
+import time
 from abc import ABC, abstractmethod
-from typing import Dict, List, Any, Optional
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
@@ -287,10 +284,6 @@ class MetricsCollector:
             c for c in self.collectors
             if not isinstance(c, collector_class)
         ]
-import platform
-from typing import Dict, List, Optional
-from datetime import datetime
-from dataclasses import dataclass, asdict
 
 logger = logging.getLogger(__name__)
 
@@ -698,17 +691,6 @@ class KubernetesCollector:
         """Collect metrics from all nodes."""
         # Placeholder for Kubernetes integration
         return []
-Metrics collectors for system, quantum, and Kubernetes monitoring
-"""
-
-import os
-import psutil
-import time
-import logging
-import requests
-from typing import Dict, Any, Optional, List
-from datetime import datetime
-from dataclasses import dataclass
 
 try:
     from kubernetes import client, config
