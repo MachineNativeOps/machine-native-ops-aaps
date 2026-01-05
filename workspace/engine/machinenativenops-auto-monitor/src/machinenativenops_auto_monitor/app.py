@@ -24,6 +24,8 @@ class AutoMonitorApp:
     """
     Main application class for the MachineNativeOps auto-monitor system.
 
+    Responsible for initializing collectors, alerting, and storage components,
+    and for running the main monitoring loop in either foreground or daemon mode.
     Orchestrates metrics collection, alert handling, and storage based on
     the provided configuration.
     """
