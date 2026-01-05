@@ -30,6 +30,7 @@ class AlertState(Enum):
     RESOLVED = "resolved"
 
 
+logger = logging.getLogger(__name__)
 class AlertStatus(Enum):
     """Alert status."""
     FIRING = "firing"
@@ -209,8 +210,6 @@ class AlertManager:
             self.active_alerts.remove(alert)
         
         logger.info(f"Cleared {len(resolved)} resolved alerts")
-            'resolved_at': self.resolved_at.isoformat() if self.resolved_at else None
-        }
 
 
 @dataclass

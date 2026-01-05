@@ -71,11 +71,15 @@ npm run dev:stack --workspace=workspace
 ### Documentation
 
 ```bash
-# Generate knowledge graph
+# Generate knowledge graph (from repository root)
 make -C workspace all-kg
+# Or, if already in workspace directory:
+make all-kg
 
-# Lint documentation
+# Lint documentation (from repository root)
 npm run docs:lint --workspace=workspace
+# Or, if already in workspace directory:
+npm run docs:lint
 ```
 
 ## Package Management
@@ -95,15 +99,6 @@ The actual workspace packages (paths relative to repository root) include:
 - Other components as defined in `/package.json` and `workspace/package.json`
 
 For the authoritative list of all workspace packages, see the root `/package.json` file.
-This `workspace/` directory is itself an npm workspace root. See `./package.json` in this directory (i.e., `workspace/package.json` from the repository root) for the complete and authoritative list of workspace packages. The main packages (paths are relative to this directory) include:
-
-- MCP server implementations (`src/mcp-servers`)
-- Core contract services (`src/core/contract_service/contracts-L1/contracts`)
-- Advisory database (`src/core/advisory-database`)
-- Web applications (`src/apps/web`)
-- AI components (`src/ai`)
-- Other components as defined in `./package.json`
-
 ## Guidelines
 
 Please refer to:
