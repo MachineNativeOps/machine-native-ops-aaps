@@ -22,7 +22,11 @@ from .儲存 import StorageManager
 
 class AutoMonitorApp:
     """
-    
+    Main application class for the MachineNativeOps auto-monitor system.
+
+    Orchestrates metrics collection, alert handling, and storage based on
+    the provided configuration.
+    """
     def __init__(self, config: AutoMonitorConfig):
         """
         Initialize auto-monitor application.
