@@ -1,0 +1,374 @@
+# AXIOM Integration Plan
+# Phase 2: Integration - Output
+# Generated: 2026-01-05
+#
+# 集成階段輸出：整合分散模組，建立層間界限與接口
+
+apiVersion: axiom.io/v2
+kind: IntegrationPlan
+metadata:
+  name: axiom-integration-plan
+  version: "1.0.0"
+  generated_at: "2026-01-05T00:00:00Z"
+  phase: "2_integration"
+
+# ==========================================================================
+# Layer Boundaries
+# ==========================================================================
+layer_boundaries:
+  L0_immutable_foundation:
+    entry_points:
+      - workspace/src/core/bootstrap/__init__.py
+      - workspace/src/core/merkle/__init__.py
+      - workspace/src/core/crypto/__init__.py
+    public_interfaces:
+      - BootstrapCore
+      - MerkleTree
+      - QuantumSafeCrypto
+    allowed_dependencies: []  # Foundation has no dependencies
+    no_circular_deps: true
+
+  L1_neural_compute:
+    entry_points:
+      - workspace/src/ai/__init__.py
+      - workspace/src/ai/embeddings/__init__.py
+    public_interfaces:
+      - EmbeddingEngine
+      - ModelRegistry
+      - InferenceEngine
+    allowed_dependencies:
+      - L0_immutable_foundation
+    no_circular_deps: true
+
+  L3_protocol_mesh:
+    entry_points:
+      - workspace/src/services/mesh/__init__.py
+      - workspace/src/mcp-servers/__init__.py
+    public_interfaces:
+      - ServiceMesh
+      - MCPServer
+    allowed_dependencies:
+      - L0_immutable_foundation
+    no_circular_deps: true
+
+  L4_multi_agent:
+    entry_points:
+      - workspace/src/autonomous/agents/__init__.py
+    public_interfaces:
+      - AgentFramework
+      - AgentCoordinator
+    allowed_dependencies:
+      - L1_neural_compute
+      - L3_protocol_mesh
+    no_circular_deps: true
+
+  L5_autonomous_healing:
+    entry_points:
+      - workspace/src/autonomous/core/__init__.py
+    public_interfaces:
+      - MAPEKLoop
+      - AutoRemediation
+    allowed_dependencies:
+      - L1_neural_compute
+      - L4_multi_agent
+    no_circular_deps: true
+
+  L6_federated_learning:
+    entry_points:
+      - workspace/src/ai/federated/__init__.py
+    public_interfaces:
+      - FederationFramework
+    allowed_dependencies:
+      - L1_neural_compute
+      - L3_protocol_mesh
+    no_circular_deps: true
+
+  L7_infrastructure_automation:
+    entry_points:
+      - workspace/src/autonomous/infrastructure/__init__.py
+    public_interfaces:
+      - InfrastructureManager
+      - KubernetesController
+    allowed_dependencies:
+      - L3_protocol_mesh
+      - L5_autonomous_healing
+    no_circular_deps: true
+
+  L8_supply_chain_security:
+    entry_points:
+      - workspace/src/supply-chain/__init__.py
+    public_interfaces:
+      - ArtifactVerifier
+      - SBOMGenerator
+      - SLSAProvenance
+    allowed_dependencies:
+      - L0_immutable_foundation
+    no_circular_deps: true
+
+  L10_system_optimization:
+    entry_points:
+      - workspace/src/automation/__init__.py
+    public_interfaces:
+      - GeneticOptimizer
+      - PerformanceTuner
+    allowed_dependencies:
+      - L5_autonomous_healing
+      - L7_infrastructure_automation
+    no_circular_deps: true
+
+  L11_metacognition:
+    entry_points:
+      - workspace/src/ai/metacognition/__init__.py
+    public_interfaces:
+      - MetaStrategist
+      - EmergenceDetector
+    allowed_dependencies:
+      - L1_neural_compute
+      - L4_multi_agent
+    no_circular_deps: true
+
+  L13_digital_twin:
+    entry_points:
+      - workspace/src/core/digital-twin/__init__.py
+    public_interfaces:
+      - SimulationEngine
+      - PredictiveModeler
+    allowed_dependencies:
+      - L1_neural_compute
+      - L10_system_optimization
+    no_circular_deps: true
+
+# ==========================================================================
+# Interface Contracts
+# ==========================================================================
+interface_contracts:
+  - name: IBootstrap
+    layer: L0
+    methods:
+      - name: initialize
+        async: true
+        params: []
+        returns: bool
+      - name: get_state
+        async: false
+        params: []
+        returns: Dict[str, Any]
+      - name: verify_integrity
+        async: true
+        params: []
+        returns: bool
+
+  - name: IEmbedding
+    layer: L1
+    methods:
+      - name: embed
+        async: true
+        params:
+          - name: text
+            type: str
+        returns: EmbeddingResult
+      - name: embed_batch
+        async: true
+        params:
+          - name: texts
+            type: List[str]
+        returns: List[EmbeddingResult]
+      - name: similarity
+        async: false
+        params:
+          - name: vec1
+            type: np.ndarray
+          - name: vec2
+            type: np.ndarray
+        returns: float
+
+  - name: IServiceMesh
+    layer: L3
+    methods:
+      - name: register_service
+        async: false
+        params:
+          - name: service
+            type: ServiceDefinition
+        returns: None
+      - name: get_endpoint
+        async: false
+        params:
+          - name: service_name
+            type: str
+        returns: Optional[ServiceEndpoint]
+      - name: call
+        async: true
+        params:
+          - name: service_name
+            type: str
+          - name: path
+            type: str
+          - name: method
+            type: str
+        returns: Dict[str, Any]
+
+  - name: IMAPEK
+    layer: L5
+    methods:
+      - name: start
+        async: true
+        params: []
+        returns: None
+      - name: stop
+        async: true
+        params: []
+        returns: None
+      - name: register_monitor
+        async: false
+        params:
+          - name: monitor
+            type: Callable
+        returns: None
+      - name: get_state
+        async: false
+        params: []
+        returns: Dict[str, Any]
+
+  - name: IFederation
+    layer: L6
+    methods:
+      - name: register_client
+        async: false
+        params:
+          - name: client
+            type: FederatedClient
+        returns: bool
+      - name: run_federation
+        async: true
+        params: []
+        returns: List[RoundResult]
+      - name: get_global_model
+        async: false
+        params: []
+        returns: Dict[str, List[float]]
+
+  - name: IOptimizer
+    layer: L10
+    methods:
+      - name: set_fitness_function
+        async: false
+        params:
+          - name: func
+            type: Callable
+        returns: None
+      - name: optimize
+        async: true
+        params: []
+        returns: OptimizationResult
+
+  - name: IMetaStrategist
+    layer: L11
+    methods:
+      - name: set_goal
+        async: false
+        params:
+          - name: goal
+            type: StrategicGoal
+        returns: None
+      - name: analyze_state
+        async: true
+        params:
+          - name: state
+            type: SystemState
+        returns: List[Strategy]
+
+  - name: ISimulation
+    layer: L13
+    methods:
+      - name: run_scenario
+        async: true
+        params:
+          - name: scenario
+            type: SimulationScenario
+        returns: SimulationResult
+
+# ==========================================================================
+# Cross-Layer Communication Patterns
+# ==========================================================================
+communication_patterns:
+  event_driven:
+    description: "Layers communicate via events for loose coupling"
+    example: "L5 emits 'anomaly_detected' event, L4 agents respond"
+    layers: [L4, L5, L7, L10]
+
+  request_response:
+    description: "Synchronous calls for immediate results"
+    example: "L11 calls L1 for embedding generation"
+    layers: [L1, L3, L11]
+
+  streaming:
+    description: "Continuous data flow for real-time processing"
+    example: "L7 streams metrics to L10 for optimization"
+    layers: [L7, L10, L13]
+
+  pub_sub:
+    description: "Publish-subscribe for multi-consumer scenarios"
+    example: "L0 publishes state changes, multiple layers subscribe"
+    layers: [L0, L5, L8, L14]
+
+# ==========================================================================
+# Integration Checkpoints
+# ==========================================================================
+integration_checkpoints:
+  - checkpoint: "layer_initialization"
+    description: "All layers initialize without errors"
+    validation:
+      - "Import all layer entry points"
+      - "Call initialize() on each layer"
+      - "Verify no circular import errors"
+
+  - checkpoint: "interface_compliance"
+    description: "All public interfaces match contracts"
+    validation:
+      - "Run interface contract tests"
+      - "Verify method signatures"
+      - "Check return types"
+
+  - checkpoint: "dependency_validation"
+    description: "No forbidden dependencies"
+    validation:
+      - "Run dependency analysis"
+      - "Check import graph"
+      - "Verify no cycles"
+
+  - checkpoint: "cross_layer_communication"
+    description: "Layers can communicate correctly"
+    validation:
+      - "Test event emission/reception"
+      - "Test service calls"
+      - "Test streaming data"
+
+# ==========================================================================
+# Module Consolidation Plan
+# ==========================================================================
+module_consolidation:
+  - source: workspace/src/ai/agents/*
+    target: workspace/src/autonomous/agents
+    action: "Consolidate AI agents into autonomous agents"
+    reason: "Single location for all agent implementations"
+
+  - source: workspace/src/core/instant_generation
+    target: workspace/src/autonomous/deployment
+    action: "Move instant generation to deployment module"
+    reason: "Align with INSTANT execution architecture"
+
+  - source: workspace/src/enterprise/execution
+    target: workspace/src/autonomous/execution
+    action: "Move enterprise execution to autonomous"
+    reason: "Consolidate execution-related code"
+
+# ==========================================================================
+# Next Phase Recommendations
+# ==========================================================================
+phase_3_recommendations:
+  - "Execute module consolidation moves"
+  - "Update all import paths after consolidation"
+  - "Run comprehensive test suite"
+  - "Generate final architecture validation report"
+  - "Update documentation to reflect new structure"

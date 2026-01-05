@@ -1,0 +1,255 @@
+# AXIOM Layer to Directory Mapping
+# Maps 15-layer architecture to MachineNativeOps directory structure
+#
+# 三階段重構對齊：解構 → 集成 → 重構
+
+apiVersion: axiom.io/v2
+kind: LayerDirectoryMapping
+metadata:
+  name: axiom-layer-mapping
+  version: "2.0.0"
+  description: "Maps AXIOM 15 layers to workspace/src structure"
+
+# ==========================================================================
+# Layer Mappings
+# ==========================================================================
+mappings:
+  # L0: Immutable Foundation
+  L0_immutable_foundation:
+    primary_path: workspace/src/core
+    secondary_paths:
+      - controlplane/validation
+      - workspace/src/supply-chain
+    components:
+      bootstrap_core:
+        path: workspace/src/core/bootstrap
+        status: to_create
+      merkle_foundation:
+        path: workspace/src/core/merkle
+        status: to_create
+      quantum_safe_crypto:
+        path: workspace/src/core/crypto
+        status: to_create
+
+  # L1: Neural Compute
+  L1_neural_compute:
+    primary_path: workspace/src/ai
+    components:
+      language_models:
+        path: workspace/src/ai/models
+        status: exists_partial
+      embedding_engine:
+        path: workspace/src/ai/embeddings
+        status: to_create
+      quantum_ml:
+        path: workspace/src/ai/quantum
+        status: to_create
+
+  # L2: Knowledge Synthesis
+  L2_knowledge_synthesis:
+    primary_path: workspace/src/core/knowledge
+    components:
+      knowledge_graph:
+        path: workspace/src/core/knowledge/graph
+        status: exists
+      synthesis_engine:
+        path: workspace/src/core/knowledge/synthesis
+        status: to_create
+
+  # L3: Protocol Mesh
+  L3_protocol_mesh:
+    primary_path: workspace/src/services
+    components:
+      service_mesh:
+        path: workspace/src/services/mesh
+        status: to_create
+      mcp_servers:
+        path: workspace/src/mcp-servers
+        status: exists
+
+  # L4: Multi-Agent Orchestration
+  L4_multi_agent:
+    primary_path: workspace/src/autonomous/agents
+    components:
+      agent_framework:
+        path: workspace/src/autonomous/agents/framework
+        status: exists_partial
+      coordination_engine:
+        path: workspace/src/autonomous/agents/coordination
+        status: exists
+
+  # L5: Autonomous Healing
+  L5_autonomous_healing:
+    primary_path: workspace/src/autonomous/core
+    components:
+      mape_k_loop:
+        path: workspace/src/autonomous/core/mape-k
+        status: to_create
+      auto_remediation:
+        path: workspace/src/autonomous/core/remediation
+        status: to_create
+
+  # L6: Federated Learning
+  L6_federated_learning:
+    primary_path: workspace/src/ai/federated
+    components:
+      federation_framework:
+        path: workspace/src/ai/federated/framework
+        status: to_create
+
+  # L7: Infrastructure Automation
+  L7_infrastructure_automation:
+    primary_path: workspace/src/autonomous/infrastructure
+    components:
+      multi_cloud:
+        path: workspace/src/autonomous/infrastructure/cloud
+        status: exists
+      kubernetes_fleet:
+        path: workspace/src/autonomous/infrastructure/k8s
+        status: exists
+      observability:
+        path: workspace/src/autonomous/infrastructure/observability
+        status: exists
+
+  # L8: Supply Chain Security
+  L8_supply_chain_security:
+    primary_path: workspace/src/supply-chain
+    components:
+      artifact_verification:
+        path: workspace/src/supply-chain/verification
+        status: exists
+      sbom_generator:
+        path: workspace/src/supply-chain/sbom
+        status: exists
+
+  # L9: Quantum Optimization
+  L9_quantum_optimization:
+    primary_path: workspace/src/core/quantum
+    components:
+      optimization_suite:
+        path: workspace/src/core/quantum/optimization
+        status: to_create
+
+  # L10: System Optimization
+  L10_system_optimization:
+    primary_path: workspace/src/automation
+    components:
+      performance_tuning:
+        path: workspace/src/automation/performance
+        status: exists_partial
+      genetic_algorithms:
+        path: workspace/src/automation/genetic
+        status: to_create
+
+  # L11: Metacognition
+  L11_metacognition:
+    primary_path: workspace/src/ai/metacognition
+    components:
+      meta_strategist:
+        path: workspace/src/ai/metacognition/strategist
+        status: to_create
+      emergence_detector:
+        path: workspace/src/ai/metacognition/emergence
+        status: to_create
+
+  # L12: Edge Computing
+  L12_edge_computing:
+    primary_path: workspace/src/services/edge
+    components:
+      edge_infrastructure:
+        path: workspace/src/services/edge/infra
+        status: to_create
+      edge_ai:
+        path: workspace/src/services/edge/ai
+        status: to_create
+
+  # L13: Digital Twin
+  L13_digital_twin:
+    primary_path: workspace/src/core/digital-twin
+    components:
+      simulation_engine:
+        path: workspace/src/core/digital-twin/simulation
+        status: to_create
+      predictive_modeling:
+        path: workspace/src/core/digital-twin/prediction
+        status: to_create
+
+  # L14: Strategic Governance
+  L14_strategic_governance:
+    primary_path: workspace/src/governance
+    components:
+      policy_engine:
+        path: workspace/src/governance/policy
+        status: exists
+      compliance_framework:
+        path: workspace/src/governance/compliance
+        status: exists
+
+# ==========================================================================
+# Refactoring Actions
+# ==========================================================================
+refactoring_phases:
+  phase_1_deconstruction:
+    description: "Identify and separate components"
+    actions:
+      - analyze_existing_structure
+      - identify_layer_gaps
+      - document_dependencies
+    output: layer_gap_analysis.yaml
+
+  phase_2_integration:
+    description: "Integrate distributed modules"
+    actions:
+      - create_missing_directories
+      - establish_layer_boundaries
+      - define_interfaces
+    output: integration_plan.yaml
+
+  phase_3_refactor:
+    description: "Optimize architecture structure"
+    actions:
+      - move_components_to_layers
+      - update_imports
+      - validate_structure
+    output: refactor_completion_report.yaml
+
+# ==========================================================================
+# Directory Creation Plan
+# ==========================================================================
+directories_to_create:
+  - workspace/src/core/bootstrap
+  - workspace/src/core/merkle
+  - workspace/src/core/crypto
+  - workspace/src/core/quantum/optimization
+  - workspace/src/core/digital-twin/simulation
+  - workspace/src/core/digital-twin/prediction
+  - workspace/src/ai/embeddings
+  - workspace/src/ai/quantum
+  - workspace/src/ai/federated/framework
+  - workspace/src/ai/metacognition/strategist
+  - workspace/src/ai/metacognition/emergence
+  - workspace/src/services/mesh
+  - workspace/src/services/edge/infra
+  - workspace/src/services/edge/ai
+  - workspace/src/autonomous/core/mape-k
+  - workspace/src/autonomous/core/remediation
+  - workspace/src/automation/genetic
+
+# ==========================================================================
+# Validation Rules
+# ==========================================================================
+validation:
+  required_files_per_layer:
+    - __init__.py
+    - README.md
+    - config.yaml
+
+  naming_convention:
+    directories: kebab-case
+    python_modules: snake_case
+    config_files: kebab-case
+
+  structure_compliance:
+    max_depth: 5
+    require_readme: true
+    require_tests: true
