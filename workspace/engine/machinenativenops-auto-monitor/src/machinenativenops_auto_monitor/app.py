@@ -22,7 +22,11 @@ from .儲存 import StorageManager
 
 class AutoMonitorApp:
     """
-    
+    Main application class for the MachineNativeOps auto-monitor system.
+
+    Responsible for initializing collectors, alerting, and storage components,
+    and for running the main monitoring loop in either foreground or daemon mode.
+    """
     def __init__(self, config: AutoMonitorConfig):
         """
         Initialize auto-monitor application.
