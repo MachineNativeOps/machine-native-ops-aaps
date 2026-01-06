@@ -1513,7 +1513,11 @@ async function executeDissolvedTool(
         {
           tool: toolName,
           sourceModule: tool.sourceModule,
+          source_module: tool.source_module,
           args,
+          execution_method: "quantum",
+          execution_timestamp: new Date().toISOString(),
+          quantum_executed: true,
           executionTimestamp: new Date().toISOString(),
           quantumExecuted: true,
           executionMethod: "quantum",
