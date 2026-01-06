@@ -3,7 +3,7 @@
 ## 📋 報告元數據
 - **平台**: GitHub
 - **倉庫**: `MachineNativeOps/machine-native-ops`
-- **分析時間**: 2026-01-06T23:09:59.142606Z
+- **分析時間**: 2026-01-06T23:12:01.353060Z
 - **分析工具**: MachineNativeOps Quantum Analyzer v3.0.0
 - **量子啟用**: ✅
 
@@ -55,11 +55,11 @@ but found another document
 ### 量子演算法測試結果
 | 演算法 | 保真度 | 狀態 |
 |--------|--------|------|
-| VQE | 0.9610 | ✅ |
-| QAOA | 0.9155 | ✅ |
-| QML | 0.9327 | ✅ |
+| VQE | 0.9689 | ✅ |
+| QAOA | 0.9523 | ✅ |
+| QML | 0.9465 | ✅ |
 
-**平均保真度**: 0.9364
+**平均保真度**: 0.9559
 
 ---
 
@@ -113,10 +113,8 @@ but found another document
 ## 📋 待辦事項
 
 ### 高優先級
-- **Fix TypeScript syntax issues in axiom-dissolved-server.ts** (優先級: critical)
-  - 預估工作量: 1-2 hours
-- **Remove duplicate imports and declarations** (優先級: high)
-  - 預估工作量: 30 minutes
+- **Fix YAML multi-document syntax in config files** (優先級: high)
+  - 預估工作量: 2-3 hours
 - **Add comprehensive TypeScript linting** (優先級: high)
   - 預估工作量: 1 hour
 
@@ -126,7 +124,7 @@ but found another document
 ## 🔧 已識別問題
 
 ### 已知問題
-- 🟡 **Duplicate type declarations in axiom-dissolved-server.ts**
+- 🟡 **YAML files with multiple documents in single stream**
   - 修復優先級: high
 - 🟢 **Mixed snake_case and camelCase in tool definitions**
   - 修復優先級: medium
@@ -134,5 +132,5 @@ but found another document
 
 ---
 
-*報告生成時間: 2026-01-06T23:09:59.142606Z*
+*報告生成時間: 2026-01-06T23:12:01.353060Z*
 *分析引擎: MachineNativeOps Quantum Analyzer v3.0.0*
