@@ -12,6 +12,7 @@
 ## 🎯 當前焦點
 
 - 專案已鎖定執行既定的三階段重構計劃（解構 → 集成 → 重構），詳見 `INSTANT-EXECUTION-REFACTOR-PLAN.md` 與 `workspace/docs/refactor_playbooks/README.md`
+- ✨ **NEW**: QuantumFlow Toolkit 已完全整合，支持混合量子-古典工作流程（見 `workspace/docs/QUANTUMFLOW_INTEGRATION_REPORT.md`）
 - 所有工作優先支持架構重構與自動化執行，不引入與計劃無關的需求
 
 ---
@@ -48,10 +49,20 @@ machine-native-ops-aaps/
 │
 ├── workspace/              # 工作區（讀寫）
 │   ├── src/               # 源代碼
+│   │   └── quantum/       # 🔬 量子工作流程引擎（QuantumFlow）
 │   ├── docs/              # 項目文檔
+│   │   └── quantum/       # 量子功能文檔
 │   ├── scripts/           # 腳本工具
 │   ├── tests/             # 測試
+│   │   └── quantum/       # 量子模組測試
 │   └── ...                # 其他項目文件
+│
+├── apps/                   # 應用層
+│   └── quantum-dashboard/ # 🔬 量子工作流程儀表板（React）
+│
+├── infrastructure/         # 基礎設施
+│   └── kubernetes/
+│       └── quantum/       # 🔬 量子服務 K8s 配置
 │
 ├── root.bootstrap.yaml     # 引導配置
 ├── root.fs.map            # 文件系統映射
