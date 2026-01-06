@@ -87,7 +87,7 @@ class GeneticOptimizer:
         self._initialize_population()
 
         fitness_history = []
-        generation = 0
+        generations_run = 0
 
         for generation in range(self.config.generations):
             # Evaluate fitness
@@ -99,10 +99,14 @@ class GeneticOptimizer:
 
             # Check for convergence
             if generation > 10 and self._check_convergence(fitness_history[-10:]):
+                generations_run = generation + 1
                 break
 
             # Create next generation
             self._evolve()
+        else:
+            # Loop completed without breaking
+            generations_run = self.config.generations
 
         # Final evaluation
         await self._evaluate_population()
@@ -111,7 +115,7 @@ class GeneticOptimizer:
         return OptimizationResult(
             best_individual=best,
             best_fitness=best.fitness,
-            generations_run=generation + 1,
+            generations_run=generations_run,
             fitness_history=fitness_history,
             final_population=self._population,
         )
