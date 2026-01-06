@@ -1863,7 +1863,7 @@ server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
   
   const tools = DISSOLVED_TOOLS.filter((t) => {
     const layerMatch = t.sourceModule.match(/L(\d{2})/);
-    const resourceLayerMatch = layerId.match(/l(\d{2})/);
+    const resourceLayerMatch = layerId?.match(/l(\d{2})/);
     return layerMatch && resourceLayerMatch && layerMatch[1] === resourceLayerMatch[1];
   });
 
