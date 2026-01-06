@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UnifiedPipeline",
+  "type": "object",
+  "required": ["apiVersion", "kind", "metadata", "spec"],
+  "properties": {
+    "apiVersion": { "type": "string", "const": "pipeline.machinenativeops/v2" },
+    "kind": { "type": "string", "const": "UnifiedPipeline" },
+    "metadata": {
+      "type": "object",
+      "required": ["name", "version", "mode"],
+      "properties": {
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "mode": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "spec": {
+      "type": "object",
+      "required": ["inputUnification", "coreScheduling", "pipelines", "mcpIntegration", "outputs"],
+      "properties": {
+        "inputUnification": {
+          "type": "object",
+          "required": ["protocols", "normalization", "validation", "timeout"],
+          "properties": {
+            "protocols": { "type": "array", "items": { "type": "string" } },
+            "normalization": { "type": "string" },
+            "validation": { "type": "string" },
+            "timeout": { "type": ["string", "number"] }
+          },
+          "additionalProperties": false
+        },
+        "coreScheduling": {
+          "type": "object",
+          "required": ["maxParallelAgents", "taskDecomposition", "resourceArbitration", "loadBalancing", "syncBarrier"],
+          "properties": {
+            "maxParallelAgents": { "type": "integer" },
+            "taskDecomposition": { "type": "string" },
+            "resourceArbitration": { "type": "string" },
+            "loadBalancing": { "type": "string" },
+            "syncBarrier": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "pipelines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "type"],
+            "properties": {
+              "name": { "type": "string" },
+              "type": { "type": "string" },
+              "entrypoint": { "type": "string" },
+              "worldClassValidationRef": { "type": "string" },
+              "policies": { "type": "string" },
+              "manifests": { "type": "string" },
+              "dashboards": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "mcpIntegration": {
+          "type": "object",
+          "required": ["serverRef", "toolAdapters", "realTimeSync"],
+          "properties": {
+            "serverRef": { "type": "string" },
+            "toolAdapters": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["name", "path"],
+                "properties": {
+                  "name": { "type": "string" },
+                  "path": { "type": "string" }
+                },
+                "additionalProperties": false
+              }
+            },
+            "realTimeSync": { "type": "string" }
+          },
+          "additionalProperties": false
+        },
+        "outputs": {
+          "type": "object",
+          "required": ["auditLog", "evidenceChain", "statusReport", "autoRemediation", "notifications"],
+          "properties": {
+            "auditLog": { "type": "string" },
+            "evidenceChain": { "type": "string" },
+            "statusReport": { "type": "string" },
+            "autoRemediation": { "type": "string" },
+            "notifications": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

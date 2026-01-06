@@ -1,0 +1,53 @@
+apiVersion: pipeline.machinenativeops/v2
+kind: UnifiedPipeline
+metadata:
+  name: machine-native-ops-unified-pipeline
+  version: "2.0.0"
+  mode: INSTANT-Autonomous
+spec:
+  inputUnification:
+    protocols: ["webhook", "mcp", "cli", "rest", "grpc", "eventbus"]
+    normalization: canonical_event_format
+    validation: schema_strict
+    timeout: 100ms
+
+  coreScheduling:
+    maxParallelAgents: 256
+    taskDecomposition: ai_optimized
+    resourceArbitration: quantum_annealing
+    loadBalancing: adaptive
+    syncBarrier: enabled
+
+  pipelines:
+    - name: quantum_validation
+      type: validation
+      entrypoint: tools/validation/validate_pr1023_layers.py
+      worldClassValidationRef: workspace/config/validation/world-class-validation.yaml
+    - name: refactor_execution
+      type: refactor
+      entrypoint: scripts/refactor/master-refactor.sh
+    - name: security_compliance
+      type: security
+      policies: security/
+    - name: delivery
+      type: deployment
+      manifests: infrastructure/kubernetes/
+    - name: monitoring
+      type: observability
+      dashboards: apps/quantum-dashboard/
+
+  mcpIntegration:
+    serverRef: workspace/mcp
+    toolAdapters:
+      - name: validation_tooling
+        path: tools/validation/world_class_validation.py
+      - name: pipeline_manifest
+        path: workspace/mcp/pipelines/unified-pipeline-config.yaml
+    realTimeSync: enabled
+
+  outputs:
+    auditLog: unified
+    evidenceChain: aggregated
+    statusReport: generated
+    autoRemediation: enabled
+    notifications: multi_platform
