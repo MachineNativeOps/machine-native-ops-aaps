@@ -184,18 +184,8 @@ npm run check:strict
 - ✅ Node.js version compatibility check
 
 #### 2. **Logic Validator**
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-- ✅ **Authenticity checks**: Detects suspicious patterns (eval, dynamic
-  functions)
-=======
-- ✅ **Authenticity checks**: Detects suspicious patterns (eval, dynamic functions)
->>>>>>> origin/alert-autofix-37
-=======
 
 - ✅ **Authenticity checks**: Detects suspicious patterns (eval, dynamic functions)
->>>>>>> origin/copilot/sub-pr-402
 - ✅ **Obfuscation detection**: Identifies potentially obfuscated code
 - ✅ **Integrity hashing**: SHA-256 hash for code verification
 - ✅ **Logic validation**: Detects unreachable code, infinite loops, empty catch blocks
