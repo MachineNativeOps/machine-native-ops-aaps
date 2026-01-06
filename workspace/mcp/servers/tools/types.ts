@@ -24,5 +24,6 @@ export interface ResourceDefinition {
 export interface PromptDefinition {
   name: string;
   description: string;
+  template: string;
   arguments: Array<{ name: string; description: string; required: boolean }>;
 }
