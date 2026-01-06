@@ -179,6 +179,10 @@ class InstantPipeline:
     description: Optional[str] = None
 
     def __post_init__(self) -> None:
+        # Defensive runtime validation for cases where type checking is bypassed
+        # (e.g., dynamic data loading from YAML, JSON deserialization, or direct
+        # dict unpacking). The Literal[0] type annotation provides static type
+        # checking, but this ensures runtime safety as well.
         if self.humanIntervention != 0:
             raise ValueError(
                 f"InstantPipeline.humanIntervention must be 0 for INSTANT pipelines, "
