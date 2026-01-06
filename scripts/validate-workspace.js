@@ -145,7 +145,7 @@ function validateWorkspaces() {
       // Check if dependency is another workspace
       if (workspacePackages.has(depName)) {
         // Workspace dependency found
-        if (depVersion === '*' || depVersion.startsWith('workspace:')) {
+        if (depVersion.startsWith('workspace:')) {
           log(`  ✅ ${pkg.name} → ${depName} (workspace)`, 'green');
         } else {
           warnings.push(`Workspace ${pkg.name} depends on workspace ${depName} but uses version "${depVersion}" instead of "workspace:*"`);
@@ -184,11 +184,5 @@ function validateWorkspaces() {
 // Run validation
 const { errors, warnings } = validateWorkspaces();
 
-// Exit with appropriate code
-if (errors.length > 0) {
-  process.exit(1);
-} else if (warnings.length > 0) {
-  process.exit(0); // Warnings don't fail the script
-} else {
-  process.exit(0);
-}
+// Exit with appropriate code (only errors cause non-zero exit)
+process.exit(errors.length > 0 ? 1 : 0);
