@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WorldClassValidation",
+  "type": "object",
+  "required": ["apiVersion", "kind", "metadata", "spec"],
+  "properties": {
+    "apiVersion": { "type": "string", "const": "validation.machinenativeops/v1" },
+    "kind": { "type": "string", "const": "WorldClassValidation" },
+    "metadata": {
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "spec": {
+      "type": "object",
+      "required": ["enhancedValidationDimensions", "performanceTargets", "implementationRequirements"],
+      "properties": {
+        "enhancedValidationDimensions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["dimension"],
+            "properties": {
+              "dimension": { "type": "string" },
+              "accuracy": { "type": "number" },
+              "techniques": { "type": "array", "items": { "type": "string" } },
+              "dimensions": { "type": "integer" },
+              "coverage": { "type": "number" },
+              "standards": { "type": "array", "items": { "type": "string" } },
+              "technologies": { "type": "array", "items": { "type": "string" } },
+              "prediction_accuracy": { "type": "number" },
+              "horizon": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "performanceTargets": {
+          "type": "object",
+          "required": ["validationSpeed", "falsePositiveRate", "falseNegativeRate", "coverage"],
+          "properties": {
+            "validationSpeed": { "type": "string" },
+            "falsePositiveRate": { "type": "number" },
+            "falseNegativeRate": { "type": "number" },
+            "coverage": { "type": "number" }
+          },
+          "additionalProperties": false
+        },
+        "implementationRequirements": {
+          "type": "object",
+          "required": ["quantumHardware", "aiAcceleration", "blockchainIntegration", "realTimeMonitoring", "automatedRemediation"],
+          "properties": {
+            "quantumHardware": { "type": "string" },
+            "aiAcceleration": { "type": "string" },
+            "blockchainIntegration": { "type": "string" },
+            "realTimeMonitoring": { "type": "string" },
+            "automatedRemediation": { "type": "string" }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
