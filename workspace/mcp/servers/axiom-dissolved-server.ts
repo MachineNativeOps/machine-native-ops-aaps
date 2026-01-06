@@ -1506,7 +1506,7 @@ async function executeDissolvedTool(
 
   // Validate input arguments against the tool's input schema
   try {
-    validateToolArguments(args, tool.input_schema);
+    validateToolArguments(args, tool.inputSchema);
   } catch (error) {
     return {
       success: false,
