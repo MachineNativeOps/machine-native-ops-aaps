@@ -370,13 +370,13 @@ trigger_1_pr_validation:
   event: "PR 創建/更新"
   action: "自動運行量子驗證"
   latency: "< 100ms"
-  status: "⏳ PENDING - 需配置 GitHub Actions"
+  status: "✅ READY - .github/workflows/quantum-validation-pr.yml"
   
 trigger_2_refactor_validation:
   event: "重構腳本執行"
   action: "自動驗證架構合規性"
   latency: "< 50ms"
-  status: "⏳ PENDING - 需整合到 master-refactor.sh"
+  status: "✅ READY - scripts/refactor/master-refactor.sh (lines 243-274)"
   
 trigger_3_quantum_backend_failover:
   event: "主後端不可用"
