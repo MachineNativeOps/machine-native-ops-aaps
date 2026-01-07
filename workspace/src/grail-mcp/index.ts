@@ -252,11 +252,6 @@ export class GrailActivationError extends Error {
   ) {
     super(message);
     this.name = 'GrailActivationError';
-
-    // Maintain stack trace from the original error if available
-    if (cause && cause.stack) {
-      this.stack = `${this.stack}\nCaused by: ${cause.stack}`;
-    }
   }
 }
 
