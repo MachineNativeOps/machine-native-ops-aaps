@@ -167,6 +167,7 @@ export interface GrailMCP {
   /** Activate the Grail system */
   activate(): Promise<boolean>;
 
+  /** Demonstrate Grail API structure with placeholder values (NOT real metrics) */
   /** 
    * Demonstrate Grail capabilities with example/placeholder values
    * ⚠️ Returns hardcoded example values for demonstration purposes only.
@@ -181,6 +182,9 @@ export interface GrailMCP {
 /**
  * Grail demonstration results
  * 
+ * ⚠️ NOTE: The demonstrate() method returns HARDCODED PLACEHOLDER VALUES.
+ * These are example values to illustrate the API structure, NOT real performance metrics.
+ * Do not use these values for actual performance assessment or decision-making.
  * ⚠️ **Important**: These values are EXAMPLE/PLACEHOLDER values only.
  * The demonstrate() method returns hardcoded values to illustrate
  * the expected structure and range of results, not real measurements.
