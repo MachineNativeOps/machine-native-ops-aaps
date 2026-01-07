@@ -601,6 +601,13 @@ export namespace Grail {
 
     /**
      * MCP Extensions
+     * @deprecated Use direct imports from './protocols-mcp.js' instead
+     * @see protocols-mcp.ts
+     */
+    export namespace MCP {
+      export type GrailToolDefinition = import('./protocols-mcp.js').GrailToolDefinition;
+      export type GrailResourceDefinition = import('./protocols-mcp.js').GrailResourceDefinition;
+      export type MCPExtension = import('./protocols-mcp.js').MCPExtension;
      * @deprecated Use direct imports from './protocols.js' instead
      */
     export namespace MCP {
