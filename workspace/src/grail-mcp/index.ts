@@ -189,7 +189,6 @@ class GrailMCPImpl implements Partial<GrailMCP> {
    */
   async getMetrics(): Promise<GrailMetrics> {
     const registryStats = this.registry.getStats();
-    const converterStats = this.typeConverter.getStats();
 
     return {
       systemHealth: this._activated ? 1.0 : 0.0,
