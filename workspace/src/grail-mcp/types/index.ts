@@ -167,7 +167,11 @@ export interface GrailMCP {
   /** Activate the Grail system */
   activate(): Promise<boolean>;
 
-  /** Demonstrate Grail capabilities (results may vary) */
+  /** 
+   * Demonstrate Grail capabilities with example/placeholder values
+   * ⚠️ Returns hardcoded example values for demonstration purposes only.
+   * Not based on real measurements. Use getMetrics() for actual runtime metrics.
+   */
   demonstrate(): Promise<GrailDemonstration>;
 
   /** Get system metrics */
@@ -176,6 +180,10 @@ export interface GrailMCP {
 
 /**
  * Grail demonstration results
+ * 
+ * ⚠️ **Important**: These values are EXAMPLE/PLACEHOLDER values only.
+ * The demonstrate() method returns hardcoded values to illustrate
+ * the expected structure and range of results, not real measurements.
  */
 export interface GrailDemonstration {
   readonly multimodalCapabilities: {
