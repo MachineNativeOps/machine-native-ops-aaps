@@ -583,71 +583,38 @@ export namespace Grail {
 
   /**
    * Protocols namespace - ops::registry (just communication standards)
+   * @deprecated Use direct imports from './protocols-*.js' modules instead
    */
   export namespace Protocols {
     /**
      * Standard Protocol (no divinity required)
+     * @deprecated Use direct imports from './protocols-standard.js' instead
+     * @see {@link ../protocols-standard}
      */
     export namespace Standard {
-      export interface ProtocolMessage {
-        readonly type: string;
-        readonly payload: unknown;
-        readonly signature: Uint8Array;
-        readonly timestamp: Date;
-      }
-
-      export interface StandardProtocol {
-        send(message: ProtocolMessage): Promise<void>;
-        receive(): AsyncGenerator<ProtocolMessage>;
-        verify(message: ProtocolMessage): Promise<boolean>;
-        seal(message: ProtocolMessage): Promise<ProtocolMessage>;
-      }
+      export type ProtocolMessage = import('./protocols-standard.js').ProtocolMessage;
+      export type StandardProtocol = import('./protocols-standard.js').StandardProtocol;
     }
 
     /**
      * MCP Extensions
+     * @deprecated Use direct imports from './protocols-mcp.js' instead
+     * @see {@link ../protocols-mcp}
      */
     export namespace MCP {
-      export interface GrailToolDefinition {
-        readonly name: string;
-        readonly description: string;
-        readonly namespace: NamespacePath;
-        readonly inputSchema: unknown;
-        readonly outputSchema: unknown;
-      }
-
-      export interface GrailResourceDefinition {
-        readonly uri: string;
-        readonly name: string;
-        readonly namespace: NamespacePath;
-        readonly mimeType: string;
-      }
-
-      export interface MCPExtension {
-        registerTool(tool: GrailToolDefinition): void;
-        registerResource(resource: GrailResourceDefinition): void;
-        getTools(): GrailToolDefinition[];
-        getResources(): GrailResourceDefinition[];
-        invoke(toolName: string, params: unknown): Promise<unknown>;
-      }
+      export type GrailToolDefinition = import('./protocols-mcp.js').GrailToolDefinition;
+      export type GrailResourceDefinition = import('./protocols-mcp.js').GrailResourceDefinition;
+      export type MCPExtension = import('./protocols-mcp.js').MCPExtension;
     }
 
     /**
      * Inter-Protocol Bridge
+     * @deprecated Use direct imports from './protocols-bridge.js' instead
+     * @see {@link ../protocols-bridge}
      */
     export namespace Bridge {
-      export interface ProtocolAdapter<T, U> {
-        readonly sourceProtocol: string;
-        readonly targetProtocol: string;
-        adapt(message: T): U;
-        reverse(message: U): T;
-      }
-
-      export interface InterProtocolBridge {
-        registerAdapter<T, U>(adapter: ProtocolAdapter<T, U>): void;
-        bridge<T, U>(message: T, sourceProtocol: string, targetProtocol: string): U;
-        getSupportedBridges(): Array<[string, string]>;
-      }
+      export type ProtocolAdapter<T, U> = import('./protocols-bridge.js').ProtocolAdapter<T, U>;
+      export type InterProtocolBridge = import('./protocols-bridge.js').InterProtocolBridge;
     }
   }
 }
