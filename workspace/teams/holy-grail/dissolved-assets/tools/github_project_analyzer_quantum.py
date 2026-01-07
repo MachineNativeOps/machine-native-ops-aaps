@@ -702,12 +702,14 @@ class GitHubProjectAnalyzer:
 
     def _format_performance_metrics(self, metrics: Dict) -> str:
         result = "| 指標 | 當前值 | 目標值 | 狀態 |\n|------|--------|--------|------|\n"
+        def _resolve_current(data: Dict[str, Any]) -> Any:
+            value = data.get("current")
+            return value if value is not None else data.get("p95", "N/A")
+
         for metric, data in metrics.items():
             status = data.get("status")
             status_emoji = {"met": "✅", "partial": "⚠️"}.get(status, "❌")
-            current = data.get("current")
-            if current is None:
-                current = data.get("p95", "N/A")
+            current = _resolve_current(data)
             # 如果缺少即時數值則使用 p95 指標作為性能代表值
             target = data.get("target", "N/A")
             result += f"| {metric} | {current} | {target} | {status_emoji} |\n"
