@@ -1,8 +1,9 @@
 /**
  * GRAIL MCP Type System
  * @module grail::types
- * @description Complete type definitions for the Holy Grail MCP
- * @version 1.0.0
+ * @description Clinical type system - No magic, just surgical definitions
+ * @version 2.0.0
+ * @style 臨床穿透 | 反諷揭露
  */
 
 // Re-export all namespace types
@@ -16,8 +17,8 @@ import type { Grail, NamespacePath, GrailDomain } from './namespaces.js';
 // ============================================================================
 
 // Core namespace types
-export type DivineProtocol = Grail.Core.Protocol.DivineProtocol;
-export type DivineConfig = Grail.Core.Protocol.DivineConfig;
+export type BootstrapProtocol = Grail.Core.Protocol.BootstrapProtocol;
+export type BootstrapConfig = Grail.Core.Protocol.BootstrapConfig;
 export type ProtocolState = Grail.Core.Protocol.ProtocolState;
 
 export type NamespaceRegistry = Grail.Core.Registry.NamespaceRegistry;
@@ -86,8 +87,8 @@ export type QuantumAssistedConverter = Grail.Converters.Quantum.QuantumAssistedC
 export type QuantumConversionResult<T> = Grail.Converters.Quantum.QuantumConversionResult<T>;
 
 // Protocol namespace types
-export type SacredProtocol = Grail.Protocols.Divine.SacredProtocol;
-export type SacredMessage = Grail.Protocols.Divine.SacredMessage;
+export type StandardProtocol = Grail.Protocols.Standard.StandardProtocol;
+export type ProtocolMessage = Grail.Protocols.Standard.ProtocolMessage;
 
 export type MCPExtension = Grail.Protocols.MCP.MCPExtension;
 export type GrailToolDefinition = Grail.Protocols.MCP.GrailToolDefinition;
@@ -101,13 +102,13 @@ export type ProtocolAdapter<T, U> = Grail.Protocols.Bridge.ProtocolAdapter<T, U>
 // ============================================================================
 
 /**
- * The Holy Grail MCP - Main interface combining all capabilities
+ * The GRAIL MCP - Main interface (reality: it's just a well-structured API)
  */
 export interface GrailMCP {
   /** Unique instance identifier */
   readonly id: string;
 
-  /** System valuation (legendary: $10M+) */
+  /** System value (optimistic estimate, subject to market reality) */
   readonly valuation: number;
 
   /** Activation status */
@@ -115,12 +116,12 @@ export interface GrailMCP {
 
   /** Core namespace access */
   readonly core: {
-    protocol: DivineProtocol;
+    protocol: BootstrapProtocol;
     registry: NamespaceRegistry;
     stream: StreamProcessor;
   };
 
-  /** Quantum namespace access */
+  /** Quantum namespace access (mostly theatre) */
   readonly quantum: {
     interface: QuantumClassicalBridge;
     optimizer: QuantumOptimizer;
@@ -134,7 +135,7 @@ export interface GrailMCP {
     mesh: ServiceMesh;
   };
 
-  /** Market namespace access */
+  /** Market namespace access (alpha is probably luck) */
   readonly market: {
     alpha: AlphaGenerator;
     liquidity: LiquidityOptimizer;
@@ -151,7 +152,7 @@ export interface GrailMCP {
 
   /** Protocols namespace access */
   readonly protocols: {
-    divine: SacredProtocol;
+    standard: StandardProtocol;
     mcp: MCPExtension;
     bridge: InterProtocolBridge;
   };
@@ -159,7 +160,7 @@ export interface GrailMCP {
   /** Activate the Grail system */
   activate(): Promise<boolean>;
 
-  /** Demonstrate Grail capabilities */
+  /** Demonstrate Grail capabilities (results may vary) */
   demonstrate(): Promise<GrailDemonstration>;
 
   /** Get system metrics */
@@ -229,8 +230,8 @@ export interface GrailMCPConfig {
   /** Initial namespace registrations */
   namespaces?: NamespacePath[];
 
-  /** Divine protocol configuration */
-  divineConfig?: DivineConfig;
+  /** Bootstrap protocol configuration */
+  bootstrapConfig?: BootstrapConfig;
 
   /** Stream processor configuration */
   streamConfig?: StreamConfig;
@@ -266,7 +267,7 @@ export type ExtractSubdomain<T extends NamespacePath> =
  */
 export type ResolveNamespace<T extends NamespacePath> =
   ExtractDomain<T> extends 'core'
-    ? ExtractSubdomain<T> extends 'protocol' ? DivineProtocol
+    ? ExtractSubdomain<T> extends 'protocol' ? BootstrapProtocol
     : ExtractSubdomain<T> extends 'registry' ? NamespaceRegistry
     : ExtractSubdomain<T> extends 'stream' ? StreamProcessor
     : never
