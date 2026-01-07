@@ -6,9 +6,6 @@
  * @style 臨床穿透 | 反諷揭露
  */
 
-// Import ES2015 module types for re-export in namespaces
-import type * as ProtocolsMCPTypes from './protocols-mcp.js';
-
 // ============================================================================
 // NAMESPACE PATH UTILITIES
 // ============================================================================
@@ -610,12 +607,12 @@ export namespace Grail {
     /**
      * MCP Extensions
      * @deprecated Use direct imports from './protocols-mcp.js' instead
-     * @see {@link ./protocols-mcp}
+     * @see protocols-mcp.ts
      */
     export namespace MCP {
-      export type GrailToolDefinition = ProtocolsMCPTypes.GrailToolDefinition;
-      export type GrailResourceDefinition = ProtocolsMCPTypes.GrailResourceDefinition;
-      export type MCPExtension = ProtocolsMCPTypes.MCPExtension;
+      export type GrailToolDefinition = import('./protocols-mcp.js').GrailToolDefinition;
+      export type GrailResourceDefinition = import('./protocols-mcp.js').GrailResourceDefinition;
+      export type MCPExtension = import('./protocols-mcp.js').MCPExtension;
     }
 
     /**
