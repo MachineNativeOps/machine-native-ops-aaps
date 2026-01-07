@@ -685,8 +685,14 @@ export function parseNamespacePath(path: NamespacePath): NamespaceIdentifier {
     throw new Error(`Invalid namespace path: ${path}`);
   }
 
+  const validDomains: readonly GrailDomain[] = ['core', 'quantum', 'nexus', 'market', 'converters', 'protocols'];
+  const domain = parts[1];
+  if (!validDomains.includes(domain as GrailDomain)) {
+    throw new Error(`Invalid domain in namespace path: ${path}. Domain "${domain}" is not a valid GrailDomain.`);
+  }
+
   return {
-    domain: parts[1] as GrailDomain,
+    domain: domain as GrailDomain,
     subdomain: parts[2],
     component: parts[3],
     fullPath: path
