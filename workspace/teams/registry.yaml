@@ -20,6 +20,19 @@ agents:
       - event_handling
     status: "active"
 
+  - id: "teams.holy-grail"
+    name: "Holy Grail MCP Orchestrator"
+    type: "orchestrator"
+    language: "python"
+    source: "teams/default-team/orchestrator"
+    profile: "teams/default-team/profiles/role.it_architect.md"
+    capabilities:
+      - instant_pipeline_binding
+      - quantum_flow_toolkit
+      - mcp_unified_pipeline
+      - zero_human_intervention
+    status: "active"
+
   # ============================================
   # CI/CD Pipeline Agents (NEW)
   # ============================================

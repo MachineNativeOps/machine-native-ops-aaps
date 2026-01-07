@@ -1,0 +1,101 @@
+version: v1
+team_id: "holy-grail"
+display_name: "Holy Grail INSTANT Team"
+description: "MCP 驅動的即時交付團隊，對齊 unified pipeline / Quantum Flow Toolkit，零人工介入。"
+auto_activate: true
+
+methodology:
+  mcp_pipeline: "../../mcp/pipelines/unified-pipeline-config.yaml"
+  integration_manifest: "../../mcp/AXIOM_DISSOLVED_INTEGRATION_MANIFEST.yaml"
+  execution_standard: "INSTANT-EXECUTION-REFACTOR-PLAN"
+  phases: ["deconstruct", "integrate", "refactor"]
+  latency_targets:
+    instant: 100
+    fast: 500
+    standard: 5000
+    max_stage: 30000
+    max_total: 180000
+  parallelism:
+    min_agents: 64
+    max_agents: 256
+  governance:
+    closed_loop: true
+    human_intervention: 0
+
+activation:
+  on_startup: true
+  on_events:
+    - "RUN_CREATED"
+    - "CODE_CHANGE_DETECTED"
+    - "CHAT_MESSAGE_CREATED"
+
+members:
+  - role: "orchestrator"
+    agent_id: "core.orchestrator"
+    source: "teams/default-team/orchestrator"
+    language: "python"
+
+  - role: "analyzer"
+    agent_id: "instant.input-analysis"
+    source: "src/core/instant_generation/agents/input_analysis_agent.py"
+    language: "python"
+
+  - role: "generator"
+    agent_id: "instant.code-generation"
+    source: "src/core/instant_generation/agents/code_generation_agent.py"
+    language: "python"
+
+  - role: "validator"
+    agent_id: "ai.qa"
+    source: "src/ai/agents/qa"
+    language: "typescript"
+
+  - role: "deployer"
+    agent_id: "instant.deployment"
+    source: "src/core/instant_generation/agents/deployment_agent.py"
+    language: "python"
+
+  - role: "sentinel"
+    agent_id: "services.vulnerability-detector"
+    source: "src/services/agents/vulnerability-detector"
+    language: "python"
+
+  - role: "governance_guardian"
+    agent_id: "pipeline.governance-guardian"
+    source: "teams/default-team/orchestrator"
+    language: "python"
+
+  - role: "security_scanner"
+    agent_id: "pipeline.security-scanner"
+    source: "teams/default-team/orchestrator"
+    language: "python"
+
+  - role: "optimizer"
+    agent_id: "instant.optimization"
+    source: "src/core/instant_generation/agents/optimization_agent.py"
+    language: "python"
+
+  - role: "self_evolution"
+    agent_id: "synergy.self-evolution"
+    source: "src/autonomous/agents/synergymesh_core/self_evolution_engine.py"
+    language: "python"
+
+playbooks:
+  boot: "playbooks/instant_grail.yaml"
+  on_run_created: "playbooks/instant_grail.yaml"
+  on_chat_message: "playbooks/instant_grail.yaml"
+
+collaboration:
+  arbitration: "orchestrator"
+  mode: "contract-driven"
+  evidence_required: true
+  artifact_store: "artifacts/runs"
+  audit_log: "audit/events.jsonl"
+  closed_loop: true
+
+personas:
+  - profile: "../default-team/profiles/role.it_architect.md"
+  - profile: "../default-team/profiles/role.security_expert.md"
+  - profile: "../default-team/profiles/role.tech_writer.md"
+  - profile: "../default-team/profiles/role.devrel_consultant.md"
+  - profile: "../default-team/profiles/role.fullstack_developer.md"
