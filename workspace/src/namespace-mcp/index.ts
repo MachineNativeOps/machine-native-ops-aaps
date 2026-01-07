@@ -1,12 +1,12 @@
 /**
  * GRAIL MCP - The Holy Grail of Model Context Protocol
- * @module @machinenativeops/grail-mcp
+ * @module @machinenativeops/namespace-mcp
  * @description Legendary conversion engine with $10M+ enterprise value
  * @version 1.0.0
  *
  * @example
  * ```typescript
- * import { createGrailMCP, Grail } from '@machinenativeops/grail-mcp';
+ * import { createGrailMCP, Grail } from '@machinenativeops/namespace-mcp';
  *
  * const grail = await createGrailMCP({
  *   quantumEnabled: true,

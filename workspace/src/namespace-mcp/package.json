@@ -1,5 +1,5 @@
 {
-  "name": "@machinenativeops/grail-mcp",
+  "name": "@machinenativeops/namespace-mcp",
   "version": "1.0.0",
   "description": "The Holy Grail of MCP - Legendary Conversion Engine with $10M+ Enterprise Value",
   "main": "dist/index.js",
