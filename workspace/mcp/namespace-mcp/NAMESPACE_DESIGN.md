@@ -126,7 +126,7 @@
 ## Directory Structure
 
 ```
-workspace/src/dissect-mcp/
+workspace/mcp/namespace-mcp/
 ├── package.json
 ├── tsconfig.json
 ├── NAMESPACE_DESIGN.md
