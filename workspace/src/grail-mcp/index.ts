@@ -148,22 +148,22 @@ class GrailMCPImpl implements Partial<GrailMCP> {
   }
 
   /**
-   * Demonstrate the power of the Holy Grail
+   * Demonstrate the system with example values
    * 
-   * ⚠️ **Important**: This method returns EXAMPLE/PLACEHOLDER values for demonstration purposes.
-   * These are not real measurements or actual system metrics. The values are hardcoded
-   * to illustrate the expected structure and range of results.
+   * ⚠️ IMPORTANT: This method returns HARDCODED PLACEHOLDER VALUES for demonstration purposes only.
+   * These are NOT real metrics or measurements. Values like semanticDepth: 0.95, speedup: 100,
+   * and multiplier: 10 are example data to illustrate the API structure.
    * 
-   * For actual runtime metrics, use the `getMetrics()` method instead.
+   * For actual system metrics, use getMetrics() instead.
    * 
-   * @returns Example demonstration results (not based on real measurements)
+   * @returns Example demonstration data structure (not real performance metrics)
    */
   async demonstrate(): Promise<GrailDemonstration> {
     if (!this._activated) {
       await this.activate();
     }
 
-    // NOTE: All values below are PLACEHOLDER examples, not real measurements
+    // PLACEHOLDER VALUES - Not real metrics
     return {
       multimodalCapabilities: {
         semanticDepth: 0.95, // Example value
@@ -173,22 +173,22 @@ class GrailMCPImpl implements Partial<GrailMCP> {
       quantumAdvantage: {
         achieved: this.config.quantumEnabled ?? false,
         speedup: this.config.quantumEnabled ? 100 : 1, // Example speedup
-        fidelity: 0.999 // Example fidelity
+        fidelity: 0.999 // Example value
       },
       valueCreation: {
-        initialValue: 1_000_000, // Example initial value
-        amplifiedValue: 10_000_000, // Example amplified value
+        initialValue: 1_000_000, // Example value
+        amplifiedValue: 10_000_000, // Example value
         multiplier: 10 // Example multiplier
       },
       alphaGeneration: {
         alpha: 0.15, // Example alpha
-        riskFreeAlpha: 0.08, // Example risk-free alpha
-        consistency: 0.92 // Example consistency
+        riskFreeAlpha: 0.08, // Example value
+        consistency: 0.92 // Example value
       },
       globalValueFlow: {
-        totalFlow: 1_000_000_000, // Example total flow
-        extractionEfficiency: 0.88, // Example efficiency
-        amplificationFactor: 5.2 // Example amplification
+        totalFlow: 1_000_000_000, // Example value
+        extractionEfficiency: 0.88, // Example value
+        amplificationFactor: 5.2 // Example value
       }
     };
   }
