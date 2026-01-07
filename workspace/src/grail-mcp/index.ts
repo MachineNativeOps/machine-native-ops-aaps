@@ -59,6 +59,48 @@ import { GrailTypeConverter, getGlobalConverter } from './converters/type-conver
 import { GrailFormatConverter, getGlobalFormatConverter } from './converters/format-converter.js';
 import { createNamespacePath } from './types/namespaces.js';
 
+// ============================================================================
+// ERROR CLASSES
+// ============================================================================
+
+/**
+ * Activation error codes
+ * 
+ * Current usage:
+ * - BOOTSTRAP_FAILED: Used when activation fails during initialization
+ * 
+ * Reserved for future use:
+ * - REGISTRY_FAILED: For specific registry initialization failures
+ * - CONFIG_INVALID: For configuration validation errors  
+ * - UNKNOWN_ERROR: Fallback for unexpected errors
+ */
+export type ActivationErrorCode =
+  | 'BOOTSTRAP_FAILED'
+  | 'REGISTRY_FAILED'
+  | 'CONFIG_INVALID'
+  | 'UNKNOWN_ERROR';
+
+/**
+ * Error thrown when GRAIL activation fails
+ */
+export class GrailActivationError extends Error {
+  public readonly code: ActivationErrorCode;
+
+  constructor(
+    message: string,
+    code: ActivationErrorCode = 'UNKNOWN_ERROR',
+    cause?: unknown
+  ) {
+    super(message, { cause });
+    this.name = 'GrailActivationError';
+    this.code = code;
+  }
+}
+
+// ============================================================================
+// GRAIL MCP IMPLEMENTATION
+// ============================================================================
+
 /**
  * Clinical conversion engine implementation
  *
@@ -91,6 +133,8 @@ class GrailMCPImpl implements Partial<GrailMCP> {
 
   /**
    * Activate the system (no magic, just initialization)
+   * 
+   * @throws {GrailActivationError} If activation fails during initialization
    */
   async activate(): Promise<boolean> {
     if (this._activated) {
@@ -142,8 +186,12 @@ class GrailMCPImpl implements Partial<GrailMCP> {
       this._activated = true;
       return true;
     } catch (error) {
-      console.error('GRAIL activation failed:', error);
-      return false;
+      const message = error instanceof Error ? error.message : String(error);
+      throw new GrailActivationError(
+        `GRAIL activation failed: ${message}`,
+        'BOOTSTRAP_FAILED',
+        error
+      );
     }
   }
 
