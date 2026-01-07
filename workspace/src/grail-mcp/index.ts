@@ -196,38 +196,69 @@ class GrailMCPImpl implements Partial<GrailMCP> {
   }
 
   /**
+   * Demonstrate the system with example values
+   * 
+   * ⚠️ IMPORTANT: This method returns HARDCODED PLACEHOLDER VALUES for demonstration purposes only.
+   * These are NOT real metrics or measurements. Values like semanticDepth: 0.95, speedup: 100,
+   * and multiplier: 10 are example data to illustrate the API structure.
+   * 
+   * For actual system metrics, use getMetrics() instead.
+   * 
+   * @returns Example demonstration data structure (not real performance metrics)
    * Demonstrate the power of the Holy Grail
+   * 
+   * ⚠️ **Important**: This method returns EXAMPLE/PLACEHOLDER values for demonstration purposes.
+   * These are not real measurements or actual system metrics. The values are hardcoded
+   * to illustrate the expected structure and range of results.
+   * 
+   * For actual runtime metrics, use the `getMetrics()` method instead.
+   * 
+   * @returns Example demonstration results (not based on real measurements)
    */
   async demonstrate(): Promise<GrailDemonstration> {
     if (!this._activated) {
       await this.activate();
     }
 
+    // PLACEHOLDER VALUES - Not real metrics
+    // NOTE: All values below are PLACEHOLDER examples, not real measurements
     return {
       multimodalCapabilities: {
-        semanticDepth: 0.95,
-        contextualAwareness: 0.98,
-        predictiveAccuracy: 0.97
+        semanticDepth: 0.95, // Example value
+        contextualAwareness: 0.98, // Example value
+        predictiveAccuracy: 0.97 // Example value
       },
       quantumAdvantage: {
         achieved: this.config.quantumEnabled ?? false,
-        speedup: this.config.quantumEnabled ? 100 : 1,
-        fidelity: 0.999
+        speedup: this.config.quantumEnabled ? 100 : 1, // Example speedup
+        fidelity: 0.999 // Example value
       },
       valueCreation: {
-        initialValue: 1_000_000,
-        amplifiedValue: 10_000_000,
-        multiplier: 10
+        initialValue: 1_000_000, // Example value
+        amplifiedValue: 10_000_000, // Example value
+        fidelity: 0.999 // Example fidelity
+      },
+      valueCreation: {
+        initialValue: 1_000_000, // Example initial value
+        amplifiedValue: 10_000_000, // Example amplified value
+        multiplier: 10 // Example multiplier
       },
       alphaGeneration: {
-        alpha: 0.15,
-        riskFreeAlpha: 0.08,
-        consistency: 0.92
+        alpha: 0.15, // Example alpha
+        riskFreeAlpha: 0.08, // Example value
+        consistency: 0.92 // Example value
       },
       globalValueFlow: {
-        totalFlow: 1_000_000_000,
-        extractionEfficiency: 0.88,
-        amplificationFactor: 5.2
+        totalFlow: 1_000_000_000, // Example value
+        extractionEfficiency: 0.88, // Example value
+        amplificationFactor: 5.2 // Example value
+        riskFreeAlpha: 0.08, // Example risk-free alpha
+        consistency: 0.92 // Example consistency
+      },
+      globalValueFlow: {
+        totalFlow: 1_000_000_000, // Example total flow
+        extractionEfficiency: 0.88, // Example efficiency
+        amplificationFactor: 5.2 // Example amplification
       }
     };
   }
