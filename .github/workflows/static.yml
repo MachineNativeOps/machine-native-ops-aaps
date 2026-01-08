@@ -35,6 +35,11 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@1f0c5cde4bc74bb7780920c4b2b7dcba3462806a  # v5
       - name: Upload artifact
+        uses: actions/configure-pages@1f0c5cde4bc74bb7780920c4b2b7dcba3462806a  # v4
+      - name: Upload artifact
+        uses: actions/configure-pages@1f0c5cde4bc74bb7780920c4b2b7dcba3462806a  # v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@56afc609e1f0a8fd0569726e2506e2e7a1eaaf9e  # v4
         uses: actions/upload-pages-artifact@56afc609e1f0a8fd0569726e2506e2e7a1eaaf9e  # v3
         with:
           # Upload entire repository
