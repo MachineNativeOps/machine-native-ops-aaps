@@ -28,10 +28,13 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@0ad4b8f3a27c304e21892351cbf9860471245599  # v4
       - name: Setup Pages
+        uses: actions/configure-pages@1f0c5cde4bc74bb7780920c4b2b7dcba3462806a  # v5
+      - name: Upload artifact
         uses: actions/configure-pages@1f0c5cde4bc74bb7780920c4b2b7dcba3462806a  # v4
       - name: Upload artifact
         uses: actions/configure-pages@1f0c5cde4bc74bb7780920c4b2b7dcba3462806a  # v5
