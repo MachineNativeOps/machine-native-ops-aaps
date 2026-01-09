@@ -21,17 +21,17 @@ class AdvancedMachineNativeConverter(MachineNativeConverter):
     def __init__(self, config_path: Optional[str] = None, enable_semantic: bool = True):
         super().__init__(config_path=config_path)
         self.enable_semantic = enable_semantic
+        self._semantic_rules_backup = copy.deepcopy(self.conversion_rules.get("semantic", []))
         logger.info("AdvancedMachineNativeConverter 初始化完成 (enable_semantic=%s)", enable_semantic)
 
     def convert_project(self, source_path: str, target_path: str) -> Dict[str, Any]:
         """
         目前直接調用基礎轉換器，預留高級語意/增強策略掛鉤。
         """
-        original_semantic_rules = self.conversion_rules.get("semantic", [])
+        semantic_backup = copy.deepcopy(self._semantic_rules_backup)
 
         if not self.enable_semantic:
             # 暫時允許禁用語意層，透過移除該層規則實現
-            self.conversion_rules = copy.deepcopy(self.conversion_rules)
             self.conversion_rules["semantic"] = []
             logger.info("已禁用語意層轉換 (semantic layer skipped)")
 
@@ -39,7 +39,7 @@ class AdvancedMachineNativeConverter(MachineNativeConverter):
             return super().convert_project(source_path, target_path)
         finally:
             # 恢復原規則以避免重複實例或多次調用時的副作用
-            self.conversion_rules["semantic"] = original_semantic_rules
+            self.conversion_rules["semantic"] = semantic_backup
 
 
 def main():

@@ -26,4 +26,4 @@ artifacts:
 metadata:
   slsa_level: "L3+"
   mcp_protocol: "2024.1"
-  updated_at: "2026-01-09"
+  updated_at: "2025-01-09"
