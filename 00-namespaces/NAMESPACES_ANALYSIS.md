@@ -18,4 +18,6 @@
 - **缺口**：核心/治理/觀測/安全模組與測試、範例皆缺，需依文件落實程式碼。
 
 ## 統一建議
-1) 依現有文件實作 `namespaces-adk` 模組與測試；2) 擴充 `namespaces-mcp` 的協議伺服器層並增強測試；3) 為 `namespaces-sdk` 補齊 adapter 與自動化測試，確保三個目錄能串接成端到端流程。
+1. 依現有文件落實 `namespaces-adk` 模組與測試。
+2. 擴充 `namespaces-mcp` 的協議伺服器層並增強測試。
+3. 為 `namespaces-sdk` 補齊 adapter 與自動化測試，確保三個目錄能串接成端到端流程。
