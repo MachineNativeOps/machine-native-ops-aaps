@@ -26,7 +26,7 @@
 
 Taxonomy Root Layer（專案命名分類法）以「類 Linux 最小系統骨架」+ Controlplane 分離架構為基礎，強調所有命名、模組與治理條目皆經過嚴格分類，確保層級清晰、可追溯且具備高級感。
 
-### 配置與命名索引（Taxonomy）
+### Taxonomy 配置 / 命名索引
 
 - `root.bootstrap.yaml`：Taxonomy 根入口，定義 controlplane path 與 version lock。
 - `root.fs.map`：文件系統映射索引，將分類後的掛載點固化為唯讀/讀寫邏輯。
@@ -39,7 +39,7 @@ Taxonomy Root Layer（專案命名分類法）以「類 Linux 最小系統骨架
 ### 根層結構（極簡化）
 
 ```
-machine-native-ops-taxonomy/
+machine-native-ops-taxonomy-root-layer/
 ├── bin/                    # 基本用戶命令二進制檔案
 ├── sbin/                   # 系統管理二進制檔案
 ├── etc/                    # 系統配置檔案
