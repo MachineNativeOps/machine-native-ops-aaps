@@ -3,8 +3,6 @@ Integration tests for ADK governance agent workflows
 """
 
 import pytest
-from unittest.mock import Mock, AsyncMock
-from datetime import datetime
 
 
 class TestAgentWorkflowIntegration:
@@ -215,10 +213,8 @@ class TestAgentObservability:
         
         # Run workflow with error
         with caplog.at_level("ERROR"):
-            try:
+            with pytest.raises(Exception):
                 await dag_maintenance_agent.run_maintenance_cycle()
-            except Exception:
-                pass
         
         # Verify error was logged
         assert any("Error in maintenance cycle" in record.message for record in caplog.records)

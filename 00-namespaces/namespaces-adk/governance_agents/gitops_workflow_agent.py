@@ -3,9 +3,8 @@ GitOps PR Workflow Agent
 Autonomous agent for managing GitOps pull request workflows
 """
 
-import asyncio
-from typing import List, Dict, Any, Optional
-from datetime import datetime, timedelta
+from typing import List, Optional
+from datetime import datetime
 import logging
 from dataclasses import dataclass
 from enum import Enum

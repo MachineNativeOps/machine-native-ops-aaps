@@ -154,8 +154,8 @@ docker-compose up -d mcp-servers
 # Start Redis
 docker run -d --name redis -p 6379:6379 redis:7-alpine
 
-# Start ChromaDB
-docker run -d --name chroma -p 8000:8000 chromadb/chroma:latest
+# Start ChromaDB (pinned to specific version for security)
+docker run -d --name chroma -p 8000:8000 chromadb/chroma:0.4.22
 ```
 
 ### 7. Start Observability Stack

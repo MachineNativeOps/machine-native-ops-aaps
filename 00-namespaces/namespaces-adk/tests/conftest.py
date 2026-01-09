@@ -4,7 +4,6 @@ Pytest configuration and fixtures for ADK governance agents testing
 
 import pytest
 import asyncio
-from typing import AsyncGenerator
 from unittest.mock import Mock, AsyncMock
 
 from adk.core.agent_runtime import AgentRuntime

@@ -3,7 +3,6 @@ Artifact Generation Agent
 Autonomous agent for generating and managing artifacts (schemas, configs, docs)
 """
 
-import asyncio
 from typing import List, Dict, Any, Optional
 from datetime import datetime
 import logging

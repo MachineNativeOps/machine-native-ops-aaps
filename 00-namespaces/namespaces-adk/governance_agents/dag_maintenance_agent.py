@@ -175,8 +175,6 @@ class DAGMaintenanceAgent:
                 params={"path": file_path}
             )
             
-            content = result.get("content", "")
-            
             # Parse YAML (simplified - in production, use proper YAML parser)
             node_id = file_path.split("/")[-1].replace(".yaml", "")
             
