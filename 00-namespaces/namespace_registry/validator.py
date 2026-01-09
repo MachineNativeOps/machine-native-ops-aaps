@@ -284,6 +284,8 @@ class RegistryValidator:
         # 簡化的命名格式檢查
         # 實際應該使用 regex 或 taxonomy-core 的驗證器
         parts = namespace.split('-')
+        if len(parts) == 1:
+            return bool(namespace.strip())
         return len(parts) >= 3
 
 

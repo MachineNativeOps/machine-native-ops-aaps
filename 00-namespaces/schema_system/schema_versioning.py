@@ -79,10 +79,31 @@ class SchemaVersioning:
         change_type = await self._analyze_change_type(changes)
         
         # 2. 計算新版本號
-        new_version = await self._calculate_next_version(
-            current_version,
-            change_type
-        )
+        last_to_version = None
+        if schema_id in self.version_history and self.version_history[schema_id]:
+            last_to_version = self.version_history[schema_id][-1].to_version
+
+        if last_to_version:
+            try:
+                current_parsed = version.parse(current_version)
+                last_parsed = version.parse(last_to_version)
+                if current_parsed > last_parsed:
+                    new_version = current_version
+                else:
+                    new_version = await self._calculate_next_version(
+                        current_version,
+                        change_type
+                    )
+            except Exception:
+                new_version = await self._calculate_next_version(
+                    current_version,
+                    change_type
+                )
+        else:
+            new_version = await self._calculate_next_version(
+                current_version,
+                change_type
+            )
         
         # 3. 記錄變更
         version_change = VersionChange(

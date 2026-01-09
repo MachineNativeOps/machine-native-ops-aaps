@@ -12,9 +12,9 @@ import asyncio
 import time
 from datetime import datetime
 
-from validator import RegistryValidator, ValidationStatus
-from cache import MultiLayerCache
-from schema_validator import SchemaValidator
+from .validator import RegistryValidator, ValidationStatus
+from .cache import MultiLayerCache
+from .schema_validator import SchemaValidator
 
 
 @dataclass

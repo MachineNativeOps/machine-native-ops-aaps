@@ -15,13 +15,28 @@ Compliance:
 """
 
 from .registry_manager import PlatformRegistryManager
-from .registry_validator import PlatformRegistryValidator
-from .registry_cache import PlatformRegistryCache
+from .validator import RegistryValidator, ValidationResult, ValidationStatus
+from .cache import CacheEntry, CacheLevel, MultiLayerCache
+from .schema_validator import (
+    SchemaValidationResult,
+    SchemaValidationStatus,
+    SchemaValidator,
+)
+from .registry_instant import NamespaceEntry, RegistryManagerInstant
 
 __all__ = [
     'PlatformRegistryManager',
-    'PlatformRegistryValidator',
-    'PlatformRegistryCache',
+    'RegistryValidator',
+    'ValidationResult',
+    'ValidationStatus',
+    'CacheEntry',
+    'CacheLevel',
+    'MultiLayerCache',
+    'SchemaValidationResult',
+    'SchemaValidationStatus',
+    'SchemaValidator',
+    'NamespaceEntry',
+    'RegistryManagerInstant',
 ]
 
 __version__ = '1.0.0'
