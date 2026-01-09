@@ -197,11 +197,12 @@ class MachineNativeConverter:
                 
                 # 規則 2: Python 裸導入 (import django, from flask import)
                 if lang == "python":
+                    module_name = new_dep.replace("-", "_")
                     # import django
                     rules.append(ConversionRule(
                         name=f"dependency_{lang}_{old_dep}_bare_import",
                         pattern=f'\\bimport\\s+{escaped_old}\\b',
-                        replacement=f'import {new_dep}',
+                        replacement=f'import {module_name}  # namespace-mcp: {new_dep}',
                         file_types=["source_code"],
                         context=f"{lang}_dependencies_bare",
                         priority=95,
@@ -211,8 +212,8 @@ class MachineNativeConverter:
                     # from django import
                     rules.append(ConversionRule(
                         name=f"dependency_{lang}_{old_dep}_from_import",
-                        pattern=f'\\bfrom\\s+{escaped_old}\\b',
-                        replacement=f'from {new_dep}',
+                        pattern=f'\\bfrom\\s+{escaped_old}(\\s+import\\s+[\\w\\*,\\s]+)',
+                        replacement=f'from {module_name}\\1  # namespace-mcp: {new_dep}',
                         file_types=["source_code"],
                         context=f"{lang}_dependencies_from",
                         priority=95,
