@@ -155,3 +155,7 @@ comment_body.md
 00-namespaces/namespaces-mcp/servers/**/*.js
 !00-namespaces/namespaces-mcp/servers/validate-tools-refactor.js
 .axiom-migration-backup/
+
+# CI Error Analyzer outputs
+ci-error-analysis.json
+jobs.json

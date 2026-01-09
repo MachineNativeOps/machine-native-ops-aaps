@@ -1,0 +1,117 @@
+# CI Error Analyzer Configuration
+# Settings for automated CI/CD error analysis and reporting
+
+# Analysis Settings
+analysis:
+  enabled: true
+  # Auto-analyze on workflow failures
+  auto_analyze_failures: true
+  # Maximum log size to analyze (in MB)
+  max_log_size_mb: 50
+  # Timeout for analysis (in seconds)
+  timeout_seconds: 120
+
+# Reporting Settings
+reporting:
+  # Report format: comment, issue, or both
+  mode: "comment"
+  # Post analysis as PR comment
+  pr_comment_enabled: true
+  # Create issues for critical errors
+  create_issues_for_critical: true
+  # Maximum errors to display in report
+  max_errors_in_report: 10
+  # Include code snippets in reports
+  include_code_snippets: true
+  # Include stack traces in reports
+  include_stack_traces: true
+
+# Auto-Fix Settings
+auto_fix:
+  enabled: false  # Disabled by default for safety
+  # Categories that can be auto-fixed
+  allowed_categories:
+    - lint_error
+    - dependency_error
+  # Require manual approval for auto-fixes
+  require_approval: true
+  # Create PR for auto-fixes
+  create_fix_pr: true
+
+# Error Categories Configuration
+error_categories:
+  build_error:
+    severity: high
+    notify: true
+  test_failure:
+    severity: medium
+    notify: true
+  lint_error:
+    severity: low
+    notify: false
+    auto_fixable: true
+  type_error:
+    severity: high
+    notify: true
+  dependency_error:
+    severity: medium
+    notify: true
+    auto_fixable: true
+  security_scan:
+    severity: critical
+    notify: true
+  deployment_error:
+    severity: critical
+    notify: true
+  timeout:
+    severity: medium
+    notify: false
+  permission_error:
+    severity: high
+    notify: true
+  configuration_error:
+    severity: high
+    notify: true
+
+# Custom Error Patterns
+custom_patterns:
+  # Add repository-specific error patterns here
+  - pattern_id: "custom_quantum_error"
+    category: "build_error"
+    regex: "quantum.*error"
+    severity: "high"
+    description: "Quantum workflow error"
+    auto_fixable: false
+
+# Notification Settings
+notifications:
+  # Notify on specific severity levels
+  notify_on_severity:
+    - critical
+    - high
+  # Slack webhook for notifications (optional)
+  slack_webhook_url: ""
+  # Email notifications (optional)
+  email_recipients: []
+
+# GitHub Integration
+github:
+  # Label to add to created issues
+  issue_labels:
+    - "ci-failure"
+    - "automated"
+    - "needs-triage"
+  # Assignees for created issues (optional)
+  issue_assignees: []
+  # Auto-close resolved issues
+  auto_close_resolved: true
+
+# Metrics and Tracking
+metrics:
+  enabled: true
+  # Track fix effectiveness
+  track_fix_effectiveness: true
+  # Store analysis history
+  store_history: true
+  # History retention (in days)
+  history_retention_days: 90

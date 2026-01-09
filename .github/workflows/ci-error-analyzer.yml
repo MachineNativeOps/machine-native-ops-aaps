@@ -1,0 +1,276 @@
+# ==============================================================================
+# 🔍 CI Error Analyzer Workflow
+# Automatically analyzes CI failures and provides actionable insights
+# ==============================================================================
+name: "🔍 CI Error Analyzer"
+
+on:
+  workflow_run:
+    workflows:
+      - "🚀 CI Pipeline"
+      - "🤖 Autonomous CI Guardian"
+      - "🔒 Security Scan"
+    types:
+      - completed
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+  actions: read
+
+jobs:
+  analyze-failure:
+    name: "Analyze CI Failure"
+    runs-on: ubuntu-latest
+    # Only run on failed workflows
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    timeout-minutes: 10
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@0ad4b8f3a27c304e21892351cbf9860471245599  # v4
+        with:
+          fetch-depth: 1
+
+      - name: "Setup Python"
+        uses: actions/setup-python@82c7e631bb3cdc910f68e0081d534527d238d7a7  # v5
+        with:
+          python-version: '3.11'
+
+      - name: "Install dependencies"
+        run: |
+          pip install --user pyyaml requests
+
+      - name: "Download workflow logs"
+        id: download-logs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          echo "🔍 Downloading logs for workflow run ${{ github.event.workflow_run.id }}..."
+
+          # Get workflow jobs
+          JOBS_URL="https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/jobs"
+
+          curl -s -H "Authorization: token $GITHUB_TOKEN" "$JOBS_URL" > jobs.json
+
+          # Extract failed job logs
+          mkdir -p logs
+
+          # Get failed job IDs
+          FAILED_JOBS=$(jq -r '.jobs[] | select(.conclusion == "failure") | .id' jobs.json)
+
+          echo "📋 Found failed jobs:"
+          echo "$FAILED_JOBS"
+
+          # Download logs for each failed job
+          for JOB_ID in $FAILED_JOBS; do
+            echo "📥 Downloading log for job $JOB_ID..."
+            LOGS_URL="https://api.github.com/repos/${{ github.repository }}/actions/jobs/$JOB_ID/logs"
+
+            curl -s -L -H "Authorization: token $GITHUB_TOKEN" "$LOGS_URL" > "logs/job-$JOB_ID.log"
+
+            # Combine all logs
+            cat "logs/job-$JOB_ID.log" >> logs/combined.log
+            echo -e "\n\n=== END OF JOB $JOB_ID ===\n\n" >> logs/combined.log
+          done
+
+          if [ -f "logs/combined.log" ]; then
+            echo "✅ Logs downloaded successfully"
+            echo "log_file=logs/combined.log" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️  No logs found"
+            echo "log_file=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "Analyze errors"
+        id: analyze
+        if: steps.download-logs.outputs.log_file != ''
+        run: |
+          set -euo pipefail
+
+          echo "🔬 Analyzing CI errors..."
+
+          python3 scripts/ci-error-analyzer.py \
+            --log-file "${{ steps.download-logs.outputs.log_file }}" \
+            --mode comment \
+            --output ci-error-analysis.json \
+            --verbose || true
+
+          # Check if analysis was successful
+          if [ -f "ci-error-analysis.json" ]; then
+            echo "✅ Analysis complete"
+            echo "analysis_completed=true" >> $GITHUB_OUTPUT
+          else
+            echo "⚠️  Analysis failed"
+            echo "analysis_completed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: "Upload analysis report"
+        if: steps.analyze.outputs.analysis_completed == 'true'
+        uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a  # v4
+        with:
+          name: ci-error-analysis
+          path: ci-error-analysis.json
+          retention-days: 30
+
+      - name: "Post analysis to PR"
+        if: |
+          steps.analyze.outputs.analysis_completed == 'true' &&
+          github.event.workflow_run.event == 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          echo "💬 Posting analysis to PR..."
+
+          # Get PR number from workflow run
+          PR_NUMBER=$(jq -r '.pull_requests[0].number' <<< "$(
+            curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              "https://api.github.com/repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}"
+          )")
+
+          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" == "null" ]; then
+            echo "⚠️  No PR found for this workflow run"
+            exit 0
+          fi
+
+          echo "📝 Posting to PR #$PR_NUMBER"
+
+          # Read analysis report
+          if [ -f "ci-error-analysis.json" ]; then
+            # Generate markdown from JSON
+            python3 -c "
+import json
+import sys
+
+with open('ci-error-analysis.json', 'r') as f:
+    analysis = json.load(f)
+
+print('# 🔍 CI Error Analysis Report')
+print()
+print('This workflow run failed. Here is an automated analysis of the errors:')
+print()
+
+summary = analysis.get('summary', {})
+print(f'## 📊 Summary')
+print()
+print(f'- **Total Errors**: {summary.get(\"total\", 0)}')
+print(f'- **Auto-Fixable**: {summary.get(\"auto_fixable_count\", 0)}')
+print()
+
+errors = analysis.get('errors', [])
+if errors:
+    print('## 🐛 Top Errors')
+    print()
+    for idx, error in enumerate(errors[:5], 1):
+        print(f'### {idx}. {error.get(\"title\", \"Unknown\")}')
+        print()
+        print(f'- **Category**: {error.get(\"category\", \"unknown\")}')
+        print(f'- **Severity**: {error.get(\"severity\", \"unknown\")}')
+        if error.get('file_path'):
+            print(f'- **File**: \`{error[\"file_path\"]}\`')
+        if error.get('fix_suggestion'):
+            print(f'- **💡 Suggestion**: {error[\"fix_suggestion\"]}')
+        print()
+
+print('---')
+print('*This analysis was generated automatically by the CI Error Analyzer*')
+" > comment.md
+
+            # Post comment
+            curl -s -X POST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              "https://api.github.com/repos/${{ github.repository }}/issues/$PR_NUMBER/comments" \
+              -d @- <<EOF
+{
+  "body": $(jq -Rs . < comment.md)
+}
+EOF
+
+            echo "✅ Comment posted successfully"
+          fi
+
+      - name: "Create issue for critical errors"
+        if: steps.analyze.outputs.analysis_completed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          echo "🔍 Checking for critical errors..."
+
+          # Check if there are critical errors
+          CRITICAL_COUNT=$(jq -r '.summary.by_severity.critical // 0' ci-error-analysis.json)
+
+          if [ "$CRITICAL_COUNT" -gt 0 ]; then
+            echo "🚨 Found $CRITICAL_COUNT critical errors, creating issue..."
+
+            # Generate issue body
+            python3 -c "
+import json
+
+with open('ci-error-analysis.json', 'r') as f:
+    analysis = json.load(f)
+
+errors = [e for e in analysis.get('errors', []) if e.get('severity') == 'critical']
+
+print('# 🚨 Critical CI Failure')
+print()
+print(f'Workflow run failed with {len(errors)} critical error(s).')
+print()
+print(f'**Workflow**: ${{ github.event.workflow_run.name }}')
+print(f'**Run ID**: ${{ github.event.workflow_run.id }}')
+print(f'**Commit**: \`${{ github.event.workflow_run.head_sha }}\`')
+print(f'**Branch**: \`${{ github.event.workflow_run.head_branch }}\`')
+print()
+print('## Critical Errors')
+print()
+
+for idx, error in enumerate(errors[:3], 1):
+    print(f'### {idx}. {error.get(\"title\", \"Unknown\")}')
+    print()
+    print(f'- **Category**: {error.get(\"category\", \"unknown\")}')
+    if error.get('file_path'):
+        print(f'- **Location**: \`{error[\"file_path\"]}\`')
+    if error.get('message'):
+        print(f'')
+        print('**Message**:')
+        print(f'\`\`\`')
+        print(error.get('message', '')[:500])
+        print(f'\`\`\`')
+    if error.get('fix_suggestion'):
+        print(f'')
+        print(f'**💡 Suggestion**: {error[\"fix_suggestion\"]}')
+    print()
+
+print('---')
+print(f'[View full workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }})')
+" > issue.md
+
+            # Create issue
+            curl -s -X POST \
+              -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Content-Type: application/json" \
+              "https://api.github.com/repos/${{ github.repository }}/issues" \
+              -d @- <<EOF
+{
+  "title": "🚨 Critical CI Failure: ${{ github.event.workflow_run.name }}",
+  "body": $(jq -Rs . < issue.md),
+  "labels": ["ci-failure", "critical", "automated"]
+}
+EOF
+
+            echo "✅ Issue created successfully"
+          else
+            echo "ℹ️  No critical errors found"
+          fi
+
+      - name: "Cleanup"
+        if: always()
+        run: |
+          rm -rf logs/ jobs.json comment.md issue.md
