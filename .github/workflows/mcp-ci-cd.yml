@@ -12,6 +12,9 @@ on:
       - '00-namespaces/namespaces-mcp/**'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 env:
   NODE_VERSION: '20.x'
   WORKING_DIRECTORY: '00-namespaces/namespaces-mcp'
