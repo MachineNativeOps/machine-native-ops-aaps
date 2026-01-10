@@ -1,0 +1,154 @@
+# Communication Module Schema
+# Defines data structure and validation rules
+
+version: "2.0.0"
+semantic_role: schema_definitions
+artifact_type: schema
+semantic_root: false
+
+schema_definitions:
+  Message:
+    type: "object"
+    description: "Base message structure for communication layer"
+    required:
+      - "id"
+      - "type"
+      - "timestamp"
+      - "data"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+        description: "Unique message identifier"
+      type:
+        type: "string"
+        description: "Message type"
+        pattern: "^[a-z][a-z0-9-]*$"
+      timestamp:
+        type: "string"
+        format: "date-time"
+        description: "Message creation timestamp"
+      data:
+        type: "object"
+        description: "Message payload"
+      metadata:
+        type: "object"
+        description: "Additional message metadata"
+        properties:
+          priority:
+            type: "integer"
+            minimum: 0
+            maximum: 10
+          ttl:
+            type: "integer"
+            description: "Time to live in seconds"
+          correlationId:
+            type: "string"
+            format: "uuid"
+
+  Event:
+    type: "object"
+    description: "Event structure for event emitter"
+    required:
+      - "name"
+      - "timestamp"
+    properties:
+      name:
+        type: "string"
+        description: "Event name"
+      timestamp:
+        type: "string"
+        format: "date-time"
+      data:
+        type: "object"
+        description: "Event data"
+      source:
+        type: "string"
+        description: "Event source"
+
+  Topic:
+    type: "object"
+    description: "Topic structure for pub-sub"
+    required:
+      - "name"
+      - "pattern"
+    properties:
+      name:
+        type: "string"
+        description: "Topic name"
+        pattern: "^[a-z][a-z0-9-]*$"
+      pattern:
+        type: "string"
+        description: "Topic pattern for matching"
+      subscribers:
+        type: "array"
+        items:
+          type: "string"
+        description: "List of subscriber IDs"
+      retention:
+        type: "string"
+        description: "Message retention period"
+        pattern: "^[0-9]+[smhd]$"
+
+  QueueMessage:
+    type: "object"
+    description: "Queue message structure"
+    required:
+      - "id"
+      - "payload"
+      - "priority"
+    properties:
+      id:
+        type: "string"
+        format: "uuid"
+      payload:
+        type: "object"
+      priority:
+        type: "integer"
+        minimum: 0
+        maximum: 10
+      attempts:
+        type: "integer"
+        minimum: 0
+      maxAttempts:
+        type: "integer"
+        minimum: 1
+      delay:
+        type: "integer"
+        description: "Delay in milliseconds"
+
+validation_rules:
+  message:
+    - rule: "id_format"
+      description: "Message ID must be a valid UUID"
+    - rule: "type_format"
+      description: "Message type must be lowercase with hyphens"
+    - rule: "timestamp_format"
+      description: "Timestamp must be ISO 8601 format"
+  
+  event:
+    - rule: "name_required"
+      description: "Event name is required"
+    - rule: "timestamp_required"
+      description: "Event timestamp is required"
+  
+  topic:
+    - rule: "name_format"
+      description: "Topic name must be lowercase with hyphens"
+    - rule: "pattern_valid"
+      description: "Topic pattern must be valid regex"
+  
+  queue:
+    - rule: "priority_range"
+      description: "Priority must be between 0 and 10"
+    - rule: "attempts_positive"
+      description: "Attempts must be non-negative"
+
+metadata:
+  created_at: "2025-01-10T12:40:00Z"
+  updated_at: "2025-01-10T12:40:00Z"
+  version: "2.0.0"
+  status: "active"
+  references:
+    - "communication.manifest.yaml"
+    - "communication.spec.yaml"

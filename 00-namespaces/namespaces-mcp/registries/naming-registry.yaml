@@ -1,0 +1,146 @@
+# MCP Level 2 Naming Registry
+# Defines naming conventions and semantic identifiers for all artifacts
+
+version: "2.0.0"
+semantic_role: naming_registry
+artifact_type: registry
+semantic_root: true
+
+naming_conventions:
+  artifacts:
+    manifest:
+      pattern: "<module-name>.manifest.yaml"
+      description: "Module metadata and dependencies"
+      examples:
+        - "communication.manifest.yaml"
+        - "protocol.manifest.yaml"
+        - "data-management.manifest.yaml"
+    
+    schema:
+      pattern: "<module-name>.schema.yaml"
+      description: "Data structure and validation rules"
+      examples:
+        - "communication.schema.yaml"
+        - "protocol.schema.yaml"
+    
+    spec:
+      pattern: "<module-name>.spec.yaml"
+      description: "Interface and behavior contracts"
+      examples:
+        - "communication.spec.yaml"
+        - "protocol.spec.yaml"
+    
+    policy:
+      pattern: "<module-name>.policy.yaml"
+      description: "Access control and governance rules"
+      examples:
+        - "communication.policy.yaml"
+        - "protocol.policy.yaml"
+    
+    bundle:
+      pattern: "<module-name>.bundle.yaml"
+      description: "Grouped artifacts for deployment"
+      examples:
+        - "communication.bundle.yaml"
+        - "protocol.bundle.yaml"
+    
+    flow:
+      pattern: "<module-name>.flow.yaml"
+      description: "DAG-based execution workflows"
+      examples:
+        - "rag-pipeline.flow.yaml"
+        - "data-processing.flow.yaml"
+    
+    graph:
+      pattern: "<module-name>.graph.yaml"
+      description: "RAG/DAG integration and dependencies"
+      examples:
+        - "communication.graph.yaml"
+        - "protocol.graph.yaml"
+
+  modules:
+    pattern: "<category>-<function>"
+    case: "kebab-case"
+    examples:
+      - "communication"
+      - "protocol"
+      - "data-management"
+      - "monitoring-observability"
+      - "integration-extension"
+
+  endpoints:
+    pattern: "<resource>/<action>"
+    case: "camelCase for actions"
+    examples:
+      - "tools/list"
+      - "tools/call"
+      - "resources/list"
+      - "resources/read"
+      - "prompts/list"
+      - "prompts/get"
+
+  api_operations:
+    pattern: "<verb><Noun>"
+    case: "camelCase"
+    examples:
+      - "listTools"
+      - "callTool"
+      - "readResource"
+      - "createMessage"
+
+semantic_identifiers:
+  artifact_types:
+    - manifest
+    - schema
+    - spec
+    - policy
+    - bundle
+    - flow
+    - graph
+    - registry
+    - endpoint
+    - report
+
+  semantic_roles:
+    - manifest_storage
+    - schema_definitions
+    - specification_definitions
+    - policy_definitions
+    - artifact_bundles
+    - workflow_definitions
+    - dependency_graphs
+    - module_definitions
+    - naming_registry
+    - mcp_endpoints
+    - integration_reports
+
+  module_categories:
+    - communication
+    - protocol
+    - data-management
+    - monitoring-observability
+    - integration-extension
+    - configuration-governance
+
+validation_rules:
+  naming:
+    - rule: "no_special_chars"
+      description: "Avoid special characters except hyphen and underscore"
+    - rule: "unique_identifiers"
+      description: "All artifact names must be unique within their category"
+    - rule: "semantic_clarity"
+      description: "Names must clearly indicate purpose and function"
+  
+  versioning:
+    - rule: "semver"
+      description: "Use semantic versioning (major.minor.patch)"
+    - rule: "backward_compatibility"
+      description: "Major version changes indicate breaking changes"
+
+metadata:
+  created_at: "2025-01-10T12:40:00Z"
+  updated_at: "2025-01-10T12:40:00Z"
+  version: "2.0.0"
+  status: "active"
+  maintainers:
+    - "MCP Core Team"

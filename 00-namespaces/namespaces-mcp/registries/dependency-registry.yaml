@@ -1,0 +1,181 @@
+# MCP Level 2 Dependency Registry
+# Tracks artifact dependencies and semantic roots
+
+version: "2.0.0"
+semantic_role: dependency_registry
+artifact_type: registry
+semantic_root: true
+
+dependencies:
+  communication:
+    artifact: "communication.manifest.yaml"
+    semantic_root: true
+    depends_on:
+      - artifact: "communication.schema.yaml"
+        type: "schema"
+        required: true
+      - artifact: "communication.spec.yaml"
+        type: "spec"
+        required: true
+      - artifact: "communication.policy.yaml"
+        type: "policy"
+        required: false
+    provides:
+      - "message-bus"
+      - "event-emitter"
+      - "topic-manager"
+      - "message-queue"
+    lifecycle_stage: "active"
+
+  protocol:
+    artifact: "protocol.manifest.yaml"
+    semantic_root: true
+    depends_on:
+      - artifact: "protocol.schema.yaml"
+        type: "schema"
+        required: true
+      - artifact: "protocol.spec.yaml"
+        type: "spec"
+        required: true
+      - artifact: "communication.manifest.yaml"
+        type: "manifest"
+        required: true
+    provides:
+      - "json-rpc-handler"
+      - "transport-layer"
+      - "protocol-validator"
+    lifecycle_stage: "active"
+
+  data-management:
+    artifact: "data-management.manifest.yaml"
+    semantic_root: true
+    depends_on:
+      - artifact: "data-management.schema.yaml"
+        type: "schema"
+        required: true
+      - artifact: "data-management.spec.yaml"
+        type: "spec"
+        required: true
+      - artifact: "data-management.policy.yaml"
+        type: "policy"
+        required: true
+    provides:
+      - "storage-system"
+      - "cache-manager"
+      - "index-manager"
+      - "sync-manager"
+    lifecycle_stage: "active"
+
+  monitoring-observability:
+    artifact: "monitoring-observability.manifest.yaml"
+    semantic_root: true
+    depends_on:
+      - artifact: "monitoring-observability.schema.yaml"
+        type: "schema"
+        required: true
+      - artifact: "monitoring-observability.spec.yaml"
+        type: "spec"
+        required: true
+    provides:
+      - "metrics-collector"
+      - "logger"
+      - "trace-manager"
+      - "dashboard-server"
+    lifecycle_stage: "active"
+
+  configuration-governance:
+    artifact: "configuration-governance.manifest.yaml"
+    semantic_root: true
+    depends_on:
+      - artifact: "configuration-governance.schema.yaml"
+        type: "schema"
+        required: true
+      - artifact: "configuration-governance.spec.yaml"
+        type: "spec"
+        required: true
+      - artifact: "configuration-governance.policy.yaml"
+        type: "policy"
+        required: true
+    provides:
+      - "policy-engine"
+      - "compliance-checker"
+      - "audit-manager"
+      - "governance-dashboard"
+    lifecycle_stage: "active"
+
+  integration-extension:
+    artifact: "integration-extension.manifest.yaml"
+    semantic_root: true
+    depends_on:
+      - artifact: "integration-extension.schema.yaml"
+        type: "schema"
+        required: true
+      - artifact: "integration-extension.spec.yaml"
+        type: "spec"
+        required: true
+      - artifact: "protocol.manifest.yaml"
+        type: "manifest"
+        required: true
+    provides:
+      - "rest-adapter"
+      - "graphql-adapter"
+      - "grpc-adapter"
+      - "webhook-adapter"
+      - "plugin-system"
+      - "extension-manager"
+      - "event-bridge"
+      - "adapter-registry"
+    lifecycle_stage: "active"
+
+dependency_graph:
+  roots:
+    - "communication.manifest.yaml"
+    - "naming-registry.yaml"
+    - "dependency-registry.yaml"
+    - "reference-registry.yaml"
+  
+  layers:
+    layer_1_foundation:
+      - "communication"
+      - "naming-registry"
+      - "dependency-registry"
+      - "reference-registry"
+    
+    layer_2_protocol:
+      - "protocol"
+      - "data-management"
+    
+    layer_3_services:
+      - "monitoring-observability"
+      - "configuration-governance"
+    
+    layer_4_integration:
+      - "integration-extension"
+
+lifecycle_stages:
+  - name: "planning"
+    description: "Artifact is being designed"
+  - name: "development"
+    description: "Artifact is being implemented"
+  - name: "active"
+    description: "Artifact is in production use"
+  - name: "deprecated"
+    description: "Artifact is marked for removal"
+  - name: "archived"
+    description: "Artifact is no longer maintained"
+
+validation_rules:
+  - rule: "no_circular_dependencies"
+    description: "Dependencies must form a DAG"
+  - rule: "semantic_root_required"
+    description: "Each module must have a semantic root manifest"
+  - rule: "required_dependencies_present"
+    description: "All required dependencies must be satisfied"
+
+metadata:
+  created_at: "2025-01-10T12:40:00Z"
+  updated_at: "2025-01-10T12:40:00Z"
+  version: "2.0.0"
+  status: "active"
+  maintainers:
+    - "MCP Core Team"

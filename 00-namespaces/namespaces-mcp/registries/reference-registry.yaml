@@ -1,0 +1,204 @@
+# MCP Level 2 Reference Registry
+# Maps artifact references across modules
+
+version: "2.0.0"
+semantic_role: reference_registry
+artifact_type: registry
+semantic_root: true
+
+references:
+  communication_module:
+    manifest: "communication.manifest.yaml"
+    references:
+      schemas:
+        - path: "schemas/communication.schema.yaml"
+          type: "schema"
+          purpose: "data structure validation"
+      specs:
+        - path: "specs/communication.spec.yaml"
+          type: "spec"
+          purpose: "interface definition"
+      policies:
+        - path: "policies/communication.policy.yaml"
+          type: "policy"
+          purpose: "access control"
+      bundles:
+        - path: "bundles/communication.bundle.yaml"
+          type: "bundle"
+          purpose: "deployment unit"
+      endpoints:
+        - path: "endpoints/endpoints.yaml"
+          type: "endpoint"
+          purpose: "API mapping"
+
+  protocol_module:
+    manifest: "protocol.manifest.yaml"
+    references:
+      schemas:
+        - path: "schemas/protocol.schema.yaml"
+          type: "schema"
+          purpose: "protocol structure validation"
+      specs:
+        - path: "specs/protocol.spec.yaml"
+          type: "spec"
+          purpose: "protocol behavior definition"
+      external_references:
+        - path: "communication.manifest.yaml"
+          type: "manifest"
+          purpose: "communication layer dependency"
+
+  data_management_module:
+    manifest: "data-management.manifest.yaml"
+    references:
+      schemas:
+        - path: "schemas/data-management.schema.yaml"
+          type: "schema"
+          purpose: "data structure validation"
+      specs:
+        - path: "specs/data-management.spec.yaml"
+          type: "spec"
+          purpose: "data handling interface"
+      policies:
+        - path: "policies/data-management.policy.yaml"
+          type: "policy"
+          purpose: "data access and retention"
+      graphs:
+        - path: "graphs/data-management.graph.yaml"
+          type: "graph"
+          purpose: "dependency visualization"
+
+  monitoring_observability_module:
+    manifest: "monitoring-observability.manifest.yaml"
+    references:
+      schemas:
+        - path: "schemas/monitoring-observability.schema.yaml"
+          type: "schema"
+          purpose: "metrics and logs structure"
+      specs:
+        - path: "specs/monitoring-observability.spec.yaml"
+          type: "spec"
+          purpose: "monitoring interface"
+      flows:
+        - path: "flows/monitoring-pipeline.flow.yaml"
+          type: "flow"
+          purpose: "metrics collection workflow"
+
+  configuration_governance_module:
+    manifest: "configuration-governance.manifest.yaml"
+    references:
+      schemas:
+        - path: "schemas/configuration-governance.schema.yaml"
+          type: "schema"
+          purpose: "policy structure validation"
+      specs:
+        - path: "specs/configuration-governance.spec.yaml"
+          type: "spec"
+          purpose: "governance interface"
+      policies:
+        - path: "policies/configuration-governance.policy.yaml"
+          type: "policy"
+          purpose: "governance rules"
+      external_references:
+        - path: "naming-registry.yaml"
+          type: "registry"
+          purpose: "naming conventions"
+
+  integration_extension_module:
+    manifest: "integration-extension.manifest.yaml"
+    references:
+      schemas:
+        - path: "schemas/integration-extension.schema.yaml"
+          type: "schema"
+          purpose: "adapter structure validation"
+      specs:
+        - path: "specs/integration-extension.spec.yaml"
+          type: "spec"
+          purpose: "adapter interface"
+      bundles:
+        - path: "bundles/integration-extension.bundle.yaml"
+          type: "bundle"
+          purpose: "adapter deployment"
+      external_references:
+        - path: "protocol.manifest.yaml"
+          type: "manifest"
+          purpose: "protocol layer dependency"
+
+cross_module_references:
+  api_mappings:
+    - source: "specs/communication.spec.yaml"
+      target: "endpoints/endpoints.yaml"
+      relationship: "implements"
+    - source: "specs/protocol.spec.yaml"
+      target: "endpoints/endpoints.yaml"
+      relationship: "implements"
+    - source: "specs/integration-extension.spec.yaml"
+      target: "endpoints/endpoints.yaml"
+      relationship: "implements"
+
+  policy_mappings:
+    - source: "policies/communication.policy.yaml"
+      target: "naming-registry.yaml"
+      relationship: "references"
+    - source: "policies/data-management.policy.yaml"
+      target: "naming-registry.yaml"
+      relationship: "references"
+    - source: "policies/configuration-governance.policy.yaml"
+      target: "naming-registry.yaml"
+      relationship: "references"
+
+  dependency_mappings:
+    - source: "manifests/protocol.manifest.yaml"
+      target: "dependency-registry.yaml"
+      relationship: "tracked_by"
+    - source: "manifests/data-management.manifest.yaml"
+      target: "dependency-registry.yaml"
+      relationship: "tracked_by"
+    - source: "manifests/integration-extension.manifest.yaml"
+      target: "dependency-registry.yaml"
+      relationship: "tracked_by"
+
+semantic_api_mappings:
+  tools:
+    - endpoint: "tools/list"
+      artifact: "specs/communication.spec.yaml"
+      operation: "listTools"
+    - endpoint: "tools/call"
+      artifact: "specs/communication.spec.yaml"
+      operation: "callTool"
+
+  resources:
+    - endpoint: "resources/list"
+      artifact: "specs/data-management.spec.yaml"
+      operation: "listResources"
+    - endpoint: "resources/read"
+      artifact: "specs/data-management.spec.yaml"
+      operation: "readResource"
+
+  prompts:
+    - endpoint: "prompts/list"
+      artifact: "specs/protocol.spec.yaml"
+      operation: "listPrompts"
+    - endpoint: "prompts/get"
+      artifact: "specs/protocol.spec.yaml"
+      operation: "getPrompt"
+
+  sampling:
+    - endpoint: "sampling/createMessage"
+      artifact: "flows/sampling-workflow.flow.yaml"
+      operation: "createMessage"
+
+validation_rules:
+  - rule: "valid_reference_paths"
+    description: "All referenced paths must exist"
+  - rule: "no_dangling_references"
+    description: "All references must have valid targets"
+  - rule: "semantic_consistency"
+    description: "References must maintain semantic relationships"
+
+metadata:
+  created_at: "2025-01-10T12:40:00Z"
+  updated_at: "2025-01-10T12:40:00Z"
+  version: "2.0.0"
+  status: "active"
+  maintainers:
+    - "MCP Core Team"

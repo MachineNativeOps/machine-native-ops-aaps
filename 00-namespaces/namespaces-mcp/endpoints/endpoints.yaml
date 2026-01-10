@@ -1,0 +1,227 @@
+# MCP Level 2 Endpoints Registry
+# Maps MCP endpoints to artifact paths and source files
+
+version: "2.0.0"
+semantic_role: mcp_endpoints
+artifact_type: endpoint_registry
+semantic_root: false
+
+endpoints:
+  tools:
+    list:
+      path: "tools/list"
+      method: "POST"
+      artifact_path: "modules/communication/"
+      source_file: "specs/communication.spec.yaml"
+      semantic_role: "tool_discovery"
+      operation_id: "listTools"
+      description: "List all available tools"
+      
+    call:
+      path: "tools/call"
+      method: "POST"
+      artifact_path: "modules/communication/"
+      source_file: "specs/communication.spec.yaml"
+      semantic_role: "tool_invocation"
+      operation_id: "callTool"
+      description: "Invoke a specific tool"
+
+  resources:
+    list:
+      path: "resources/list"
+      method: "POST"
+      artifact_path: "modules/data-management/"
+      source_file: "specs/data-management.spec.yaml"
+      semantic_role: "resource_discovery"
+      operation_id: "listResources"
+      description: "List all available resources"
+      
+    read:
+      path: "resources/read"
+      method: "POST"
+      artifact_path: "modules/data-management/"
+      source_file: "specs/data-management.spec.yaml"
+      semantic_role: "resource_access"
+      operation_id: "readResource"
+      description: "Read a specific resource"
+      
+    subscribe:
+      path: "resources/subscribe"
+      method: "POST"
+      artifact_path: "modules/data-management/"
+      source_file: "specs/data-management.spec.yaml"
+      semantic_role: "resource_subscription"
+      operation_id: "subscribeResource"
+      description: "Subscribe to resource updates"
+      
+    unsubscribe:
+      path: "resources/unsubscribe"
+      method: "POST"
+      artifact_path: "modules/data-management/"
+      source_file: "specs/data-management.spec.yaml"
+      semantic_role: "resource_unsubscription"
+      operation_id: "unsubscribeResource"
+      description: "Unsubscribe from resource updates"
+
+  prompts:
+    list:
+      path: "prompts/list"
+      method: "POST"
+      artifact_path: "modules/protocol/"
+      source_file: "specs/protocol.spec.yaml"
+      semantic_role: "prompt_discovery"
+      operation_id: "listPrompts"
+      description: "List all available prompts"
+      
+    get:
+      path: "prompts/get"
+      method: "POST"
+      artifact_path: "modules/protocol/"
+      source_file: "specs/protocol.spec.yaml"
+      semantic_role: "prompt_retrieval"
+      operation_id: "getPrompt"
+      description: "Get a specific prompt"
+
+  sampling:
+    createMessage:
+      path: "sampling/createMessage"
+      method: "POST"
+      artifact_path: "flows/"
+      source_file: "flows/sampling-workflow.flow.yaml"
+      semantic_role: "sampling_workflow"
+      operation_id: "createMessage"
+      description: "Create a message using sampling"
+
+  logging:
+    setLevel:
+      path: "logging/setLevel"
+      method: "POST"
+      artifact_path: "modules/monitoring-observability/"
+      source_file: "specs/monitoring-observability.spec.yaml"
+      semantic_role: "logging_configuration"
+      operation_id: "setLogLevel"
+      description: "Set logging level"
+
+  registry:
+    naming:
+      path: "registry/naming"
+      method: "GET"
+      artifact_path: "registries/"
+      source_file: "registries/naming-registry.yaml"
+      semantic_role: "naming_registry"
+      operation_id: "getNamingRegistry"
+      description: "Get naming conventions registry"
+      
+    dependency:
+      path: "registry/dependency"
+      method: "GET"
+      artifact_path: "registries/"
+      source_file: "registries/dependency-registry.yaml"
+      semantic_role: "dependency_registry"
+      operation_id: "getDependencyRegistry"
+      description: "Get dependency registry"
+      
+    reference:
+      path: "registry/reference"
+      method: "GET"
+      artifact_path: "registries/"
+      source_file: "registries/reference-registry.yaml"
+      semantic_role: "reference_registry"
+      operation_id: "getReferenceRegistry"
+      description: "Get reference registry"
+
+  endpoints:
+    discover:
+      path: "endpoints/discover"
+      method: "GET"
+      artifact_path: "endpoints/"
+      source_file: "endpoints/endpoints.yaml"
+      semantic_role: "endpoint_registry"
+      operation_id: "discoverEndpoints"
+      description: "Discover all available endpoints"
+
+  reports:
+    integration:
+      path: "reports/integration"
+      method: "GET"
+      artifact_path: "reports/"
+      source_file: "reports/module-integration-report.yaml"
+      semantic_role: "integration_report"
+      operation_id: "getIntegrationReport"
+      description: "Get module integration report"
+
+  adapters:
+    rest:
+      path: "adapters/rest"
+      method: "POST"
+      artifact_path: "modules/integration-extension/adapters/rest/"
+      source_file: "specs/integration-extension.spec.yaml"
+      semantic_role: "rest_adapter"
+      operation_id: "invokeRestAdapter"
+      description: "Invoke REST adapter"
+      
+    graphql:
+      path: "adapters/graphql"
+      method: "POST"
+      artifact_path: "modules/integration-extension/adapters/graphql/"
+      source_file: "specs/integration-extension.spec.yaml"
+      semantic_role: "graphql_adapter"
+      operation_id: "invokeGraphQLAdapter"
+      description: "Invoke GraphQL adapter"
+      
+    grpc:
+      path: "adapters/grpc"
+      method: "POST"
+      artifact_path: "modules/integration-extension/adapters/grpc/"
+      source_file: "specs/integration-extension.spec.yaml"
+      semantic_role: "grpc_adapter"
+      operation_id: "invokeGRPCAdapter"
+      description: "Invoke gRPC adapter"
+      
+    webhook:
+      path: "adapters/webhook"
+      method: "POST"
+      artifact_path: "modules/integration-extension/adapters/webhook/"
+      source_file: "specs/integration-extension.spec.yaml"
+      semantic_role: "webhook_adapter"
+      operation_id: "invokeWebhookAdapter"
+      description: "Invoke Webhook adapter"
+
+endpoint_categories:
+  core:
+    - "tools/list"
+    - "tools/call"
+    - "resources/list"
+    - "resources/read"
+    - "prompts/list"
+    - "prompts/get"
+  
+  extended:
+    - "resources/subscribe"
+    - "resources/unsubscribe"
+    - "sampling/createMessage"
+    - "logging/setLevel"
+  
+  registry:
+    - "registry/naming"
+    - "registry/dependency"
+    - "registry/reference"
+    - "endpoints/discover"
+  
+  integration:
+    - "adapters/rest"
+    - "adapters/graphql"
+    - "adapters/grpc"
+    - "adapters/webhook"
+  
+  reporting:
+    - "reports/integration"
+
+metadata:
+  created_at: "2025-01-10T12:40:00Z"
+  updated_at: "2025-01-10T12:40:00Z"
+  version: "2.0.0"
+  status: "active"
+  total_endpoints: 23
+  maintainers:
+    - "MCP Core Team"
