@@ -21,14 +21,16 @@ The workspace is organized into the following key directories:
   - `docs/`: Documentation generation scripts
   - `cli/`: Command-line interface tools
   - `scripts/`: Automation scripts
+  - `apps/quantum-dashboard/`: Quantum workflow dashboard (React)
+  - `infrastructure/kubernetes/`: Quantum stack + validation K8s manifests
+  - `security/`: Quantum security strategy artifacts
+  - `cloudflare/`: Cloudflare Pages / Workers configs
 
 - **config/**: Configuration files
   - YAML configs, wrangler.toml, etc.
 
 - **docs/**: Documentation
   - Generated docs, knowledge graphs, reports
-
-- **cloudflare/**: Cloudflare Workers and edge functions
 
 - **deploy/**: Deployment configurations and scripts
 

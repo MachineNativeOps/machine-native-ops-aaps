@@ -75,7 +75,7 @@
 ## 目錄結構
 
 ```
-cloudflare/
+workspace/tools/cloudflare/
 ├── workers/
 │   ├── src/
 │   │   ├── index.ts              # Worker 主入口
@@ -189,7 +189,7 @@ wrangler r2 bucket create machinenativeops-assets-dev
 
 ```bash
 # 安裝依賴
-cd cloudflare/workers
+cd workspace/tools/cloudflare/workers
 npm install
 
 # 啟動開發伺服器
@@ -482,7 +482,7 @@ Error: Authentication error
 
 #### 已配置但未實作的測試
 
-`cloudflare/workers/package.json` 中已定義測試腳本：
+`workspace/tools/cloudflare/workers/package.json` 中已定義測試腳本：
 
 ```json
 {
@@ -494,7 +494,7 @@ Error: Authentication error
 ```
 
 但是：
-- ❌ 沒有測試檔案存在於 `cloudflare/workers` 目錄
+- ❌ 沒有測試檔案存在於 `workspace/tools/cloudflare/workers` 目錄
 - ❌ 沒有單元測試覆蓋率
 - ❌ 沒有整合測試
 - ❌ 沒有 E2E 測試

@@ -356,7 +356,7 @@ from core.ai_engine.ai_decision_engine import AIDecisionEngine
     "workspace/src/services/*",
     "workspace/src/apps/*",
     "workspace/src/ai",
-    "cloudflare/workers"
+    "workspace/tools/cloudflare/workers"
   ],
   "devDependencies": {
     "typescript": "^5.0.0",
@@ -529,7 +529,7 @@ ls -la workspace/src/frontend/
     "workspace/src/services/*",
     "workspace/src/apps/*",
     "workspace/src/ai",
-    "cloudflare/workers"
+    "workspace/tools/cloudflare/workers"
   ],
   "devDependencies": {
     "typescript": "^5.0.0",
@@ -560,7 +560,7 @@ ls -la workspace/src/frontend/
     "workspace/src/services/*",
     "workspace/src/apps/*",
     "workspace/src/ai",
-    "cloudflare/workers"
+    "workspace/tools/cloudflare/workers"
   ],
   "devDependencies": {
     "typescript": "^5.0.0",

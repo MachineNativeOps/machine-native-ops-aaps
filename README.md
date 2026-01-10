@@ -66,20 +66,17 @@ machine-native-ops-taxonomy-root-layer/
 │   ├── docs/              # 項目文檔
 │   │   ├── quantum/       # 量子功能文檔
 │   │   └── validation/    # 🔬 量子驗證系統文檔 + 證據鏈
+│   ├── tools/             # 工具與收斂後子模組
+│   │   ├── apps/quantum-dashboard/   # 🔬 量子工作流程儀表板（React）
+│   │   ├── infrastructure/kubernetes/ # 🔬 量子服務與驗證 K8s 配置
+│   │   ├── security/                 # 🔐 量子安全策略
+│   │   └── cloudflare/               # Cloudflare Pages / Workers 配置
 │   ├── scripts/           # 腳本工具
 │   ├── tests/             # 測試
 │   │   └── quantum/       # 量子模組測試
 │   └── ...                # 其他項目文件
 │
-├── apps/                   # 應用層
-│   └── quantum-dashboard/ # 🔬 量子工作流程儀表板（React）
-│
-├── infrastructure/         # 基礎設施
-│   └── kubernetes/
-│       ├── quantum/       # 🔬 量子服務 K8s 配置
-│       └── validation/    # 🔬 量子驗證系統 K8s 部署
-│
-├── tools/                  # 工具集
+├── tools/                  # 工具集（root）
 │   ├── refactor/          # 三階段重構驗證工具
 │   └── validation/        # 🔬 量子增強驗證工具（8 維度）
 │
@@ -143,7 +140,7 @@ python3 tools/validation/adaptive_decision_engine.py \
   --config tools/validation/hybrid-weights-config.yaml
 
 # 部署量子驗證系統到 K8s
-kubectl apply -f infrastructure/kubernetes/validation/
+kubectl apply -f workspace/tools/infrastructure/kubernetes/validation/
 ```
 
 **自動觸發器（INSTANT-compliant）**：
@@ -172,7 +169,7 @@ kubectl apply -f infrastructure/kubernetes/validation/
 - `workspace/scripts/`：CI/CD 與維運腳本（驗證、部署、命名遷移、健康檢查等）
 - 🔍 **NEW**: CI Error Analyzer - 自動分析 CI 失敗並提供可操作的見解（見 `docs/ci-error-analyzer-integration.md`）
 - `workspace/docs/`：交付/治理/操作手冊
-- `cloudflare/`：Cloudflare Pages / Workers 相關配置與專案
+- `workspace/tools/cloudflare/`：Cloudflare Pages / Workers 相關配置與專案
 
 **Key Features**（高層概覽）：
 

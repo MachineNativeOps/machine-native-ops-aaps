@@ -17,7 +17,7 @@
     "dev:stack": "bash scripts/start-machinenativeops-dev.sh",
     "docs:lint": "markdownlint \"**/*.md\"",
     "clean": "npm run clean --workspaces --if-present && rm -rf node_modules",
-    "cf:dev": "cd cloudflare/workers && npm run dev",
+    "cf:dev": "cd tools/cloudflare/workers && npm run dev",
     "cf:deploy": "wrangler deploy",
     "cf:deploy:staging": "wrangler deploy --env staging",
     "cf:deploy:production": "wrangler deploy --env production",
@@ -29,7 +29,7 @@
     "cf:secret:put": "wrangler secret put",
     "cf:login": "wrangler login",
     "cf:whoami": "wrangler whoami",
-    "build:worker": "cd cloudflare/workers && npm run build"
+    "build:worker": "cd tools/cloudflare/workers && npm run build"
   },
   "keywords": [
     "enterprise-integration",

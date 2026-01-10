@@ -82,13 +82,13 @@ spec:
       priority: medium
     - name: security_compliance
       type: security
-      policies: security/
+      policies: workspace/tools/security/
       latency: 5000
       parallelism: 16
       priority: critical
     - name: delivery
       type: deployment
-      manifests: infrastructure/kubernetes/
+      manifests: workspace/tools/infrastructure/kubernetes/
       latency: 30000
       parallelism: 32
       priority: high
@@ -99,7 +99,7 @@ spec:
         - auto-rollback
     - name: monitoring
       type: observability
-      dashboards: apps/quantum-dashboard/
+      dashboards: workspace/tools/apps/quantum-dashboard/
       latency: 1000
       parallelism: 8
       priority: low

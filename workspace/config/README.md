@@ -122,7 +122,7 @@ python3 tools/docs/validate_index.py --config config/system-manifest.yaml
 
 ```bash
 # Kubernetes 部署
-kubectl apply -f infrastructure/kubernetes/manifests/
+kubectl apply -f tools/infrastructure/kubernetes/manifests/
 
 # Docker 部署
 docker-compose -f docker-compose.yml up -d

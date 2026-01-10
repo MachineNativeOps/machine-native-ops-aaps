@@ -125,7 +125,7 @@ python3 tools/validation/quantum_feature_extractor.py \
 量子驗證器可部署為 K8s 服務：
 
 ```bash
-kubectl apply -f infrastructure/kubernetes/validation/
+kubectl apply -f workspace/tools/infrastructure/kubernetes/validation/
 ```
 
 部署內容：
@@ -158,7 +158,7 @@ kubectl apply -f infrastructure/kubernetes/validation/
 ## 📚 相關文檔
 
 - **完整系統文檔**: [workspace/docs/validation/QUANTUM_VALIDATION_SYSTEM.md](../../workspace/docs/validation/QUANTUM_VALIDATION_SYSTEM.md)
-- **K8s 部署配置**: [infrastructure/kubernetes/validation/](../../infrastructure/kubernetes/validation/)
+- **K8s 部署配置**: [workspace/tools/infrastructure/kubernetes/validation/](../../workspace/tools/infrastructure/kubernetes/validation/)
 - **證據鏈**: [workspace/docs/validation/evidence-chains/](../../workspace/docs/validation/evidence-chains/)
 - **驗證報告**: [workspace/docs/validation/reports/](../../workspace/docs/validation/reports/)
 
@@ -172,7 +172,7 @@ kubectl apply -f infrastructure/kubernetes/validation/
 source: workspace/config/dev/validation-system/
 targets:
   scripts: tools/validation/
-  manifests: infrastructure/kubernetes/validation/
+  manifests: workspace/tools/infrastructure/kubernetes/validation/
   documentation: workspace/docs/validation/
   
 integration_status: ✅ COMPLETE

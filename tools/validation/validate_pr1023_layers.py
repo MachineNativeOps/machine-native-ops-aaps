@@ -62,17 +62,17 @@ def build_checks(evidence_min: int) -> Iterable[Check]:
         ),
         Check(
             name="L5 quantum dashboard",
-            patterns=["apps/quantum-dashboard/src/*"],
+            patterns=["workspace/tools/apps/quantum-dashboard/src/*"],
             description="量子前端 UI 與指標板原始碼",
         ),
         Check(
             name="L6 k8s quantum stack",
-            patterns=["infrastructure/kubernetes/quantum/*.yaml"],
+            patterns=["workspace/tools/infrastructure/kubernetes/quantum/*.yaml"],
             description="量子堆疊 K8s 組件 (backend/frontend/HPA/ingress/secret)",
         ),
         Check(
             name="L6 k8s validation system",
-            patterns=["infrastructure/kubernetes/validation/*.yaml"],
+            patterns=["workspace/tools/infrastructure/kubernetes/validation/*.yaml"],
             description="驗證系統 K8s 部署",
         ),
         Check(
@@ -88,7 +88,7 @@ def build_checks(evidence_min: int) -> Iterable[Check]:
         ),
         Check(
             name="L8 security configs",
-            patterns=["security/*.yaml"],
+            patterns=["workspace/tools/security/*.yaml"],
             description="五層量子安全策略",
         ),
     ]

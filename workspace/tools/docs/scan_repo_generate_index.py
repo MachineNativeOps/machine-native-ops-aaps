@@ -33,11 +33,11 @@ except ImportError:
 DOMAIN_MAPPING = {
     'automation': ['automation/', 'automation/'],
     'core': ['core/'],
-    'frontend': ['frontend/', 'ui/'],
-    'infrastructure': ['infrastructure/', 'src/autonomous/deployment/', 'k8s/'],
+    'frontend': ['frontend/', 'ui/', 'workspace/tools/apps/quantum-dashboard/'],
+    'infrastructure': ['infrastructure/', 'src/autonomous/deployment/', 'k8s/', 'workspace/tools/infrastructure/'],
     'tests': ['tests/', 'test-vectors/'],
     'governance': ['governance/'],
-    'tools': ['tools/'],
+    'tools': ['tools/', 'workspace/tools/'],
     'ops': ['ops/'],
     'config': ['config/'],
     'docs': ['docs/'],
@@ -49,7 +49,7 @@ DOMAIN_MAPPING = {
     'runtime': ['runtime/'],
     'github': ['.github/'],
     'architecture': ['docs/architecture/'],
-    'security': ['security/'],
+    'security': ['security/', 'workspace/tools/security/'],
     'guides': ['docs/guides/', 'docs/QUICK_START', 'docs/INTEGRATION']
 }
 

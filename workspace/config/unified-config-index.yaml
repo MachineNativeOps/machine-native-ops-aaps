@@ -229,7 +229,7 @@ directory_consolidation:
     description: "合併所有基礎設施相關目錄"
     status: "completed"
     directories:
-      - path: "infrastructure/kubernetes/"
+- path: "workspace/tools/infrastructure/kubernetes/"
         capabilities: ["Deployment", "Services", "Monitoring"]
       - path: "infrastructure/monitoring/"
         capabilities: ["MetricsCollection", "AlertManagement"]

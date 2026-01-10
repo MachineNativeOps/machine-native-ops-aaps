@@ -240,8 +240,8 @@ directory_categories:
         version: "0.1.0"
         status: "infrastructure-ready"
         deployment:
-          kubernetes: "infrastructure/kubernetes/deployments/hlp-executor-core.yaml"
-          rbac: "infrastructure/kubernetes/rbac/hlp-executor-rbac.yaml"
+          kubernetes: "workspace/tools/infrastructure/kubernetes/deployments/hlp-executor-core.yaml"
+          rbac: "workspace/tools/infrastructure/kubernetes/rbac/hlp-executor-rbac.yaml"
           registry: "governance/24-registry/plugins/hlp-executor-core.yaml"
         endpoints:
           http: 8080

@@ -8,7 +8,7 @@
 # ============================================================================
 
 name = "machine-native-ops"
-main = "cloudflare/workers/src/index.ts"
+main = "workspace/tools/cloudflare/workers/src/index.ts"
 compatibility_date = "2025-12-01"
 compatibility_flags = ["nodejs_compat"]
 
@@ -31,7 +31,7 @@ crons = ["0 * * * *", "0 0 * * *"]
 # ============================================================================
 # Note: No custom [build] command is defined.
 # Wrangler 3 will automatically bundle the TypeScript entrypoint defined in
-# `main = "cloudflare/workers/src/index.ts"`, which avoids relying on a
+# `main = "workspace/tools/cloudflare/workers/src/index.ts"`, which avoids relying on a
 # non-emitting npm script (e.g., `tsc --noEmit`) for deployment artifacts.
 
 # ============================================================================
