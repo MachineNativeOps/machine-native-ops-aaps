@@ -1,0 +1,251 @@
+{
+  "version": "1.0.0",
+  "created": "2026-01-10T09:08:15.535337Z",
+  "base_concepts": 7,
+  "derived_concepts": 2,
+  "concepts": {
+    "Artifact": {
+      "type": "base",
+      "definition": "Any entity in the system that can be versioned, governed, and traced",
+      "category": "structural",
+      "stability": "stable",
+      "fields": [
+        {
+          "name": "metadata",
+          "type": "object",
+          "required": true,
+          "description": "Artifact identification and metadata"
+        },
+        {
+          "name": "spec",
+          "type": "object",
+          "required": true,
+          "description": "Artifact specification"
+        },
+        {
+          "name": "status",
+          "type": "object",
+          "required": true,
+          "description": "Artifact runtime status"
+        }
+      ],
+      "examples": [
+        "Configuration file",
+        "Service definition",
+        "Policy document"
+      ]
+    },
+    "Governance": {
+      "type": "base",
+      "definition": "System of policies, procedures, and mechanisms that regulate behavior",
+      "category": "governance",
+      "stability": "stable",
+      "fields": [
+        {
+          "name": "policies",
+          "type": "array",
+          "required": true,
+          "description": "Governance policies"
+        },
+        {
+          "name": "roles",
+          "type": "array",
+          "required": true,
+          "description": "RBAC roles and permissions"
+        },
+        {
+          "name": "audit",
+          "type": "object",
+          "required": false,
+          "description": "Audit trail configuration"
+        }
+      ],
+      "examples": [
+        "Access control policy",
+        "Compliance requirements",
+        "Audit logging"
+      ]
+    },
+    "Module": {
+      "type": "base",
+      "definition": "Self-contained unit of functionality with defined interfaces and dependencies",
+      "category": "structural",
+      "stability": "stable",
+      "fields": [
+        {
+          "name": "entrypoint",
+          "type": "string",
+          "required": true,
+          "description": "Module execution entry point"
+        },
+        {
+          "name": "dependencies",
+          "type": "array",
+          "required": true,
+          "description": "Module dependencies"
+        },
+        {
+          "name": "health_check",
+          "type": "object",
+          "required": true,
+          "description": "Health check configuration"
+        }
+      ],
+      "examples": [
+        "Governance engine module",
+        "Trust manager module",
+        "Provenance service module"
+      ]
+    },
+    "Trust": {
+      "type": "base",
+      "definition": "System of establishing and maintaining trust relationships between entities",
+      "category": "security",
+      "stability": "stable",
+      "fields": [
+        {
+          "name": "certificate_chain",
+          "type": "array",
+          "required": true,
+          "description": "Trust certificate chain"
+        },
+        {
+          "name": "signature",
+          "type": "string",
+          "required": true,
+          "description": "Cryptographic signature"
+        },
+        {
+          "name": "verification",
+          "type": "object",
+          "required": true,
+          "description": "Verification configuration"
+        }
+      ],
+      "examples": [
+        "Certificate-based trust",
+        "Signature verification",
+        "Key rotation"
+      ]
+    },
+    "Provenance": {
+      "type": "base",
+      "definition": "Complete record of the origin, history, and lifecycle of an artifact",
+      "category": "traceability",
+      "stability": "stable",
+      "fields": [
+        {
+          "name": "origin",
+          "type": "object",
+          "required": true,
+          "description": "Artifact origin information"
+        },
+        {
+          "name": "modifications",
+          "type": "array",
+          "required": true,
+          "description": "Modification history"
+        },
+        {
+          "name": "signatures",
+          "type": "array",
+          "required": true,
+          "description": "Provenance signatures"
+        }
+      ],
+      "examples": [
+        "Source code origin",
+        "Build provenance",
+        "Deployment history"
+      ]
+    },
+    "Integrity": {
+      "type": "base",
+      "definition": "System for ensuring and verifying the consistency and authenticity of artifacts",
+      "category": "security",
+      "stability": "stable",
+      "fields": [
+        {
+          "name": "hash",
+          "type": "string",
+          "required": true,
+          "description": "Cryptographic hash"
+        },
+        {
+          "name": "hash_algorithm",
+          "type": "string",
+          "required": true,
+          "description": "Hash algorithm used"
+        },
+        {
+          "name": "signature",
+          "type": "string",
+          "required": true,
+          "description": "Integrity signature"
+        }
+      ],
+      "examples": [
+        "Hash lock",
+        "Drift detection",
+        "Signature verification"
+      ]
+    },
+    "Execution": {
+      "type": "base",
+      "definition": "Flow and orchestration of system operations and workflows",
+      "category": "operational",
+      "stability": "stable",
+      "fields": [
+        {
+          "name": "workflows",
+          "type": "array",
+          "required": true,
+          "description": "Execution workflows"
+        },
+        {
+          "name": "triggers",
+          "type": "array",
+          "required": true,
+          "description": "Execution triggers"
+        },
+        {
+          "name": "state_management",
+          "type": "object",
+          "required": true,
+          "description": "Execution state management"
+        }
+      ],
+      "examples": [
+        "Deployment workflow",
+        "Validation pipeline",
+        "Rollback procedure"
+      ]
+    },
+    "FileXArtifact": {
+      "type": "derived",
+      "extends": "Artifact",
+      "definition": "Artifact following FileX Standard Template v1 with bi-directional governance",
+      "category": "structural",
+      "stability": "experimental",
+      "features": [
+        "Forward expansion",
+        "Backward reconciliation",
+        "Semantic closure validation",
+        "Attestation bundle generation"
+      ]
+    },
+    "BiDirectionalGovernance": {
+      "type": "derived",
+      "extends": "Governance",
+      "definition": "Governance system with both forward and backward reconciliation mechanisms",
+      "category": "governance",
+      "stability": "experimental",
+      "features": [
+        "Semantic root consistency",
+        "Dependency closure validation",
+        "Automatic patch generation",
+        "Governance closure enforcement"
+      ]
+    }
+  }
+}

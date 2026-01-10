@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0",
+  "created": "2026-01-10T09:08:26.303800Z",
+  "rules": {
+    "structural": {
+      "enabled": true,
+      "schema_validation": true,
+      "required_fields_check": true,
+      "data_type_check": true
+    },
+    "semantic": {
+      "enabled": true,
+      "concept_consistency": true,
+      "definition_completeness": true,
+      "semantic_root_traceability": true
+    },
+    "dependency": {
+      "enabled": true,
+      "dag_check": true,
+      "circular_dependency_check": true,
+      "version_compatibility": true
+    },
+    "governance": {
+      "enabled": true,
+      "naming_conventions": true,
+      "documentation_completeness": true,
+      "policy_compliance": true
+    },
+    "closure": {
+      "enabled": true,
+      "dependency_closure": true,
+      "semantic_closure": true,
+      "governance_closure": true
+    }
+  }
+}

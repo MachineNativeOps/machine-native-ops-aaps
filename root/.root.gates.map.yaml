@@ -1,0 +1,495 @@
+# Root Gates Map Configuration
+# Machine Native Ops - Gate Mechanism & CI/CD Integration
+# Version: 1.0.0
+# Purpose: Define gate mechanisms for automated governance closure
+
+apiVersion: machinenativeops.io/v1
+kind: GatesMap
+metadata:
+  name: machinenativeops-gates-map
+  version: 1.0.0
+  namespace: machinenativeops-root
+  labels:
+    machinenativeops.io/tier: "gates-map"
+    machinenativeops.io/version: "1.0.0"
+    machinenativeops.io/component: "gates-map"
+  annotations:
+    machinenativeops.io/description: "Gate mechanisms for automated governance closure enforcement"
+    machinenativeops.io/created: "2025-01-10T10:00:00Z"
+
+spec:
+  # === GATE DEFINITIONS ===
+  gates:
+    # Structural Validation Gate
+    - name: "structural-validation-gate"
+      description: "Validates artifact structure against schema"
+      priority: 100
+      enabled: true
+      
+      validation_level: "structural"
+      validation_type: "schema"
+      
+      # Gate conditions
+      conditions:
+        - name: "schema_compliance"
+          expression: "validation.structural.status == 'pass'"
+          description: "Artifact must comply with schema"
+        
+        - name: "required_fields"
+          expression: "validation.structural.required_fields == true"
+          description: "All required fields must be present"
+        
+        - name: "data_types"
+          expression: "validation.structural.data_types == true"
+          description: "All data types must be correct"
+      
+      # Gate actions
+      actions:
+        on_pass: "proceed_to_next_gate"
+        on_fail: "block_and_report"
+        on_warning: "request_review"
+      
+      # Gate configuration
+      config:
+        timeout: 30  # seconds
+        retry_attempts: 3
+        retry_interval: 5  # seconds
+        blocking_on_failure: true
+      
+      # Notifications
+      notifications:
+        on_pass: false
+        on_fail: true
+        channels: ["slack", "email"]
+        recipients: ["team-architecture@machinenativeops.io"]
+
+    # Semantic Validation Gate
+    - name: "semantic-validation-gate"
+      description: "Validates semantic consistency and concept traceability"
+      priority: 90
+      enabled: true
+      
+      validation_level: "semantic"
+      validation_type: "consistency"
+      
+      conditions:
+        - name: "concept_traceability"
+          expression: "validation.semantic.concept_traceability == 'pass'"
+          description: "All concepts must trace to semantic root"
+        
+        - name: "semantic_consistency"
+          expression: "validation.semantic.semantic_consistency == 'pass'"
+          description: "All concepts must be semantically consistent"
+        
+        - name: "definition_completeness"
+          expression: "validation.semantic.definition_completeness == 'pass'"
+          description: "All concept definitions must be complete"
+      
+      actions:
+        on_pass: "proceed_to_next_gate"
+        on_fail: "block_and_report"
+        on_warning: "request_approval"
+      
+      config:
+        timeout: 60  # seconds
+        retry_attempts: 2
+        retry_interval: 10  # seconds
+        blocking_on_failure: true
+        approval_workflow: "semantic-approval"
+      
+      notifications:
+        on_pass: false
+        on_fail: true
+        on_warning: true
+        channels: ["slack"]
+        recipients: ["team-governance@machinenativeops.io"]
+
+    # Dependency Validation Gate
+    - name: "dependency-validation-gate"
+      description: "Validates dependency graph and checks for circular dependencies"
+      priority: 95
+      enabled: true
+      
+      validation_level: "dependency"
+      validation_type: "dag"
+      
+      conditions:
+        - name: "dag_structure"
+          expression: "validation.dependency.dag_check == 'pass'"
+          description: "Dependency graph must be a valid DAG"
+        
+        - name: "circular_dependencies"
+          expression: "validation.dependency.circular_dependency_check == 'pass'"
+          description: "No circular dependencies allowed"
+        
+        - name: "version_compatibility"
+          expression: "validation.dependency.version_compatibility == 'pass'"
+          description: "All dependency versions must be compatible"
+        
+        - name: "dependency_health"
+          expression: "validation.dependency.dependency_health == 'pass'"
+          description: "All dependencies must be healthy"
+      
+      actions:
+        on_pass: "proceed_to_next_gate"
+        on_fail: "block_and_report"
+        on_warning: "request_review"
+      
+      config:
+        timeout: 45  # seconds
+        retry_attempts: 3
+        retry_interval: 10  # seconds
+        blocking_on_failure: true
+      
+      notifications:
+        on_pass: false
+        on_fail: true
+        channels: ["slack", "email"]
+        recipients: ["team-dependency@machinenativeops.io"]
+
+    # Governance Validation Gate
+    - name: "governance-validation-gate"
+      description: "Validates governance policies and naming conventions"
+      priority: 85
+      enabled: true
+      
+      validation_level: "governance"
+      validation_type: "compliance"
+      
+      conditions:
+        - name: "naming_conventions"
+          expression: "validation.governance.naming_conventions == 'pass'"
+          description: "Must follow naming conventions"
+        
+        - name: "documentation_completeness"
+          expression: "validation.governance.documentation_completeness == 'pass'"
+          description: "Documentation must be complete"
+        
+        - name: "policy_compliance"
+          expression: "validation.governance.policy_compliance == 'pass'"
+          description: "Must comply with all governance policies"
+        
+        - name: "attestation_bundle"
+          expression: "validation.governance.attestation_bundle == 'pass'"
+          description: "Attestation bundle must be generated"
+      
+      actions:
+        on_pass: "proceed_to_next_gate"
+        on_fail: "block_and_report"
+        on_warning: "request_approval"
+      
+      config:
+        timeout: 60  # seconds
+        retry_attempts: 2
+        retry_interval: 15  # seconds
+        blocking_on_failure: true
+      
+      notifications:
+        on_pass: false
+        on_fail: true
+        on_warning: true
+        channels: ["slack"]
+        recipients: ["team-governance@machinenativeops.io"]
+
+    # Closure Validation Gate
+    - name: "closure-validation-gate"
+      description: "Validates complete governance closure including dependency, semantic, and governance closure"
+      priority: 99
+      enabled: true
+      
+      validation_level: "closure"
+      validation_type: "closure"
+      
+      conditions:
+        - name: "dependency_closure"
+          expression: "validation.closure.dependency_closure == 'pass'"
+          description: "Dependency closure must be achieved"
+        
+        - name: "semantic_closure"
+          expression: "validation.closure.semantic_closure == 'pass'"
+          description: "Semantic closure must be achieved"
+        
+        - name: "governance_closure"
+          expression: "validation.closure.governance_closure == 'pass'"
+          description: "Governance closure must be achieved"
+        
+        - name: "overall_closure"
+          expression: "validation.closure.overall == 'pass'"
+          description: "Overall governance closure must be achieved"
+      
+      actions:
+        on_pass: "proceed_to_lock"
+        on_fail: "block_and_report"
+        on_warning: "block_and_report"
+      
+      config:
+        timeout: 90  # seconds
+        retry_attempts: 1
+        retry_interval: 30  # seconds
+        blocking_on_failure: true
+        final_gate: true
+      
+      notifications:
+        on_pass: true
+        on_fail: true
+        channels: ["slack", "email"]
+        recipients: ["team-architecture@machinenativeops.io", "team-governance@machinenativeops.io"]
+
+  # === GATE WORKFLOWS ===
+  workflows:
+    # Standard validation workflow
+    - name: "standard-validation-workflow"
+      description: "Standard artifact validation workflow"
+      enabled: true
+      
+      gates_sequence:
+        - "structural-validation-gate"
+        - "semantic-validation-gate"
+        - "dependency-validation-gate"
+        - "governance-validation-gate"
+        - "closure-validation-gate"
+      
+      # Workflow configuration
+      config:
+        parallel_gates: false
+        stop_on_first_failure: true
+        timeout: 300  # seconds
+      
+      # Workflow actions
+      on_success:
+        - "generate_attestation_bundle"
+        - "lock_artifact"
+        - "notify_success"
+      
+      on_failure:
+        - "generate_failure_report"
+        - "notify_failure"
+        - "block_deployment"
+
+    # Fast-track workflow for trusted artifacts
+    - name: "fast-track-workflow"
+      description: "Fast-track workflow for trusted artifacts"
+      enabled: true
+      
+      conditions:
+        - expression: "artifact.trust_level == 'trusted'"
+          description: "Artifact must be trusted"
+      
+      gates_sequence:
+        - "structural-validation-gate"
+        - "dependency-validation-gate"
+        - "closure-validation-gate"
+      
+      config:
+        parallel_gates: false
+        stop_on_first_failure: true
+        timeout: 180  # seconds
+      
+      on_success:
+        - "generate_attestation_bundle"
+        - "lock_artifact"
+        - "notify_success"
+      
+      on_failure:
+        - "generate_failure_report"
+        - "notify_failure"
+        - "block_deployment"
+
+  # === GATE LOCK MECHANISM ===
+  gate_lock:
+    enabled: true
+    
+    # Lock configuration
+    config:
+      lock_duration: "1h"
+      auto_renew: false
+      lock_storage: "/root/.root.jobs/gate-locks/"
+      
+      # Lock acquisition
+      acquisition:
+        timeout: 30  # seconds
+        retry_attempts: 3
+        retry_interval: 5  # seconds
+      
+      # Lock release
+      release:
+        automatic: true
+        on_failure: true
+        on_success: true
+    
+    # Lock actions
+    actions:
+      on_lock:
+        - "store_lock_metadata"
+        - "notify_lock_acquired"
+      
+      on_unlock:
+        - "verify_lock_validity"
+        - "notify_lock_released"
+      
+      on_lock_expiry:
+        - "send_expiry_notification"
+        - "initiate_lock_cleanup"
+
+  # === ATTESTATION BUNDLE GENERATION ===
+  attestation:
+    enabled: true
+    
+    # Bundle configuration
+    config:
+      format: "yaml"
+      compression: true
+      encryption: true
+      signing: true
+      
+      # Bundle content
+      content:
+        - "artifact_metadata"
+        - "validation_results"
+        - "governance_compliance"
+        - "provenance"
+        - "trust_chain"
+        - "timestamp"
+        - "signature"
+      
+      # Bundle storage
+      storage:
+        path: "/root/.root.jobs/attestations/"
+        retention: "7d"
+        backup_enabled: true
+        backup_path: "/root/.root.jobs/attestations/backup/"
+      
+      # Bundle signing
+      signing:
+        algorithm: "RSA-4096"
+        certificate_chain: "/root/.root.trust/certificates/"
+        private_key: "/root/.root.trust/keys/private.key"
+        timestamp_service: "http://timestamp.machinenativeops.io"
+
+  # === APPROVAL WORKFLOWS ===
+  approval_workflows:
+    # Semantic approval workflow
+    - name: "semantic-approval"
+      description: "Approval workflow for semantic validation issues"
+      enabled: true
+      
+      approvers:
+        - "team-architecture@machinenativeops.io"
+        - "team-governance@machinenativeops.io"
+      
+      approval_criteria:
+        - "Semantic drift explanation"
+        - "Impact analysis"
+        - "Mitigation plan"
+        - "Rollback plan"
+      
+      timeout: "24h"
+      auto_approve_after: false
+    
+    # Breaking change approval workflow
+    - name: "breaking-change-approval"
+      description: "Approval workflow for breaking changes"
+      enabled: true
+      
+      approvers:
+        - "team-architecture@machinenativeops.io"
+        - "team-dependency@machinenativeops.io"
+        - "team-operations@machinenativeops.io"
+      
+      approval_criteria:
+        - "Breaking change justification"
+        - "Migration guide"
+        - "Impact analysis on dependents"
+        - "Testing plan"
+        - "Rollback plan"
+      
+      timeout: "48h"
+      auto_approve_after: false
+
+  # === NOTIFICATIONS ===
+  notifications:
+    enabled: true
+    
+    # Notification channels
+    channels:
+      slack:
+        enabled: true
+        webhook: "https://hooks.slack.com/services/XXX"
+        channel: "#governance-notifications"
+        username: "GateBot"
+        icon_emoji: ":gate:"
+      
+      email:
+        enabled: true
+        smtp_server: "smtp.machinenativeops.io"
+        smtp_port: 587
+        from_address: "gates@machinenativeops.io"
+        from_name: "Gate Notifications"
+      
+      webhook:
+        enabled: true
+        endpoint: "https://api.machinenativeops.io/gates/webhook"
+        secret: "${GATE_WEBHOOK_SECRET}"
+    
+    # Notification templates
+    templates:
+      success:
+        subject: "Gate Success: ${gate_name} for ${artifact_name}"
+        message: |
+          ✅ Gate ${gate_name} passed for artifact ${artifact_name}
+          
+          Artifact: ${artifact_name} v${artifact_version}
+          Gate: ${gate_name}
+          Status: PASS
+          Timestamp: ${timestamp}
+          
+          Proceeding to next gate...
+      
+      failure:
+        subject: "⚠️ Gate Failure: ${gate_name} for ${artifact_name}"
+        message: |
+          ❌ Gate ${gate_name} failed for artifact ${artifact_name}
+          
+          Artifact: ${artifact_name} v${artifact_version}
+          Gate: ${gate_name}
+          Status: FAIL
+          Error: ${error_message}
+          Timestamp: ${timestamp}
+          
+          Action Required: ${required_action}
+      
+      warning:
+        subject: "⚡ Gate Warning: ${gate_name} for ${artifact_name}"
+        message: |
+          ⚡ Gate ${gate_name} warning for artifact ${artifact_name}
+          
+          Artifact: ${artifact_name} v${artifact_version}
+          Gate: ${gate_name}
+          Status: WARNING
+          Warning: ${warning_message}
+          Timestamp: ${timestamp}
+          
+          Review Required: ${review_required}
+
+status:
+  phase: "active"
+  version: "1.0.0"
+  
+  conditions:
+    - type: "GatesConfigured"
+      status: "True"
+      lastTransitionTime: "2025-01-10T10:00:00Z"
+      reason: "All gates are configured"
+      message: "5 gates configured and active"
+    
+    - type: "WorkflowsActive"
+      status: "True"
+      lastTransitionTime: "2025-01-10T10:00:00Z"
+      reason: "Workflows are active"
+      message: "2 workflows configured and active"
+    
+    - type: "AttestationEnabled"
+      status: "True"
+      lastTransitionTime: "2025-01-10T10:00:00Z"
+      reason: "Attestation is enabled"
+      message: "Attestation bundle generation is enabled"

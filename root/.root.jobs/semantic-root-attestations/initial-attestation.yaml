@@ -1,0 +1,33 @@
+apiVersion: machinenativeops.io/v1
+kind: SemanticRootAttestation
+metadata:
+  created: '2026-01-10T09:08:44.087258Z'
+  name: semantic-root-attestation-1.0.0
+  namespace: machinenativeops-root
+  type: initial
+  version: 1.0.0
+spec:
+  dependency_closure: pass
+  governance_closure: pass
+  overall_status: pass
+  semantic_closure: pass
+  semantic_consistency: pass
+  semantic_root_version: 1.0.0
+  validation_summary:
+    closure: pass
+    dependency: pass
+    governance: pass
+    semantic: pass
+    structural: pass
+status:
+  conditions:
+  - message: Semantic root initialized and consistent
+    status: 'True'
+    type: SemanticRootConsistency
+  - message: Concept registry initialized
+    status: 'True'
+    type: ConceptRegistry
+  - message: Validation rules initialized
+    status: 'True'
+    type: ValidationRules
+  phase: initialized
