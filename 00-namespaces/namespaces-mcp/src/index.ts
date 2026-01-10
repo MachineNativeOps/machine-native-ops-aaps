@@ -95,6 +95,18 @@ export { TaxonomyIntegration } from './taxonomy-integration';
 export { converter } from './converter';
 export { advancedConverter } from './advanced_converter';
 
+// Phase 5 Module 5A: Quantum-Agentic Intelligence Layer
+export {
+  QuantumAgenticSystem,
+  QuantumAgenticSystemFactory,
+  createQuantumAgenticSystem,
+  QuantumNeuralEngine,
+  AgenticOrchestrator,
+  CognitiveReasoningEngine,
+  MultiModalProcessor,
+  KnowledgeGraph
+} from './quantum-agentic';
+
 /**
  * Namespaces-MCP 版本信息
  */
