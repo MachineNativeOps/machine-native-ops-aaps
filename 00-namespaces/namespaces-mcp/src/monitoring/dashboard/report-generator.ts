@@ -42,9 +42,21 @@ export class ReportGenerator extends EventEmitter {
     super();
     this.reports = new Map();
   }
+
+  /**
+   * Escape HTML special characters to prevent XSS attacks
+   */
+  private escapeHtml(unsafe: string): string {
+    return unsafe
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
   
   async generateReport(config: ReportConfig): Promise<Report> {
-    const id = `report-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const id = `report-${crypto.randomUUID()}`;
     
     const content = await this.renderReport(config);
     
@@ -88,8 +100,8 @@ export class ReportGenerator extends EventEmitter {
   private renderHTML(config: ReportConfig): string {
     const sections = config.sections.map(section => `
       <section>
-        <h2>${section.title}</h2>
-        <div>${JSON.stringify(section.content)}</div>
+        <h2>${this.escapeHtml(section.title)}</h2>
+        <div>${this.escapeHtml(JSON.stringify(section.content))}</div>
       </section>
     `).join('\n');
     
@@ -97,7 +109,7 @@ export class ReportGenerator extends EventEmitter {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>${config.title}</title>
+        <title>${this.escapeHtml(config.title)}</title>
         <style>
           body { font-family: Arial, sans-serif; margin: 20px; }
           h1 { color: #333; }
@@ -105,7 +117,7 @@ export class ReportGenerator extends EventEmitter {
         </style>
       </head>
       <body>
-        <h1>${config.title}</h1>
+        <h1>${this.escapeHtml(config.title)}</h1>
         <p>Generated: ${new Date().toISOString()}</p>
         ${sections}
       </body>

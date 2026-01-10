@@ -37,7 +37,7 @@ export class TraceManager extends EventEmitter {
   }
   
   startTrace(name: string): string {
-    const traceId = `trace-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const traceId = `trace-${crypto.randomUUID()}`;
     
     const trace: Trace = {
       traceId,
@@ -57,7 +57,7 @@ export class TraceManager extends EventEmitter {
   startSpan(traceId: string, name: string, parentSpanId?: string): Span {
     const span: Span = {
       traceId,
-      spanId: `span-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      spanId: `span-${crypto.randomUUID()}`,
       parentSpanId,
       name,
       startTime: Date.now(),
@@ -89,12 +89,17 @@ export class TraceManager extends EventEmitter {
     
     this.emit('span:ended', { span });
     
-    // Check if trace is complete
+    // Check if this trace is complete by counting remaining spans for this trace
     const trace = this.traces.get(span.traceId);
-    if (trace && this.activeSpans.size === 0) {
-      trace.endTime = Date.now();
-      trace.duration = trace.endTime - trace.startTime;
-      this.emit('trace:completed', { trace });
+    if (trace) {
+      const remainingSpans = Array.from(this.activeSpans.values())
+        .filter(s => s.traceId === span.traceId);
+      
+      if (remainingSpans.length === 0) {
+        trace.endTime = Date.now();
+        trace.duration = trace.endTime - trace.startTime;
+        this.emit('trace:completed', { trace });
+      }
     }
   }
   

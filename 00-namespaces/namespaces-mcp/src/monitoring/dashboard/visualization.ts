@@ -23,7 +23,7 @@ export interface ChartData {
   }>;
 }
 
-export interface Chart {
+export interface DashboardChart {
   id: string;
   type: ChartType;
   title: string;
@@ -32,17 +32,17 @@ export interface Chart {
 }
 
 export class Visualization extends EventEmitter {
-  private charts: Map<string, Chart>;
+  private charts: Map<string, DashboardChart>;
   
   constructor() {
     super();
     this.charts = new Map();
   }
   
-  createChart(chart: Omit<Chart, 'id'>): string {
-    const id = `chart-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  createChart(chart: Omit<DashboardChart, 'id'>): string {
+    const id = `chart-${crypto.randomUUID()}`;
     
-    const fullChart: Chart = {
+    const fullChart: DashboardChart = {
       ...chart,
       id
     };
@@ -64,11 +64,11 @@ export class Visualization extends EventEmitter {
     this.emit('chart:updated', { chart });
   }
   
-  getChart(id: string): Chart | null {
+  getChart(id: string): DashboardChart | null {
     return this.charts.get(id) || null;
   }
   
-  getAllCharts(): Chart[] {
+  getAllCharts(): DashboardChart[] {
     return Array.from(this.charts.values());
   }
   

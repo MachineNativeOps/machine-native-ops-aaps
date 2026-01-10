@@ -163,6 +163,7 @@ export class MonitoringSystem {
   private traceManager: TraceManager;
   private dashboardServer: DashboardServer;
   private metricsAPI: MetricsAPI;
+  private dashboardEnabled: boolean;
   
   constructor(config?: {
     context?: string;
@@ -185,11 +186,21 @@ export class MonitoringSystem {
     // Initialize dashboard
     this.dashboardServer = new DashboardServer();
     this.metricsAPI = new MetricsAPI(this.metricsCollector);
-    
-    if (config?.enableDashboard) {
-      this.dashboardServer.start().catch(err => {
+    this.dashboardEnabled = config?.enableDashboard ?? false;
+  }
+
+  /**
+   * Initialize async components (e.g., dashboard server).
+   * Call this method after construction to start services that require async initialization.
+   */
+  async initialize(): Promise<void> {
+    if (this.dashboardEnabled) {
+      try {
+        await this.dashboardServer.start();
+      } catch (err) {
         this.logger.error('Failed to start dashboard', err);
-      });
+        throw err;
+      }
     }
   }
   

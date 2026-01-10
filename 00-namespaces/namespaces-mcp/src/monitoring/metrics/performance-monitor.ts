@@ -51,6 +51,8 @@ export class PerformanceMonitor extends EventEmitter {
   private thresholds: Map<string, PerformanceThreshold>;
   private monitoringInterval?: NodeJS.Timeout;
   private samplingRate: number;
+  private lastCpuUsage?: { time: bigint; usage: NodeJS.CpuUsage };
+  private lastEventLoopLag: number = 0;
   
   constructor(config?: {
     metricsCollector?: MetricsCollector;
@@ -80,8 +82,33 @@ export class PerformanceMonitor extends EventEmitter {
    * Monitor CPU usage
    */
   monitorCPU(): void {
-    const usage = process.cpuUsage();
-    const cpuPercent = (usage.user + usage.system) / 1000000; // Convert to seconds
+    const now = process.hrtime.bigint();
+    const currentUsage = process.cpuUsage();
+    
+    let cpuPercent = 0;
+    
+    if (this.lastCpuUsage) {
+      // Calculate elapsed time in nanoseconds
+      const elapsedNs = now - this.lastCpuUsage.time;
+      
+      if (elapsedNs > 0n) {
+        // Convert to microseconds for comparison with cpuUsage
+        const elapsedMicros = Number(elapsedNs / 1000n);
+        
+        if (elapsedMicros > 0) {
+          // Calculate CPU time delta in microseconds
+          const userDiff = currentUsage.user - this.lastCpuUsage.usage.user;
+          const systemDiff = currentUsage.system - this.lastCpuUsage.usage.system;
+          const totalCpuTime = userDiff + systemDiff;
+          
+          // CPU percentage = (CPU time used / wall time elapsed) * 100
+          cpuPercent = (totalCpuTime / elapsedMicros) * 100;
+        }
+      }
+    }
+    
+    // Update last measurement
+    this.lastCpuUsage = { time: now, usage: currentUsage };
     
     this.metricsCollector.recordGauge('cpu_usage_percent', cpuPercent);
     this.checkThreshold('cpu_usage_percent', cpuPercent);
@@ -105,13 +132,14 @@ export class PerformanceMonitor extends EventEmitter {
    * Monitor event loop lag
    */
   monitorEventLoop(): void {
-    const start = Date.now();
+    const start = performance.now();
     
-    setImmediate(() => {
-      const lag = Date.now() - start;
+    setTimeout(() => {
+      const lag = performance.now() - start;
+      this.lastEventLoopLag = lag;
       this.metricsCollector.recordHistogram('event_loop_lag_ms', lag);
       this.checkThreshold('event_loop_lag_ms', lag);
-    });
+    }, 0);
   }
   
   /**
@@ -232,15 +260,36 @@ export class PerformanceMonitor extends EventEmitter {
   } {
     const memUsage = process.memoryUsage();
     
+    // Compute CPU percentage using the same logic as monitorCPU
+    let cpuPercent = 0;
+    const now = process.hrtime.bigint();
+    const currentUsage = process.cpuUsage();
+    
+    if (this.lastCpuUsage) {
+      const elapsedNs = now - this.lastCpuUsage.time;
+      if (elapsedNs > 0n) {
+        const elapsedMicros = Number(elapsedNs / 1000n);
+        if (elapsedMicros > 0) {
+          const userDiff = currentUsage.user - this.lastCpuUsage.usage.user;
+          const systemDiff = currentUsage.system - this.lastCpuUsage.usage.system;
+          const totalCpuTime = userDiff + systemDiff;
+          cpuPercent = (totalCpuTime / elapsedMicros) * 100;
+        }
+      }
+    }
+    
+    // Update last measurement
+    this.lastCpuUsage = { time: now, usage: currentUsage };
+    
     return {
-      cpu: process.cpuUsage().user / 1000000,
+      cpu: cpuPercent,
       memory: {
         heapUsed: memUsage.heapUsed,
         heapTotal: memUsage.heapTotal,
         rss: memUsage.rss,
         heapPercent: (memUsage.heapUsed / memUsage.heapTotal) * 100
       },
-      eventLoopLag: 0, // Would need to track this separately
+      eventLoopLag: this.lastEventLoopLag,
       uptime: process.uptime()
     };
   }

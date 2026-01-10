@@ -100,13 +100,21 @@ export class HealthChecker extends EventEmitter {
     }
     
     const startTime = Date.now();
+    let completed = false; // Flag to prevent race condition
     
     try {
       const timeout = config.timeout || 5000;
       const result = await Promise.race([
-        config.check(),
+        config.check().then(res => {
+          completed = true;
+          return res;
+        }),
         new Promise<{ healthy: boolean; message: string }>((_, reject) =>
-          setTimeout(() => reject(new Error('Health check timeout')), timeout)
+          setTimeout(() => {
+            if (!completed) {
+              reject(new Error('Health check timeout'));
+            }
+          }, timeout)
         )
       ]);
       
@@ -124,18 +132,21 @@ export class HealthChecker extends EventEmitter {
       
       return healthCheck;
     } catch (error) {
-      const healthCheck: HealthCheck = {
-        name,
-        status: HealthStatus.UNHEALTHY,
-        message: error instanceof Error ? error.message : String(error),
-        timestamp: Date.now(),
-        duration: Date.now() - startTime
-      };
-      
-      this.results.set(name, healthCheck);
-      this.emit('check:failed', { check: healthCheck, error });
-      
-      return healthCheck;
+      if (!completed) {
+        const healthCheck: HealthCheck = {
+          name,
+          status: HealthStatus.UNHEALTHY,
+          message: error instanceof Error ? error.message : String(error),
+          timestamp: Date.now(),
+          duration: Date.now() - startTime
+        };
+        
+        this.results.set(name, healthCheck);
+        this.emit('check:failed', { check: healthCheck, error });
+        
+        return healthCheck;
+      }
+      throw error; // Should not happen
     }
   }
   

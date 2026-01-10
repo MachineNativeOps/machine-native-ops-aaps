@@ -40,7 +40,7 @@ export class AuditLogger extends EventEmitter {
   log(event: Omit<AuditEvent, 'id' | 'timestamp'>): void {
     const auditEvent: AuditEvent = {
       ...event,
-      id: `audit-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: `audit-${crypto.randomUUID()}`,
       timestamp: Date.now()
     };
     

@@ -17,11 +17,18 @@ export class MetricsAPI extends EventEmitter {
   private endpoints: Map<string, APIEndpoint>;
   private metricsCollector: MetricsCollector;
   
-  constructor(metricsCollector: MetricsCollector) {
+  constructor(
+    metricsCollector: MetricsCollector,
+    options?: {
+      registerDefaultEndpoints?: boolean;
+    }
+  ) {
     super();
     this.endpoints = new Map();
     this.metricsCollector = metricsCollector;
-    this.registerDefaultEndpoints();
+    if (options?.registerDefaultEndpoints ?? true) {
+      this.registerDefaultEndpoints();
+    }
   }
   
   private registerDefaultEndpoints(): void {
@@ -60,14 +67,63 @@ export class MetricsAPI extends EventEmitter {
     this.endpoints.set(key, endpoint);
   }
   
+  /**
+   * Handle incoming API request with path parameter extraction
+   */
   async handleRequest(method: string, path: string, params?: any): Promise<any> {
-    const key = `${method}:${path}`;
-    const endpoint = this.endpoints.get(key);
+    // Try exact match first
+    const exactKey = `${method}:${path}`;
+    let endpoint = this.endpoints.get(exactKey);
     
-    if (!endpoint) {
-      throw new Error(`Endpoint not found: ${key}`);
+    if (endpoint) {
+      return endpoint.handler(params || {});
     }
     
-    return endpoint.handler(params || {});
+    // Try to match parameterized routes
+    for (const [key, ep] of this.endpoints) {
+      const [epMethod, epPath] = key.split(':');
+      
+      if (epMethod !== method) continue;
+      
+      const pathParams = this.extractPathParams(epPath, path);
+      if (pathParams !== null) {
+        // Merge path params with query params
+        const mergedParams = { ...(params || {}), ...pathParams };
+        return ep.handler(mergedParams);
+      }
+    }
+    
+    throw new Error(`Endpoint not found: ${method}:${path}`);
+  }
+
+  /**
+   * Extract path parameters from a parameterized route
+   * Returns null if path doesn't match pattern
+   */
+  private extractPathParams(pattern: string, path: string): Record<string, string> | null {
+    const patternParts = pattern.split('/');
+    const pathParts = path.split('/');
+    
+    if (patternParts.length !== pathParts.length) {
+      return null;
+    }
+    
+    const params: Record<string, string> = {};
+    
+    for (let i = 0; i < patternParts.length; i++) {
+      const patternPart = patternParts[i];
+      const pathPart = pathParts[i];
+      
+      if (patternPart.startsWith(':')) {
+        // This is a parameter
+        const paramName = patternPart.slice(1);
+        params[paramName] = pathPart;
+      } else if (patternPart !== pathPart) {
+        // Static part doesn't match
+        return null;
+      }
+    }
+    
+    return params;
   }
 }

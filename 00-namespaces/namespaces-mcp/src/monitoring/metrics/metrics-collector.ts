@@ -50,6 +50,8 @@ export class MetricsCollector extends EventEmitter {
   private statistics: CollectorStatistics;
   private collectionInterval?: NodeJS.Timeout;
   private maxMetricsPerName: number;
+  private lastCollectionTime: number;
+  private lastMetricsCount: number;
   
   constructor(config?: {
     maxMetricsPerName?: number;
@@ -60,6 +62,8 @@ export class MetricsCollector extends EventEmitter {
     this.metrics = new Map();
     this.configs = new Map();
     this.maxMetricsPerName = config?.maxMetricsPerName || 1000;
+    this.lastCollectionTime = Date.now();
+    this.lastMetricsCount = 0;
     
     this.statistics = {
       totalMetrics: 0,
@@ -324,11 +328,16 @@ export class MetricsCollector extends EventEmitter {
     this.emit('metric:recorded', { metric });
   }
   
+  /**
+   * Update collection statistics with exponential moving average for latency.
+   * Smoothing factor: 0.9 for historical values, 0.1 for current sample.
+   * This provides stable latency metrics while still responding to changes.
+   */
   private updateStatistics(type: string, latency: number): void {
     this.statistics.collectionLatency = 
       (this.statistics.collectionLatency * 0.9) + (latency * 0.1);
     
-    this.statistics.memoryUsage = this.calculateMemoryUsage();
+    this.statistics.memoryUsage = this.getMemoryUsage();
   }
   
   private calculateMemoryUsage(): number {
@@ -342,17 +351,42 @@ export class MetricsCollector extends EventEmitter {
   }
   
   private percentile(values: number[], p: number): number {
-    const index = Math.ceil(values.length * p) - 1;
-    return values[Math.max(0, index)];
+    if (values.length === 0) {
+      return NaN;
+    }
+
+    if (p <= 0) {
+      return values[0];
+    }
+
+    if (p >= 1) {
+      return values[values.length - 1];
+    }
+
+    const index = Math.floor(values.length * p);
+    return values[Math.min(index, values.length - 1)];
   }
   
+  /**
+   * Exponential moving average smoothing factor for collection latency.
+   * 0.9 heavily weights historical values for stability, 0.1 weights current sample.
+   * This provides smooth latency metrics while still responding to changes.
+   */
   private startCollection(interval: number): void {
     this.collectionInterval = setInterval(() => {
       const now = Date.now();
-      const elapsed = interval / 1000;
+      const elapsed = (now - this.lastCollectionTime) / 1000; // Convert to seconds
       
-      this.statistics.metricsPerSecond = 
-        this.statistics.totalMetrics / elapsed;
+      // Calculate metrics per second using delta from last collection
+      const metricsDelta = this.statistics.totalMetrics - this.lastMetricsCount;
+      
+      if (elapsed > 0) {
+        this.statistics.metricsPerSecond = metricsDelta / elapsed;
+      }
+      
+      // Update last collection state
+      this.lastCollectionTime = now;
+      this.lastMetricsCount = this.statistics.totalMetrics;
       
       this.emit('collection:tick', {
         timestamp: now,

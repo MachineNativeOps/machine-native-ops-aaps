@@ -116,7 +116,7 @@ export class AlertManager extends EventEmitter {
    * Fire alert
    */
   fireAlert(rule: AlertRule, data?: any): Alert {
-    const alertId = `${rule.name}-${Date.now()}`;
+    const alertId = `${rule.name}-${crypto.randomUUID()}`;
     
     const alert: Alert = {
       id: alertId,
@@ -280,11 +280,26 @@ export class AlertManager extends EventEmitter {
     }
   }
   
+  /**
+   * Send a notification through the given channel.
+   *
+   * NOTE: This is currently a stub implementation and does not perform any
+   * real notification delivery. It will explicitly fail so that callers do not
+   * incorrectly assume that alerts have been sent. To use this in
+   * production, replace this implementation with real notification logic
+   * (e.g., email, chat, incident management integration) and emit the
+   * appropriate events on success/failure.
+   */
   private async sendNotification(channel: NotificationChannel, alert: Alert): Promise<void> {
-    // Simulate notification sending
-    await new Promise(resolve => setTimeout(resolve, 50));
-    
-    this.emit('notification:sent', { channel: channel.name, alert });
+    // Emit explicit event to indicate that notification sending is not implemented.
+    this.emit('notification:not_implemented', { channel: channel.name, alert });
+
+    // Fail explicitly so that the caller's error handling path is triggered
+    // (see sendNotifications, which emits 'notification:failed' on rejection).
+    throw new Error(
+      `Notification sending is not implemented for channel "${channel.name}". ` +
+      `Implement AlertManager.sendNotification before using this in production.`
+    );
   }
   
   /**
